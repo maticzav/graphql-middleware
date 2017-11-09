@@ -32,7 +32,6 @@ const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 const stack = new Stack(schema)
 
-
 stack.use(metricsMiddleware())
 
 // Minimal example middleware (before & after)
