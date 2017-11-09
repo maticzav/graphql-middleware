@@ -13,7 +13,7 @@ import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { graphqlExpress } from 'apollo-server-express'
 import { makeExecutableSchema } from 'graphql-tools'
-import Router from 'graphql-stack'
+import Stack from 'graphql-stack'
 
 import authMiddleware from './middlewares/auth'
 
