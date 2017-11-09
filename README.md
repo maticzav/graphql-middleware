@@ -48,9 +48,7 @@ stack.use({
 })
 
 stack.use({
-  Query: {
-    '*': authMiddleware,
-  },
+  Query: authMiddleware,
 })
 
 const app = express()
