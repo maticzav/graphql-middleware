@@ -17,22 +17,14 @@ import Stack from 'graphql-stack'
 
 import { authMiddleware, metricsMiddleware } from './middlewares'
 
-const typeDefs = `
-  type Query {
-    hello(name: String): String
-  }
-`
-const resolvers = {
-  Query: {
-    hello: (root, args: { name }, context) => `Hello ${name ? name : 'world'}!`,
-  },
-}
-
-const schema = makeExecutableSchema({ typeDefs, resolvers })
-
-const stack = new Stack(schema)
+const stack = new Stack()
 
 stack.use(metricsMiddleware())
+
+// Middleware will be applied on every field of `type Query`
+stack.use({
+  Query: authMiddleware,
+})
 
 // Minimal example middleware (before & after)
 stack.use({
@@ -47,14 +39,27 @@ stack.use({
   },
 })
 
-// Middleware will be applied on every field of `type Query`
-stack.use({
-  Query: authMiddleware,
-})
+
+const typeDefs = `
+  type Query {
+    hello(name: String): String
+  }
+`
+const resolvers = {
+  Query: {
+    hello: (root, args: { name }, context) => `Hello ${name ? name : 'world'}!`,
+  },
+}
+
+const baseSchema = makeExecutableSchema({ typeDefs, resolvers })
+
+stack.use(baseSchema)
+
+const schema = stack.getSchema()
 
 const app = express()
 
-app.use('/graphql', bodyParser.json(), graphqlExpress({ schema: stack.getSchema() }))
+app.use('/graphql', bodyParser.json(), graphqlExpress({ schema }))
 app.use('/playground', expressPlayground({ endpoint: '/graphql' }))
 
 app.listen(3000, () => console.log('Server running. Open http://localhost:3000/playground to run queries.'))
