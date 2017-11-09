@@ -1,17 +1,6 @@
 {
   "name": "graphql-stack",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "git@github.com:graphcool/graphql-stack.git",
-  "author": "timsuchanek <tim.suchanek@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "graphql": "^0.11.7",
-    "graphql-tools": "^2.7.2",
-    "lodash": "^4.17.4"
-  },
-  "devDependencies": {
-    "@types/graphql": "^0.11.5",
-    "@types/lodash": "^4.14.83"
-  }
+  "workspaces": [
+    "packages/*"
+  ]
 }

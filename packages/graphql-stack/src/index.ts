@@ -3,13 +3,13 @@ import { MergeInfo, default as mergeSchemas } from 'graphql-tools/dist/stitching
 import { GraphQLResolveInfo, GraphQLSchema } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
 
-interface ResolverDefinition {
+export interface ResolverDefinition {
   [key: string]: ResolverDefinition | ResolverMiddleware | ResolverMiddleware[]
 }
 
-interface ResolverMap { [path: string]: ResolverMiddleware[] }
+export interface ResolverMap { [path: string]: ResolverMiddleware[] }
 
-interface ResolverContext {
+export interface ResolverContext {
   mergeInfo: MergeInfo
   parent: any
   args: { [argName: string]: any }
@@ -17,9 +17,9 @@ interface ResolverContext {
   info: GraphQLResolveInfo
 }
 
-type ResolverMiddleware = (context: ResolverContext, next?: Promise<any>) => any | Promise<any>
+export type ResolverMiddleware = (context: ResolverContext, next?: Promise<any>) => any | Promise<any>
 
-interface StackOptions {
+export interface StackOptions {
   typeDefs?: string
   schema?: GraphQLSchema
 }
