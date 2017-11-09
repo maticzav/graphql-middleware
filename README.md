@@ -15,7 +15,7 @@ import { graphqlExpress } from 'apollo-server-express'
 import { makeExecutableSchema } from 'graphql-tools'
 import Stack from 'graphql-stack'
 
-import authMiddleware from './middlewares/auth'
+import { authMiddleware, metricsMiddleware } from './middlewares'
 
 const typeDefs = `
   type Query {
@@ -31,6 +31,9 @@ const resolvers = {
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 const stack = new Stack(schema)
+
+
+stack.use(metricsMiddleware())
 
 // Minimal example middleware (before & after)
 stack.use({
