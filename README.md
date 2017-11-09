@@ -47,6 +47,7 @@ stack.use({
   },
 })
 
+// Middleware will be applied on every field of `type Query`
 stack.use({
   Query: authMiddleware,
 })
