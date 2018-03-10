@@ -1,44 +1,103 @@
 # graphql-middleware
 
+> NOTE: This repo is still WIP
+
+## What's `graphql-middleware`?
+
+* Middlewares can be wrapped (based on provided order)
+
+### What it does
+
+* Value transformation
+* Override arguments
+* Error handling (throw & catch errors)
+* Globbing syntax
+
+### What is doesn't
+
+* Does **not** change the exposed GraphQL schema
+
 ## Install
 
 ```sh
-yarn add graphql-stack
+yarn add graphql-middleware
 ```
 
 ## API
 
-```ts
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
-import { graphqlExpress } from 'apollo-server-express'
-import { makeExecutableSchema } from 'graphql-tools'
-import {Stack} from 'graphql-stack'
+### Field middleware
 
+A field middleware is a resolver function that wraps another resolver function
+
+```ts
+type IFieldMiddlewareFunction = (
+  resolve: Function,
+  parent: any,
+  args: any,
+  context: any,
+  info: GraphQLResolveInfo,
+) => Promise<any>
+
+interface IFieldMiddlewareTypeMap {
+  [key: string]: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap
+}
+
+interface IFieldMiddlewareFieldMap {
+  [key: string]: IFieldMiddlewareFunction
+}
+
+type IFieldMiddleware = IFieldMiddlewareFunction | IFieldMiddlewareTypeMap
+
+function applyFieldMiddleware(schema: GraphQLSchema, ...middlewares: IFieldMiddleware[]): GraphQLSchema
+```
+
+### Document middleware
+
+```ts
+interface GraphQLResponse {
+  data: any
+  errors?: any[]
+  extensions?: any
+}
+
+type IDocumentMiddlewareFunction = (
+  execute: Function,
+  rootValue: any,
+  context: any,
+  info: GraphQLResolveInfo,
+): Promise<GraphQLResponse>
+
+function applyDocumentMiddleware(schema: GraphQLSchema, ...middlewares: IDocumentMiddlewareFunction[]): GraphQLSchema
+```
+
+## Examples
+
+```ts
+import { applyFieldMiddleware } from 'graphql-middleware'
+import { makeExecutableSchema } from 'graphql-tools'
 import { authMiddleware, metricsMiddleware } from './middlewares'
 
-const stack = new Stack()
-
-stack.use(metricsMiddleware())
-
-// Middleware will be applied on every field of `type Query`
-stack.use({
-  Query: authMiddleware,
-})
-
 // Minimal example middleware (before & after)
-stack.use({
+const beepMiddleware = {
   Query: {
-    hello: ({ args, resolve }) => {
+    hello: (resolve, parent, args, context, info) => {
       // You can you middlewares to override arguments
       const argsWithDefault = { name: 'Bob', ...args }
-      const result = await resolve({ args: argsWithDefault }) // other params (ctx, info...) are injected if not provided
+      const result = await resolve(parent, argsWithDefault, context, info)
       // Or change the returned values of resolvers
       return result.replace(/Trump/g, 'beep')
     },
   },
-})
+}
 
+const responseSizeMiddleware = async (execute, rootValue, context, info) => {
+  const response = await execute(rootValue, context, info)
+  if (count(response) > 1000) {
+    throw new Error('Response too big')
+  }
+
+  return response
+}
 
 const typeDefs = `
   type Query {
@@ -47,20 +106,69 @@ const typeDefs = `
 `
 const resolvers = {
   Query: {
-    hello: (root, args: { name }, context) => `Hello ${name ? name : 'world'}!`,
+    hello: (parent, { name }, context) => `Hello ${name ? name : 'world'}!`,
   },
 }
 
-const baseSchema = makeExecutableSchema({ typeDefs, resolvers })
+const schema = makeExecutableSchema({ typeDefs, resolvers })
 
-stack.use(baseSchema)
-
-const schema = stack.getSchema()
-
-const app = express()
-
-app.use('/graphql', bodyParser.json(), graphqlExpress({ schema }))
-app.use('/playground', expressPlayground({ endpoint: '/graphql' }))
-
-app.listen(3000, () => console.log('Server running. Open http://localhost:3000/playground to run queries.'))
+const schemaWithFieldMiddlewares = applyFieldMiddleware(schema, metricsMiddleware, authMiddleware, beepMiddleware)
+const schemaWithDocumentMiddlewares = applyDocumentMiddleware(schemaWithFieldMiddlewares, responseSizeMiddleware)
 ```
+
+### Usage with `graphql-yoga`
+
+`graphql-yoga` has built-in support for `graphql-middleware`
+
+```ts
+import { GraphQLServer } from 'graphql-yoga'
+import { authMiddleware, metricsMiddleware, responseSizeMiddleware } from './middlewares'
+
+const typeDefs = `
+  type Query {
+    hello(name: String): String
+  }
+`
+const resolvers = {
+  Query: {
+    hello: (parent, { name }, context) => `Hello ${name ? name : 'world'}!`,
+  },
+}
+
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers,
+  fieldMiddlewares: [authMiddleware, metricsMiddleware],
+  documentMiddlewares: [responseSizeMiddleware],
+})
+server.start(() => console.log('Server is running on localhost:4000'))
+```
+
+## Terminology
+
+* Core resolver
+
+## Middleware Use Cases
+
+### Field level
+
+* Logging
+* Metrics
+* Input sanitzation
+* Performance measurement
+* Authorization (`graphql-shield`)
+* Caching
+* Tracing
+
+### Document level
+
+* Complexity analysis
+
+## Open questions
+
+* [ ] Allow to transform schema?
+* [ ] Anything to consider for subscriptions?
+
+## Alternatives
+
+- Directive resolvers
