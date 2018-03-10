@@ -1,4 +1,4 @@
-# graphql-stack
+# graphql-middleware
 
 ## Install
 
