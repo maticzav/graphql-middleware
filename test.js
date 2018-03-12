@@ -13,11 +13,6 @@ const typeDefs = `
   type User {
     name: String!
   }
-
-  union Currency {
-    EUR
-    USD
-  }
 `
 
 const resolvers = {
@@ -38,6 +33,20 @@ const beepMiddleware = {
   },
 }
 
+const veryNiceGreeting = {
+  Query: async (resolve, parent, args, context, info) => {
+    const argsWithDefault = { name: 'Bob', ...args }
+    const result = await resolve(parent, argsWithDefault, context, info)
+    return `Well ${result}`
+  }
+}
+
+const alwaysBobAndTrump = async (resolve, parent, args, context, info) => {
+  const argsWithDefault = { name: 'Bob and Trump' }
+  const result = await resolve(parent, argsWithDefault, context, info)
+  return result
+}
+
 const responseSizeMiddleware = async (execute, rootValue, context, info) => {
   const response = await execute(rootValue, context, info)
   if (count(response) > 1000) {
@@ -53,7 +62,7 @@ const getSchema = () => makeExecutableSchema({ typeDefs, resolvers })
 
 test('Field middleware', async t => {
    const schema = getSchema()
-   const schemaWithFieldMiddlewares = applyFieldMiddleware(schema, beepMiddleware)
+   const schemaWithFieldMiddlewares = applyFieldMiddleware(schema, alwaysBobAndTrump, beepMiddleware, veryNiceGreeting)
 
    const query = `
       {
@@ -64,7 +73,7 @@ test('Field middleware', async t => {
 
    t.deepEqual(res, {
       data: {
-         hello: 'Hello beep!'
+         hello: 'Well Hello Bob and beep!'
       }
    })
 })

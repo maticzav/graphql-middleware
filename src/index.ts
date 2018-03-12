@@ -22,15 +22,10 @@ import {
 // Type checks
 
 function isMiddlewareFunction(obj: any): boolean {
-  return typeof obj === "object" && obj.then !== undefined;
-}
-
-function isMiddlewareTypeMap(obj: any): boolean {
-  return obj.kind === "typemap";
-}
-
-function isMiddlewareFieldMap(obj: any): boolean {
-  return obj.kind === "filedmap";
+  return (
+    typeof obj === "function" ||
+    (typeof obj === "object" && obj.then !== undefined)
+  );
 }
 
 function isGraphQLObjectType(obj: any): boolean {
@@ -40,7 +35,7 @@ function isGraphQLObjectType(obj: any): boolean {
 //
 
 function wrapResolverInMiddleware(
-  resolver: GraphQLField<any, any, any>,
+  resolver: GraphQLFieldResolver<any, any, any>,
   middleware: IFieldMiddlewareFunction
 ): GraphQLFieldResolver<any, any> {
   return (parent, args, ctx, info) => {
@@ -53,10 +48,14 @@ function wrapResolverInMiddleware(
 function applyMiddlewareToField(
   field: GraphQLField<any, any, any>,
   middleware: IFieldMiddlewareFunction
-): IResolvers {
-  console.log(field.name);
-  
-  return {};
+): GraphQLFieldResolver<any, any, any> {
+  let resolver = field.resolve;
+
+  if (field.subscribe) {
+    resolver = field.subscribe;
+  }
+
+  return wrapResolverInMiddleware(resolver, middleware);
 }
 
 function applyMiddlewareToType(
@@ -91,7 +90,7 @@ function applyMiddlewareToSchema(
   const typeMap = schema.getTypeMap();
 
   Object.keys(typeMap)
-    .filter(isGraphQLObjectType)
+    .filter(type => isGraphQLObjectType(typeMap[type]))
     .forEach(type => {
       resolvers[type] = applyMiddlewareToType(
         typeMap[type] as GraphQLObjectType,
@@ -115,7 +114,7 @@ function generateResolverFromSchemaAndMiddleware(
       schema,
       middleware as IFieldMiddlewareFunction
     );
-  } else if (isMiddlewareTypeMap(middleware)) {
+  } else {
     const typeMap = schema.getTypeMap();
 
     Object.keys(middleware).forEach(type => {

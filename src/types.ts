@@ -5,7 +5,7 @@ import {
 } from "graphql";
 
 export type IFieldMiddlewareFunction = (
-  resolve: GraphQLField<any, any>,
+  resolve: GraphQLFieldResolver<any, any>,
   parent: any,
   args: any,
   context: any,
@@ -13,12 +13,10 @@ export type IFieldMiddlewareFunction = (
 ) => Promise<any>;
 
 export interface IFieldMiddlewareTypeMap {
-  kind: "typemap";
   [key: string]: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap;
 }
 
 export interface IFieldMiddlewareFieldMap {
-  kind: "fieldmap";
   [key: string]: IFieldMiddlewareFunction;
 }
 
