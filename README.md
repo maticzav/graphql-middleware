@@ -80,7 +80,7 @@ import { authMiddleware, metricsMiddleware } from './middlewares'
 // Minimal example middleware (before & after)
 const beepMiddleware = {
   Query: {
-    hello: (resolve, parent, args, context, info) => {
+    hello: async (resolve, parent, args, context, info) => {
       // You can you middlewares to override arguments
       const argsWithDefault = { name: 'Bob', ...args }
       const result = await resolve(parent, argsWithDefault, context, info)

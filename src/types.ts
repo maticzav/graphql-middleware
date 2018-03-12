@@ -13,10 +13,12 @@ export type IFieldMiddlewareFunction = (
 ) => Promise<any>;
 
 export interface IFieldMiddlewareTypeMap {
+  kind: "typemap";
   [key: string]: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap;
 }
 
 export interface IFieldMiddlewareFieldMap {
+  kind: "fieldmap";
   [key: string]: IFieldMiddlewareFunction;
 }
 

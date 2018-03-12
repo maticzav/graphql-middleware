@@ -14,11 +14,33 @@ import { IResolvers } from "graphql-tools/dist/Interfaces";
 import {
   IDocumentMiddlewareFunction,
   IFieldMiddleware,
-  IFieldMiddlewareFunction
+  IFieldMiddlewareFunction,
+  IFieldMiddlewareTypeMap,
+  IFieldMiddlewareFieldMap
 } from "./types";
 
+// Type checks
+
+function isMiddlewareFunction(obj: any): boolean {
+  return typeof obj === "object" && obj.then !== undefined;
+}
+
+function isMiddlewareTypeMap(obj: any): boolean {
+  return obj.kind === "typemap";
+}
+
+function isMiddlewareFieldMap(obj: any): boolean {
+  return obj.kind === "filedmap";
+}
+
+function isGraphQLObjectType(obj: any): boolean {
+  return obj._fields !== undefined;
+}
+
+//
+
 function wrapResolverInMiddleware(
-  resolver: GraphQLField<any, any>,
+  resolver: GraphQLField<any, any, any>,
   middleware: IFieldMiddlewareFunction
 ): GraphQLFieldResolver<any, any> {
   return (parent, args, ctx, info) => {
@@ -26,16 +48,83 @@ function wrapResolverInMiddleware(
   };
 }
 
+// Merge
+
+function applyMiddlewareToField(
+  field: GraphQLField<any, any, any>,
+  middleware: IFieldMiddlewareFunction
+): IResolvers {
+  console.log(field.name);
+  
+  return {};
+}
+
+function applyMiddlewareToType(
+  type: GraphQLObjectType,
+  middleware: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap
+): IResolvers {
+  let resolvers = {};
+  const fieldMap = type.getFields();
+
+  Object.keys(fieldMap).forEach(field => {
+    if (isMiddlewareFunction(middleware)) {
+      resolvers[field] = applyMiddlewareToField(
+        fieldMap[field],
+        middleware as IFieldMiddlewareFunction
+      );
+    } else {
+      resolvers[field] = applyMiddlewareToField(
+        fieldMap[field],
+        middleware[field]
+      );
+    }
+  });
+
+  return resolvers;
+}
+
+function applyMiddlewareToSchema(
+  schema: GraphQLSchema,
+  middleware: IFieldMiddlewareFunction
+): IResolvers {
+  let resolvers = {};
+  const typeMap = schema.getTypeMap();
+
+  Object.keys(typeMap)
+    .filter(isGraphQLObjectType)
+    .forEach(type => {
+      resolvers[type] = applyMiddlewareToType(
+        typeMap[type] as GraphQLObjectType,
+        middleware
+      );
+    });
+
+  return resolvers;
+}
+
+// Generator
+
 function generateResolverFromSchemaAndMiddleware(
   schema: GraphQLSchema,
   middleware: IFieldMiddleware
 ): IResolvers {
   let resolvers = {};
-  const typeMap = schema.getTypeMap();
 
-  Object.keys(middleware).forEach(type => {
-    resolvers[type] = mergeResolvers(typeMap[type], middleware[type]);
-  });
+  if (isMiddlewareFunction(middleware)) {
+    resolvers = applyMiddlewareToSchema(
+      schema,
+      middleware as IFieldMiddlewareFunction
+    );
+  } else if (isMiddlewareTypeMap(middleware)) {
+    const typeMap = schema.getTypeMap();
+
+    Object.keys(middleware).forEach(type => {
+      resolvers[type] = applyMiddlewareToType(
+        typeMap[type] as GraphQLObjectType,
+        middleware[type]
+      );
+    });
+  }
 
   return resolvers;
 }
@@ -44,16 +133,15 @@ function addMiddlewareToSchema(
   schema: GraphQLSchema,
   middleware: IFieldMiddleware
 ): GraphQLSchema {
-  const resolvers = generateResolverFromSchemaAndMiddleware(
-    schema, 
-    middleware
-  );
+  const resolvers = generateResolverFromSchemaAndMiddleware(schema, middleware);
 
   return mergeSchemas({
     schemas: [schema],
     resolvers
   });
 }
+
+// Exposed functions
 
 export function applyFieldMiddleware(
   schema: GraphQLSchema,
