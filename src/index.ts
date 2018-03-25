@@ -7,137 +7,226 @@ import {
   GraphQLNamedType,
   GraphQLObjectType,
   GraphQLField,
-  GraphQLFieldResolver
-} from "graphql";
-import { mergeSchemas } from "graphql-tools";
-import { IResolvers } from "graphql-tools/dist/Interfaces";
+  GraphQLFieldResolver,
+  GraphQLInterfaceType,
+} from 'graphql'
+import { mergeSchemas } from 'graphql-tools'
+import { IResolvers } from 'graphql-tools/dist/Interfaces'
 import {
   IDocumentMiddlewareFunction,
   IFieldMiddleware,
   IFieldMiddlewareFunction,
   IFieldMiddlewareTypeMap,
-  IFieldMiddlewareFieldMap
-} from "./types";
+  IFieldMiddlewareFieldMap,
+} from './types'
 
 // Type checks
 
 function isMiddlewareFunction(obj: any): boolean {
   return (
-    typeof obj === "function" ||
-    (typeof obj === "object" && obj.then !== undefined)
-  );
+    typeof obj === 'function' ||
+    (typeof obj === 'object' && obj.then !== undefined)
+  )
 }
 
 function isGraphQLObjectType(obj: any): boolean {
-  return obj._fields !== undefined;
+  return obj instanceof GraphQLObjectType || obj instanceof GraphQLInterfaceType
 }
 
-//
+// Wrapper
 
 function wrapResolverInMiddleware(
   resolver: GraphQLFieldResolver<any, any, any>,
-  middleware: IFieldMiddlewareFunction
+  middleware: IFieldMiddlewareFunction,
 ): GraphQLFieldResolver<any, any> {
   return (parent, args, ctx, info) => {
-    return middleware(resolver, parent, args, ctx, info);
-  };
+    return middleware(
+      (_parent = parent, _args = args, _ctx = ctx, _info = info) =>
+        resolver(_parent, _args, _ctx, _info),
+      parent,
+      args,
+      ctx,
+      info,
+    )
+  }
+}
+
+// Inspired by graphql-tools.
+function transformDocumentMiddlewareToFieldMiddleware(
+  middleware: IDocumentMiddlewareFunction,
+): IFieldMiddlewareFunction {
+  let value = null
+  const randomNumber = Math.random()
+
+  return async (resolve, parent, args, ctx, info) => {
+    if (!info.operation['__runAtMostOnce']) {
+      info.operation['__runAtMostOnce'] = {}
+    }
+
+    if (!info.operation['__runAtMostOnce'][randomNumber]) {
+      info.operation['__runAtMostOnce'][randomNumber] = true
+      value = await middleware(resolve, parent, ctx, info)
+      return value
+    }
+
+    return value
+  }
 }
 
 // Merge
 
 function applyMiddlewareToField(
   field: GraphQLField<any, any, any>,
-  middleware: IFieldMiddlewareFunction
+  middleware: IFieldMiddlewareFunction,
 ): GraphQLFieldResolver<any, any, any> {
-  let resolver = field.resolve;
+  let resolver = field.resolve
 
   if (field.subscribe) {
-    resolver = field.subscribe;
+    resolver = field.subscribe
   }
 
-  return wrapResolverInMiddleware(resolver, middleware);
+  return wrapResolverInMiddleware(resolver, middleware)
 }
 
 function applyMiddlewareToType(
   type: GraphQLObjectType,
-  middleware: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap
+  middleware: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap,
 ): IResolvers {
-  let resolvers = {};
-  const fieldMap = type.getFields();
+  const fieldMap = type.getFields()
 
-  Object.keys(fieldMap).forEach(field => {
-    if (isMiddlewareFunction(middleware)) {
-      resolvers[field] = applyMiddlewareToField(
-        fieldMap[field],
-        middleware as IFieldMiddlewareFunction
-      );
-    } else {
-      resolvers[field] = applyMiddlewareToField(
-        fieldMap[field],
-        middleware[field]
-      );
-    }
-  });
+  if (isMiddlewareFunction(middleware)) {
+    const resolvers = Object.keys(fieldMap).reduce(
+      (resolvers, field) => ({
+        ...resolvers,
+        [field]: applyMiddlewareToField(
+          fieldMap[field],
+          middleware as IFieldMiddlewareFunction,
+        ),
+      }),
+      {},
+    )
 
-  return resolvers;
+    return resolvers
+  } else {
+    const resolvers = Object.keys(middleware).reduce(
+      (resolvers, field) => ({
+        ...resolvers,
+        [field]: applyMiddlewareToField(fieldMap[field], middleware[field]),
+      }),
+      {},
+    )
+
+    return resolvers
+  }
 }
 
 function applyMiddlewareToSchema(
   schema: GraphQLSchema,
-  middleware: IFieldMiddlewareFunction
+  middleware: IFieldMiddlewareFunction,
 ): IResolvers {
-  let resolvers = {};
-  const typeMap = schema.getTypeMap();
+  const typeMap = schema.getTypeMap()
 
-  Object.keys(typeMap)
+  const resolvers = Object.keys(typeMap)
     .filter(type => isGraphQLObjectType(typeMap[type]))
-    .forEach(type => {
-      resolvers[type] = applyMiddlewareToType(
-        typeMap[type] as GraphQLObjectType,
-        middleware
-      );
-    });
+    .reduce(
+      (resolvers, type) => ({
+        ...resolvers,
+        [type]: applyMiddlewareToType(
+          typeMap[type] as GraphQLObjectType,
+          middleware,
+        ),
+      }),
+      {},
+    )
 
-  return resolvers;
+  return resolvers
 }
 
 // Generator
 
-function generateResolverFromSchemaAndMiddleware(
+function generateResolverFromSchemaAndFieldMiddleware(
   schema: GraphQLSchema,
-  middleware: IFieldMiddleware
+  middleware: IFieldMiddleware,
 ): IResolvers {
-  let resolvers = {};
-
   if (isMiddlewareFunction(middleware)) {
-    resolvers = applyMiddlewareToSchema(
+    return applyMiddlewareToSchema(
       schema,
-      middleware as IFieldMiddlewareFunction
-    );
+      middleware as IFieldMiddlewareFunction,
+    )
   } else {
-    const typeMap = schema.getTypeMap();
+    const typeMap = schema.getTypeMap()
 
-    Object.keys(middleware).forEach(type => {
-      resolvers[type] = applyMiddlewareToType(
-        typeMap[type] as GraphQLObjectType,
-        middleware[type]
-      );
-    });
+    const resolvers = Object.keys(middleware).reduce(
+      (resolvers, type) => ({
+        ...resolvers,
+        [type]: applyMiddlewareToType(
+          typeMap[type] as GraphQLObjectType,
+          middleware[type],
+        ),
+      }),
+      {},
+    )
+
+    return resolvers
   }
-
-  return resolvers;
 }
 
-function addMiddlewareToSchema(
+function generateResolverFromSchemaAndDocumentMiddleware(
   schema: GraphQLSchema,
-  middleware: IFieldMiddleware
+  middleware: IDocumentMiddlewareFunction,
+): IResolvers {
+  const typeMap = {
+    Query: schema.getQueryType(),
+    Mutation: schema.getMutationType(),
+    Subscription: schema.getSubscriptionType(),
+  }
+
+  const resolvers = Object.keys(typeMap)
+    .filter(type => isGraphQLObjectType(typeMap[type]))
+    .reduce(
+      (resolvers, type) => ({
+        ...resolvers,
+        [type]: applyMiddlewareToType(
+          typeMap[type] as GraphQLObjectType,
+          transformDocumentMiddlewareToFieldMiddleware(middleware),
+        ),
+      }),
+      {},
+    )
+
+  return {}
+}
+
+// Reducers
+
+function addFieldMiddlewareToSchema(
+  schema: GraphQLSchema,
+  middleware: IFieldMiddleware,
 ): GraphQLSchema {
-  const resolvers = generateResolverFromSchemaAndMiddleware(schema, middleware);
+  const resolvers = generateResolverFromSchemaAndFieldMiddleware(
+    schema,
+    middleware,
+  )
 
   return mergeSchemas({
     schemas: [schema],
-    resolvers
-  });
+    resolvers,
+  })
+}
+
+function addDocumentMiddlewareToSchema(
+  schema: GraphQLSchema,
+  middleware: IDocumentMiddlewareFunction,
+): GraphQLSchema {
+  const resolvers = generateResolverFromSchemaAndDocumentMiddleware(
+    schema,
+    middleware,
+  )
+
+  return mergeSchemas({
+    schemas: [schema],
+    resolvers,
+  })
 }
 
 // Exposed functions
@@ -148,16 +237,22 @@ export function applyFieldMiddleware(
 ): GraphQLSchema {
   const schemaWithMiddleware = middlewares.reduce(
     (currentSchema, middleware) =>
-      addMiddlewareToSchema(currentSchema, middleware),
-    schema
-  );
+      addFieldMiddlewareToSchema(currentSchema, middleware),
+    schema,
+  )
 
-  return schemaWithMiddleware;
+  return schemaWithMiddleware
 }
 
 export function applyDocumentMiddleware(
   schema: GraphQLSchema,
   ...middlewares: IDocumentMiddlewareFunction[]
 ): GraphQLSchema {
-  return null;
+  const schemaWithMiddleware = middlewares.reduce(
+    (currentSchema, middleware) =>
+      addDocumentMiddlewareToSchema(currentSchema, middleware),
+    schema,
+  )
+
+  return schemaWithMiddleware
 }

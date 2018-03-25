@@ -1,13 +1,14 @@
-import test from "ava";
-import { graphql } from "graphql";
-import { makeExecutableSchema } from "graphql-tools";
-import { applyFieldMiddleware } from "./dist";
+import test from 'ava'
+import { graphql } from 'graphql'
+import { makeExecutableSchema } from 'graphql-tools'
+import { applyFieldMiddleware, applyDocumentMiddleware } from './dist'
 
-// Setup
+// Setup ---------------------------------------------------------------------
 
 const typeDefs = `
   type Query {
     hello(name: String): String
+    nothing: String
   }
 
   type User {
@@ -22,116 +23,227 @@ const typeDefs = `
     query: Query,
     subscription: Subscription
   }
-`;
+`
 
 const resolvers = {
   Query: {
-    hello: (parent, { name }, context) => `Hello ${name ? name : "world"}!`
+    hello: (parent, { name }, context) => `Hello ${name ? name : 'world'}!`,
+    nothing: () => 'nothing',
   },
   Subscription: {
     socool: {
       subscribe: async (parent, { cool }, ctx, info) => {
-        return `You are ${cool} cool!`;
-      }
-    }
-  }
-};
+        return `You are ${cool} cool!`
+      },
+    },
+  },
+}
 
-const getSchema = () => makeExecutableSchema({ typeDefs, resolvers });
+const getSchema = () => makeExecutableSchema({ typeDefs, resolvers })
 
-// Middleware
+// Middleware ----------------------------------------------------------------
 
 // Field
 
-const beepMiddleware = {
+const fieldMiddleware = {
   Query: {
     hello: async (resolve, parent, args, context, info) => {
-      const argsWithDefault = { name: "Bob", ...args };
-      const result = await resolve(parent, argsWithDefault, context, info);
-      return result.replace(/Trump/g, "beep");
-    }
-  }
-};
+      const argsWithDefault = { name: 'Bob', ...args }
+      const result = await resolve(parent, argsWithDefault, context, info)
+      return result.replace(/Trump/g, 'beep')
+    },
+  },
+}
 
-const veryNiceGreeting = {
+const typeMiddleware = {
   Query: async (resolve, parent, args, context, info) => {
-    const argsWithDefault = { name: "Bob", ...args };
-    const result = await resolve(parent, argsWithDefault, context, info);
-    return `Well ${result}`;
-  }
-};
+    const argsWithDefault = { name: 'Bob', ...args }
+    const result = await resolve(parent, argsWithDefault, context, info)
+    return `Well ${result}`
+  },
+}
 
-const alwaysBobAndTrump = async (resolve, parent, args, context, info) => {
-  const argsWithDefault = { name: "Bob and Trump" };
-  const result = await resolve(parent, argsWithDefault, context, info);
-  return result;
-};
+const schemaMiddleware = async (resolve, parent, args, context, info) => {
+  const argsWithDefault = { name: 'Bob and Trump' }
+  const result = await resolve(parent, argsWithDefault, context, info)
+  return result
+}
 
-const alwaysOver9000 = {
+const partialFieldMiddleware = async resolve => resolve()
+
+const subscriptionMiddleware = {
   Subscription: {
     socool: async (resolve, parent, { cool }, ctx, info) => {
       if (cool < 9000) {
-        cool = 9000;
+        cool = 9000
       }
-      const result = await resolve(parent, { cool }, ctx, info);
+      const result = await resolve(parent, { cool }, ctx, info)
       return result
-    }
-  }
-};
+    },
+  },
+}
 
 // Document
 
-const responseSizeMiddleware = async (execute, rootValue, context, info) => {
-  const response = await execute(rootValue, context, info);
-  if (count(response) > 1000) {
-    throw new Error("Response too big");
-  }
+const documentMiddleware = async (execute, rootValue, context, info) => {
 
-  return response;
-};
+}
 
-// Test
+const trackDocumentMiddlewareExecution = t => async (
+  execute,
+  rootValue,
+  context,
+  info,
+) => {
+  t.pass()
+  return execute(rootValue, context, info)
+}
 
-test("Field middleware", async t => {
-  const schema = getSchema();
+const partialDocumentMiddleware = async resolve => resolve()
+
+// Test ----------------------------------------------------------------------
+
+// Field
+
+test('Field middleware - Mixed middlewares', async t => {
+  const schema = getSchema()
   const schemaWithFieldMiddlewares = applyFieldMiddleware(
     schema,
-    alwaysBobAndTrump,
-    beepMiddleware,
-    veryNiceGreeting
-  );
+    schemaMiddleware,
+    fieldMiddleware,
+    typeMiddleware,
+  )
 
   const query = `
     {
       hello(name: "Trump")
+      nothing
     }
-  `;
-  const res = await graphql(schemaWithFieldMiddlewares, query);
+  `
+  const res = await graphql(schemaWithFieldMiddlewares, query)
 
   t.deepEqual(res, {
     data: {
-      hello: "Well Hello Bob and beep!"
-    }
-  });
-});
+      hello: 'Well Hello Bob and beep!',
+      nothing: 'Well nothing'
+    },
+  })
+})
 
-test("Field subscription middleware", async t => {
-  const schema = getSchema();
+test('Field middleware - Function Middleware', async t => {
+  const schema = getSchema()
   const schemaWithFieldMiddlewares = applyFieldMiddleware(
     schema,
-    alwaysOver9000
-  );
+    schemaMiddleware,
+  )
+
+  const query = `
+    {
+      hello(name: "Trump")
+      nothing
+    }
+  `
+  const res = await graphql(schemaWithFieldMiddlewares, query)
+
+  t.deepEqual(res, {
+    data: {
+      hello: 'Hello Bob and Trump!',
+      nothing: 'nothing'
+    },
+  })
+})
+
+test('Field middleware - Subscription middleware', async t => {
+  const schema = getSchema()
+  const schemaWithFieldMiddlewares = applyFieldMiddleware(
+    schema,
+    subscriptionMiddleware,
+  )
 
   const query = `
     subscription {
       socool(cool: 2)
     }
-  `;
-  const res = await graphql(schemaWithFieldMiddlewares, query);
+  `
+  const res = await graphql(schemaWithFieldMiddlewares, query)
 
   t.deepEqual(res, {
     data: {
-      socool: "You are 9000 cool!"
+      socool: 'You are 9000 cool!',
+    },
+  })
+})
+
+test('Field middleware - Partial resolver arguments', async t => {
+  const schema = getSchema()
+  const schemaWithFieldMiddlewares = applyFieldMiddleware(
+    schema,
+    partialFieldMiddleware,
+  )
+
+  const query = `
+    {
+      hello(name: "Emma")
+      nothing
     }
-  });
-});
+  `
+  const res = await graphql(schemaWithFieldMiddlewares, query)
+
+  t.deepEqual(res, {
+    data: {
+      hello: 'Hello Emma!',
+      nothing: 'nothing'
+    },
+  })
+})
+
+// Document
+
+// test('Document middleware', async t => {
+//   const schema = getSchema()
+//   const schemaWithDocumentMiddlewares = applyDocumentMiddleware(
+//     schema,
+//     documentMiddleware
+//   )
+
+//   const query = `
+  
+//   `
+
+//   t.pass()
+// })
+
+// test('Document middleware - execute only once per request', async t => {
+//   t.plan(1)
+
+//   const schema = getSchema()
+//   const schemaWithDocumentMiddlewares = applyDocumentMiddleware(
+//     schema,
+//     trackDocumentMiddlewareExecution(t),
+//   )
+
+//   const query = `
+//     query {
+//       hello(name: "Trump")
+//       nothing
+//     }
+//   `
+//   const res = await graphql(schemaWithDocumentMiddlewares, query)
+// })
+
+// test('Document middleware - partial resolver', async t => {
+//   const schema = getSchema()
+//   const schemaWithDocumentMiddlewares = applyDocumentMiddleware(
+//     schema,
+    
+//   )
+
+//   const query = `
+//     {
+//       hello(name: "Trump")
+//     }
+//   `
+//   const res = await graphql(schemaWithDocumentMiddlewares, query)
+
+//   t.pass()
+// })

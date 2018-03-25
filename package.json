@@ -29,9 +29,7 @@
     "test": "npm run lint && npm run build && npm run test-ava",
     "semantic-release": "semantic-release"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "release": {
     "branch": "master"
   },
@@ -43,8 +41,11 @@
   "bugs": {
     "url": "https://github.com/graphcool/graphql-middleware/issues"
   },
-  "keywords": [
-    "graphql"
-  ],
+  "keywords": ["graphql"],
+  "prettier": {
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true
+  },
   "license": "MIT"
 }
