@@ -15,21 +15,24 @@
     "ava": "^0.25.0",
     "graphql-tools": "^2.21.0",
     "prettier": "^1.11.1",
+    "prettier-check": "^2.0.0",
     "semantic-release": "^12.4.1",
     "tslint": "^5.9.1",
-    "tslint-config-prettier": "^1.7.0",
+    "tslint-config-prettier": "^1.10.0",
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.7.1"
   },
   "scripts": {
     "prepublish": "npm run test",
     "build": "rm -rf dist && tsc -d",
-    "lint": "tslint --project tsconfig.json {src}/**/*.ts",
+    "lint": "tslint --project tsconfig.json {src}/**/*.ts && prettier-check --ignore-path .gitignore {src,.}/{*.ts,*.js}",
     "test-ava": "ava test.js --verbose",
     "test": "npm run lint && npm run build && npm run test-ava",
     "semantic-release": "semantic-release"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "release": {
     "branch": "master"
   },
@@ -41,7 +44,9 @@
   "bugs": {
     "url": "https://github.com/graphcool/graphql-middleware/issues"
   },
-  "keywords": ["graphql"],
+  "keywords": [
+    "graphql"
+  ],
   "prettier": {
     "semi": false,
     "trailingComma": "all",

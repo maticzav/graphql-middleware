@@ -83,24 +83,6 @@ const subscriptionMiddleware = {
   },
 }
 
-// Document
-
-const documentMiddleware = async (execute, rootValue, context, info) => {
-
-}
-
-const trackDocumentMiddlewareExecution = t => async (
-  execute,
-  rootValue,
-  context,
-  info,
-) => {
-  t.pass()
-  return execute(rootValue, context, info)
-}
-
-const partialDocumentMiddleware = async resolve => resolve()
-
 // Test ----------------------------------------------------------------------
 
 // Field
@@ -125,7 +107,7 @@ test('Field middleware - Mixed middlewares', async t => {
   t.deepEqual(res, {
     data: {
       hello: 'Well Hello Bob and beep!',
-      nothing: 'Well nothing'
+      nothing: 'Well nothing',
     },
   })
 })
@@ -148,7 +130,7 @@ test('Field middleware - Function Middleware', async t => {
   t.deepEqual(res, {
     data: {
       hello: 'Hello Bob and Trump!',
-      nothing: 'nothing'
+      nothing: 'nothing',
     },
   })
 })
@@ -192,58 +174,7 @@ test('Field middleware - Partial resolver arguments', async t => {
   t.deepEqual(res, {
     data: {
       hello: 'Hello Emma!',
-      nothing: 'nothing'
+      nothing: 'nothing',
     },
   })
 })
-
-// Document
-
-// test('Document middleware', async t => {
-//   const schema = getSchema()
-//   const schemaWithDocumentMiddlewares = applyDocumentMiddleware(
-//     schema,
-//     documentMiddleware
-//   )
-
-//   const query = `
-  
-//   `
-
-//   t.pass()
-// })
-
-// test('Document middleware - execute only once per request', async t => {
-//   t.plan(1)
-
-//   const schema = getSchema()
-//   const schemaWithDocumentMiddlewares = applyDocumentMiddleware(
-//     schema,
-//     trackDocumentMiddlewareExecution(t),
-//   )
-
-//   const query = `
-//     query {
-//       hello(name: "Trump")
-//       nothing
-//     }
-//   `
-//   const res = await graphql(schemaWithDocumentMiddlewares, query)
-// })
-
-// test('Document middleware - partial resolver', async t => {
-//   const schema = getSchema()
-//   const schemaWithDocumentMiddlewares = applyDocumentMiddleware(
-//     schema,
-    
-//   )
-
-//   const query = `
-//     {
-//       hello(name: "Trump")
-//     }
-//   `
-//   const res = await graphql(schemaWithDocumentMiddlewares, query)
-
-//   t.pass()
-// })

@@ -13,7 +13,6 @@ import {
 import { mergeSchemas } from 'graphql-tools'
 import { IResolvers } from 'graphql-tools/dist/Interfaces'
 import {
-  IDocumentMiddlewareFunction,
   IFieldMiddleware,
   IFieldMiddlewareFunction,
   IFieldMiddlewareTypeMap,
@@ -48,28 +47,6 @@ function wrapResolverInMiddleware(
       ctx,
       info,
     )
-  }
-}
-
-// Inspired by graphql-tools.
-function transformDocumentMiddlewareToFieldMiddleware(
-  middleware: IDocumentMiddlewareFunction,
-): IFieldMiddlewareFunction {
-  let value = null
-  const randomNumber = Math.random()
-
-  return async (resolve, parent, args, ctx, info) => {
-    if (!info.operation['__runAtMostOnce']) {
-      info.operation['__runAtMostOnce'] = {}
-    }
-
-    if (!info.operation['__runAtMostOnce'][randomNumber]) {
-      info.operation['__runAtMostOnce'][randomNumber] = true
-      value = await middleware(resolve, parent, ctx, info)
-      return value
-    }
-
-    return value
   }
 }
 
@@ -171,32 +148,6 @@ function generateResolverFromSchemaAndFieldMiddleware(
   }
 }
 
-function generateResolverFromSchemaAndDocumentMiddleware(
-  schema: GraphQLSchema,
-  middleware: IDocumentMiddlewareFunction,
-): IResolvers {
-  const typeMap = {
-    Query: schema.getQueryType(),
-    Mutation: schema.getMutationType(),
-    Subscription: schema.getSubscriptionType(),
-  }
-
-  const resolvers = Object.keys(typeMap)
-    .filter(type => isGraphQLObjectType(typeMap[type]))
-    .reduce(
-      (resolvers, type) => ({
-        ...resolvers,
-        [type]: applyMiddlewareToType(
-          typeMap[type] as GraphQLObjectType,
-          transformDocumentMiddlewareToFieldMiddleware(middleware),
-        ),
-      }),
-      {},
-    )
-
-  return {}
-}
-
 // Reducers
 
 function addFieldMiddlewareToSchema(
@@ -204,21 +155,6 @@ function addFieldMiddlewareToSchema(
   middleware: IFieldMiddleware,
 ): GraphQLSchema {
   const resolvers = generateResolverFromSchemaAndFieldMiddleware(
-    schema,
-    middleware,
-  )
-
-  return mergeSchemas({
-    schemas: [schema],
-    resolvers,
-  })
-}
-
-function addDocumentMiddlewareToSchema(
-  schema: GraphQLSchema,
-  middleware: IDocumentMiddlewareFunction,
-): GraphQLSchema {
-  const resolvers = generateResolverFromSchemaAndDocumentMiddleware(
     schema,
     middleware,
   )
@@ -238,19 +174,6 @@ export function applyFieldMiddleware(
   const schemaWithMiddleware = middlewares.reduce(
     (currentSchema, middleware) =>
       addFieldMiddlewareToSchema(currentSchema, middleware),
-    schema,
-  )
-
-  return schemaWithMiddleware
-}
-
-export function applyDocumentMiddleware(
-  schema: GraphQLSchema,
-  ...middlewares: IDocumentMiddlewareFunction[]
-): GraphQLSchema {
-  const schemaWithMiddleware = middlewares.reduce(
-    (currentSchema, middleware) =>
-      addDocumentMiddlewareToSchema(currentSchema, middleware),
     schema,
   )
 
