@@ -8,12 +8,13 @@
   },
   "author": "Matic Zavadlal <matic.zavadlal@gmail.com>",
   "dependencies": {
-    "graphql": "^0.13.0"
+    "graphql": "^0.13.0",
+    "graphql-tools": "^2.23.1"
   },
   "devDependencies": {
     "@types/graphql": "^0.12.4",
     "ava": "^0.25.0",
-    "graphql-tools": "^2.21.0",
+    "oao": "^1.5.1",
     "prettier": "^1.11.1",
     "prettier-check": "^2.0.0",
     "semantic-release": "^12.4.1",
