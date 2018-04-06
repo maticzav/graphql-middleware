@@ -134,17 +134,17 @@ function applyFieldMiddleware(
 
 ## FAQ
 
-### Can I use GraphQL-Middleware without GraphQL-Yoga?
+### Can I use GraphQL Middleware without GraphQL Yoga?
 
-Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `fieldMiddleware` that GraphQL-Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
+Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `fieldMiddleware` that GraphQL Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
 
-### How does GraphQL-Middleware compare to `directives`?
+### How does GraphQL Middleware compare to `directives`?
 
-GraphQL-Middleware and `directives` tackle the same problem in a completely different way. GraphQL-Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
+GraphQL Middleware and `directives` tackle the same problem in a completely different way. GraphQL Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
 
-### Should I modify the context using GraphQL-Middleware?
+### Should I modify the context using GraphQL Middleware?
 
-GraphQL-Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL-Yoga's document-middleware for this functionality instead.
+GraphQL Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL Yoga's `documentMiddleware` for this functionality instead.
 
 ## Help & Community [![Slack Status](https://slack.graph.cool/badge.svg)](https://slack.graph.cool)
 
