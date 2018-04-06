@@ -10,11 +10,11 @@ All in one solution to manage middleware in your GraphQL projects.
 
 ## Overview
 
-GraphQL Middleware is a schema wrapper which allows you to easily manage additional functionality accross multiple resolvers.
+GraphQL Middleware is a schema wrapper which allows you to manage additional functionality across multiple resolvers efficiently.
 
-* __Easiest way to handle GraphQL middleware:__ Intuitive, yet familiar API will get under your skin in a second.
-* __Powerful:__ Allows complete control over your resolvers (Before, After).
-* __Compatible:__ Works with any GraphQL Schema.
+* **Easiest way to handle GraphQL middleware:** Intuitive, yet familiar API will get under your skin in a second.
+* **Powerful:** Allows complete control over your resolvers (Before, After).
+* **Compatible:** Works with any GraphQL Schema.
 
 ## Install
 
@@ -126,7 +126,7 @@ function applyFieldMiddleware(
 
 * Logging
 * Metrics
-* Input sanitzation
+* Input sanitisation
 * Performance measurement
 * Authorization
 * Caching
@@ -136,11 +136,11 @@ function applyFieldMiddleware(
 
 ### Can I use GraphQL-Middleware without GraphQL-Yoga?
 
-Yes. Nevertheless we encourage you to use it in combination with Yoga, because of the many features Yoga offers combined with GraphQL-Middleware.
+Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `fieldMiddleware` that GraphQL-Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
 
 ### How does GraphQL-Middleware compare to `directives`?
 
-GraphQL-Middleware and `directives` tackle the same problem in completely different way. GraphQL-Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
+GraphQL-Middleware and `directives` tackle the same problem in a completely different way. GraphQL-Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
 
 ### Should I modify the context using GraphQL-Middleware?
 
@@ -150,4 +150,4 @@ GraphQL-Middleware allows you to modify the context of your resolvers, but we en
 
 Join our [Slack community](http://slack.graph.cool/) if you run into issues or have questions. We love talking to you!
 
-[![](http://i.imgur.com/5RHR6Ku.png)](https://www.graph.cool/)
+[![GraphCool](http://i.imgur.com/5RHR6Ku.png)](https://www.graph.cool/)
