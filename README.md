@@ -2,7 +2,7 @@
 
 # graphql-middleware
 
-[![CircleCI](https://circleci.com/gh/maticzav/graphql-middleware.svg?style=shield)](https://circleci.com/gh/maticzav/graphql-middleware)
+[![CircleCI](https://circleci.com/gh/graphcool/graphql-middleware.svg?style=shield)](https://circleci.com/gh/graphcool/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
 ![npm](https://img.shields.io/npm/dt/graphql-middleware.svg)
 

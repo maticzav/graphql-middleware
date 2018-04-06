@@ -8,28 +8,29 @@
   },
   "author": "Matic Zavadlal <matic.zavadlal@gmail.com>",
   "dependencies": {
-    "graphql": "^0.13.0",
     "graphql-tools": "^2.23.1"
   },
   "devDependencies": {
     "@types/graphql": "^0.12.4",
     "ava": "^0.25.0",
     "oao": "^1.5.1",
+    "graphql": "^0.13.0",
     "prettier": "^1.11.1",
     "prettier-check": "^2.0.0",
-    "semantic-release": "^12.4.1",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.10.0",
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.7.1"
+  },
+  "peerDependencies": {
+    "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0"
   },
   "scripts": {
     "prepublish": "npm run test",
     "build": "rm -rf dist && tsc -d",
     "lint": "tslint --project tsconfig.json {src}/**/*.ts && prettier-check --ignore-path .gitignore {src,.}/{*.ts,*.js}",
     "test-ava": "ava test.js --verbose",
-    "test": "npm run lint && npm run build && npm run test-ava",
-    "semantic-release": "semantic-release"
+    "test": "npm run lint && npm run build && npm run test-ava"
   },
   "files": [
     "dist"
