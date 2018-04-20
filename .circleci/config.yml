@@ -2,10 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node
+      - image: 'circleci/node:latest'
     steps:
       - checkout
-      - run: npm install -g yarn
-      - run: yarn install
+      - run:
+        name: install
+        command: |
+          sudo npm install -g yarn
+          yarn install
       - run: yarn test
       - run: yarn semantic-release
