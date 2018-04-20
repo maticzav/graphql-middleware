@@ -1,10 +1,9 @@
-<p align="center"><img src="media/logo.png" width="800" /></p>
+<p align="center"><img src="media/logo.svg" width="150" /></p>
 
 # graphql-middleware
 
 [![CircleCI](https://circleci.com/gh/graphcool/graphql-middleware.svg?style=shield)](https://circleci.com/gh/graphcool/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
-![npm](https://img.shields.io/npm/dt/graphql-middleware.svg)
 
 All in one solution to manage middleware in your GraphQL projects.
 
@@ -25,7 +24,7 @@ yarn add graphql-middleware
 ## Usage
 
 ```ts
-import { applyFieldMiddleware } from 'graphql-middleware'
+import { applyMiddleware } from 'graphql-middleware'
 import { makeExecutableSchema } from 'graphql-tools'
 import { authMiddleware, metricsMiddleware } from './middlewares'
 
@@ -55,7 +54,7 @@ const resolvers = {
 
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
-const schemaWithFieldMiddlewares = applyFieldMiddleware(
+const schemaWithMiddleware = applyMiddleware(
   schema,
   metricsMiddleware,
   authMiddleware,
@@ -85,8 +84,8 @@ const resolvers = {
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
-  fieldMiddlewares: [authMiddleware, metricsMiddleware],
-  documentMiddlewares: [],
+  fieldMiddleware: [authMiddleware, metricsMiddleware],
+  documentMiddleware: [],
 })
 server.start(() => console.log('Server is running on localhost:4000'))
 ```
@@ -98,7 +97,7 @@ server.start(() => console.log('Server is running on localhost:4000'))
 A middleware is a resolver function that wraps another resolver function.
 
 ```ts
-type IFieldMiddlewareFunction = (
+type IMiddlewareFunction = (
   resolve: Function,
   parent: any,
   args: any,
@@ -106,19 +105,19 @@ type IFieldMiddlewareFunction = (
   info: GraphQLResolveInfo,
 ) => Promise<any>
 
-interface IFieldMiddlewareTypeMap {
-  [key: string]: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap
+interface IMiddlewareTypeMap {
+  [key: string]: IMiddlewareFunction | IMiddlewareFieldMap
 }
 
-interface IFieldMiddlewareFieldMap {
-  [key: string]: IFieldMiddlewareFunction
+interface IMiddlewareFieldMap {
+  [key: string]: IMiddlewareFunction
 }
 
-type IFieldMiddleware = IFieldMiddlewareFunction | IFieldMiddlewareTypeMap
+type IMiddleware = IMiddlewareFunction | IMiddlewareTypeMap
 
-function applyFieldMiddleware(
+function applyMiddleware(
   schema: GraphQLSchema,
-  ...middlewares: IFieldMiddleware[]
+  ...middlewares: IMiddleware[]
 ): GraphQLSchema
 ```
 
