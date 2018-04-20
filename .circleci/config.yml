@@ -6,9 +6,9 @@ jobs:
     steps:
       - checkout
       - run:
-        name: install
-        command: |
-          sudo npm install -g yarn
-          yarn install
+          name: install
+          command: |
+            sudo npm install -g yarn
+            yarn install
       - run: yarn test
       - run: yarn semantic-release
