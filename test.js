@@ -96,14 +96,13 @@ const typeMiddlewareBefore = {
     const _args = { arg: 'changed' }
     return resolve(parent, _args)
   },
+  // TODO this should work without explicit implementation
   Nothing: {
     nothing: async (resolve, parent, args, context, info) => {
       return resolve()
     },
   },
 }
-
-// TODO: nested types will fail here (probably)
 
 const typeMiddlewareAfter = {
   Query: async (resolve, parent, args, context, info) => {
@@ -113,6 +112,12 @@ const typeMiddlewareAfter = {
   Mutation: async (resolve, parent, args, context, info) => {
     const res = resolve()
     return 'changed'
+  },
+  // TODO this should work without explicit implementation
+  Nothing: {
+    nothing: async (resolve, parent, args, context, info) => {
+      return resolve()
+    },
   },
 }
 
@@ -236,12 +241,12 @@ test('Type middleware - Query after', async t => {
 
   t.deepEqual(res, {
     data: {
-      before: 'before',
-      beforeNothing: 'before',
+      before: 'changed',
+      beforeNothing: 'changed',
       after: 'changed',
       afterNothing: 'changed',
       null: 'changed',
-      nested: { nothing: 'nothing' }, // TODO: this might be a problem
+      nested: { nothing: 'nothing' },
     },
   })
 })
@@ -292,12 +297,12 @@ test('Type middleware - Mutation after', async t => {
 
   t.deepEqual(res, {
     data: {
-      before: 'before',
-      beforeNothing: 'before',
+      before: 'changed',
+      beforeNothing: 'changed',
       after: 'changed',
       afterNothing: 'changed',
       null: 'changed',
-      nested: { nothing: 'nothing' }, // TODO: this might be a problem
+      nested: { nothing: 'nothing' },
     },
   })
 })
