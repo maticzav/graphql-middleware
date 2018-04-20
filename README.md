@@ -1,21 +1,19 @@
+<p align="center"><img src="media/logo.svg" width="150" /></p>
+
 # graphql-middleware
 
-> NOTE: This repo is still WIP
+[![CircleCI](https://circleci.com/gh/graphcool/graphql-middleware.svg?style=shield)](https://circleci.com/gh/graphcool/graphql-middleware)
+[![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
 
-## What's `graphql-middleware`?
+All in one solution to manage middleware in your GraphQL projects.
 
-* Middlewares can be wrapped (based on provided order)
+## Overview
 
-### What it does
+GraphQL Middleware is a schema wrapper which allows you to manage additional functionality across multiple resolvers efficiently.
 
-* Value transformation
-* Override arguments
-* Error handling (throw & catch errors)
-* Globbing syntax
-
-### What is doesn't
-
-* Does **not** change the exposed GraphQL schema
+* **Easiest way to handle GraphQL middleware:** Intuitive, yet familiar API will get under your skin in a second.
+* **Powerful:** Allows complete control over your resolvers (Before, After).
+* **Compatible:** Works with any GraphQL Schema.
 
 ## Install
 
@@ -23,64 +21,17 @@
 yarn add graphql-middleware
 ```
 
-## API
-
-### Field middleware
-
-A field middleware is a resolver function that wraps another resolver function
+## Usage
 
 ```ts
-type IFieldMiddlewareFunction = (
-  resolve: Function,
-  parent: any,
-  args: any,
-  context: any,
-  info: GraphQLResolveInfo,
-) => Promise<any>
-
-interface IFieldMiddlewareTypeMap {
-  [key: string]: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap
-}
-
-interface IFieldMiddlewareFieldMap {
-  [key: string]: IFieldMiddlewareFunction
-}
-
-type IFieldMiddleware = IFieldMiddlewareFunction | IFieldMiddlewareTypeMap
-
-function applyFieldMiddleware(schema: GraphQLSchema, ...middlewares: IFieldMiddleware[]): GraphQLSchema
-```
-
-### Document middleware
-
-```ts
-interface GraphQLResponse {
-  data: any
-  errors?: any[]
-  extensions?: any
-}
-
-type IDocumentMiddlewareFunction = (
-  execute: Function,
-  rootValue: any,
-  context: any,
-  info: GraphQLResolveInfo,
-): Promise<GraphQLResponse>
-
-function applyDocumentMiddleware(schema: GraphQLSchema, ...middlewares: IDocumentMiddlewareFunction[]): GraphQLSchema
-```
-
-## Examples
-
-```ts
-import { applyFieldMiddleware } from 'graphql-middleware'
+import { applyMiddleware } from 'graphql-middleware'
 import { makeExecutableSchema } from 'graphql-tools'
 import { authMiddleware, metricsMiddleware } from './middlewares'
 
 // Minimal example middleware (before & after)
 const beepMiddleware = {
   Query: {
-    hello: (resolve, parent, args, context, info) => {
+    hello: async (resolve, parent, args, context, info) => {
       // You can you middlewares to override arguments
       const argsWithDefault = { name: 'Bob', ...args }
       const result = await resolve(parent, argsWithDefault, context, info)
@@ -88,15 +39,6 @@ const beepMiddleware = {
       return result.replace(/Trump/g, 'beep')
     },
   },
-}
-
-const responseSizeMiddleware = async (execute, rootValue, context, info) => {
-  const response = await execute(rootValue, context, info)
-  if (count(response) > 1000) {
-    throw new Error('Response too big')
-  }
-
-  return response
 }
 
 const typeDefs = `
@@ -112,17 +54,21 @@ const resolvers = {
 
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
-const schemaWithFieldMiddlewares = applyFieldMiddleware(schema, metricsMiddleware, authMiddleware, beepMiddleware)
-const schemaWithDocumentMiddlewares = applyDocumentMiddleware(schemaWithFieldMiddlewares, responseSizeMiddleware)
+const schemaWithMiddleware = applyMiddleware(
+  schema,
+  metricsMiddleware,
+  authMiddleware,
+  beepMiddleware,
+)
 ```
 
 ### Usage with `graphql-yoga`
 
-`graphql-yoga` has built-in support for `graphql-middleware`
+> `graphql-yoga` has built-in support for `graphql-middleware`!
 
 ```ts
 import { GraphQLServer } from 'graphql-yoga'
-import { authMiddleware, metricsMiddleware, responseSizeMiddleware } from './middlewares'
+import { authMiddleware, metricsMiddleware } from './middlewares'
 
 const typeDefs = `
   type Query {
@@ -138,37 +84,69 @@ const resolvers = {
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
-  fieldMiddlewares: [authMiddleware, metricsMiddleware],
-  documentMiddlewares: [responseSizeMiddleware],
+  fieldMiddleware: [authMiddleware, metricsMiddleware],
+  documentMiddleware: [],
 })
 server.start(() => console.log('Server is running on localhost:4000'))
 ```
 
-## Terminology
+### Examples
 
-* Core resolver
+## API
 
-## Middleware Use Cases
+A middleware is a resolver function that wraps another resolver function.
 
-### Field level
+```ts
+type IMiddlewareFunction = (
+  resolve: Function,
+  parent: any,
+  args: any,
+  context: any,
+  info: GraphQLResolveInfo,
+) => Promise<any>
+
+interface IMiddlewareTypeMap {
+  [key: string]: IMiddlewareFunction | IMiddlewareFieldMap
+}
+
+interface IMiddlewareFieldMap {
+  [key: string]: IMiddlewareFunction
+}
+
+type IMiddleware = IMiddlewareFunction | IMiddlewareTypeMap
+
+function applyMiddleware(
+  schema: GraphQLSchema,
+  ...middlewares: IMiddleware[]
+): GraphQLSchema
+```
+
+## GraphQL Middleware Use Cases
 
 * Logging
 * Metrics
-* Input sanitzation
+* Input sanitisation
 * Performance measurement
-* Authorization (`graphql-shield`)
+* Authorization
 * Caching
 * Tracing
 
-### Document level
+## FAQ
 
-* Complexity analysis
+### Can I use GraphQL Middleware without GraphQL Yoga?
 
-## Open questions
+Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `fieldMiddleware` that GraphQL Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
 
-* [ ] Allow to transform schema?
-* [ ] Anything to consider for subscriptions?
+### How does GraphQL Middleware compare to `directives`?
 
-## Alternatives
+GraphQL Middleware and `directives` tackle the same problem in a completely different way. GraphQL Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
 
-- Directive resolvers
+### Should I modify the context using GraphQL Middleware?
+
+GraphQL Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL Yoga's `documentMiddleware` for this functionality instead.
+
+## Help & Community [![Slack Status](https://slack.graph.cool/badge.svg)](https://slack.graph.cool)
+
+Join our [Slack community](http://slack.graph.cool/) if you run into issues or have questions. We love talking to you!
+
+[![GraphCool](http://i.imgur.com/5RHR6Ku.png)](https://www.graph.cool/)
