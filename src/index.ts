@@ -13,10 +13,10 @@ import {
 import { mergeSchemas } from 'graphql-tools'
 import { IResolvers } from 'graphql-tools/dist/Interfaces'
 import {
-  IFieldMiddleware,
-  IFieldMiddlewareFunction,
-  IFieldMiddlewareTypeMap,
-  IFieldMiddlewareFieldMap,
+  IMiddleware,
+  IMiddlewareFunction,
+  IMiddlewareTypeMap,
+  IMiddlewareFieldMap,
 } from './types'
 
 // Type checks
@@ -36,7 +36,7 @@ function isGraphQLObjectType(obj: any): boolean {
 
 function wrapResolverInMiddleware(
   resolver: GraphQLFieldResolver<any, any, any>,
-  middleware: IFieldMiddlewareFunction,
+  middleware: IMiddlewareFunction,
 ): GraphQLFieldResolver<any, any> {
   return (parent, args, ctx, info) => {
     return middleware(
@@ -54,7 +54,7 @@ function wrapResolverInMiddleware(
 
 function applyMiddlewareToField(
   field: GraphQLField<any, any, any>,
-  middleware: IFieldMiddlewareFunction,
+  middleware: IMiddlewareFunction,
 ): GraphQLFieldResolver<any, any, any> {
   let resolver = field.resolve
 
@@ -67,7 +67,7 @@ function applyMiddlewareToField(
 
 function applyMiddlewareToType(
   type: GraphQLObjectType,
-  middleware: IFieldMiddlewareFunction | IFieldMiddlewareFieldMap,
+  middleware: IMiddlewareFunction | IMiddlewareFieldMap,
 ): IResolvers {
   const fieldMap = type.getFields()
 
@@ -77,7 +77,7 @@ function applyMiddlewareToType(
         ...resolvers,
         [field]: applyMiddlewareToField(
           fieldMap[field],
-          middleware as IFieldMiddlewareFunction,
+          middleware as IMiddlewareFunction,
         ),
       }),
       {},
@@ -99,7 +99,7 @@ function applyMiddlewareToType(
 
 function applyMiddlewareToSchema(
   schema: GraphQLSchema,
-  middleware: IFieldMiddlewareFunction,
+  middleware: IMiddlewareFunction,
 ): IResolvers {
   const typeMap = schema.getTypeMap()
 
@@ -121,15 +121,12 @@ function applyMiddlewareToSchema(
 
 // Generator
 
-function generateResolverFromSchemaAndFieldMiddleware(
+function generateResolverFromSchemaAndMiddleware(
   schema: GraphQLSchema,
-  middleware: IFieldMiddleware,
+  middleware: IMiddleware,
 ): IResolvers {
   if (isMiddlewareFunction(middleware)) {
-    return applyMiddlewareToSchema(
-      schema,
-      middleware as IFieldMiddlewareFunction,
-    )
+    return applyMiddlewareToSchema(schema, middleware as IMiddlewareFunction)
   } else {
     const typeMap = schema.getTypeMap()
 
@@ -150,14 +147,11 @@ function generateResolverFromSchemaAndFieldMiddleware(
 
 // Reducers
 
-function addFieldMiddlewareToSchema(
+function addMiddlewareToSchema(
   schema: GraphQLSchema,
-  middleware: IFieldMiddleware,
+  middleware: IMiddleware,
 ): GraphQLSchema {
-  const resolvers = generateResolverFromSchemaAndFieldMiddleware(
-    schema,
-    middleware,
-  )
+  const resolvers = generateResolverFromSchemaAndMiddleware(schema, middleware)
 
   return mergeSchemas({
     schemas: [schema],
@@ -167,13 +161,13 @@ function addFieldMiddlewareToSchema(
 
 // Exposed functions
 
-export function applyFieldMiddleware(
+export function applyMiddleware(
   schema: GraphQLSchema,
-  ...middlewares: IFieldMiddleware[]
+  ...middlewares: IMiddleware[]
 ): GraphQLSchema {
   const schemaWithMiddleware = middlewares.reduce(
     (currentSchema, middleware) =>
-      addFieldMiddlewareToSchema(currentSchema, middleware),
+      addMiddlewareToSchema(currentSchema, middleware),
     schema,
   )
 

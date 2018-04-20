@@ -13,17 +13,16 @@
   "devDependencies": {
     "@types/graphql": "^0.12.4",
     "ava": "^0.25.0",
-    "oao": "^1.5.1",
-    "graphql": "^0.13.0",
     "prettier": "^1.11.1",
     "prettier-check": "^2.0.0",
+    "rimraf": "^2.6.2",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.10.0",
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.7.1"
   },
   "peerDependencies": {
-    "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0"
+    "graphql": "^0.13.2"
   },
   "scripts": {
     "prepublish": "npm run test",
@@ -47,12 +46,13 @@
     "url": "https://github.com/graphcool/graphql-middleware/issues"
   },
   "keywords": [
-    "graphql"
+    "graphql",
+    "middleware",
+    "schema",
+    "resolvers",
+    "server",
+    "prisma",
+    "yoga"
   ],
-  "prettier": {
-    "semi": false,
-    "trailingComma": "all",
-    "singleQuote": true
-  },
   "license": "MIT"
 }

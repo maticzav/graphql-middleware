@@ -1,41 +1,58 @@
 import test from 'ava'
 import { graphql } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
-import { applyFieldMiddleware, applyDocumentMiddleware } from './dist'
+import { applyMiddleware } from './dist'
 
 // Setup ---------------------------------------------------------------------
 
 const typeDefs = `
   type Query {
-    hello(name: String): String
-    nothing: String
+    before(arg: String!): String!
+    beforeNothing(arg: String!): String!
+    after: String!
+    afterNothing: String!
+    null: String
+    nested: Nothing!
   }
 
-  type User {
-    name: String!
+  type Mutation {
+    before(arg: String!): String!
+    beforeNothing(arg: String!): String!
+    after: String!
+    afterNothing: String!
+    null: String
+    nested: Nothing!
   }
 
-  type Subscription {
-    socool(cool: Int!): String!
+  type Nothing {
+    nothing: String!
   }
 
   schema {
     query: Query,
-    subscription: Subscription
+    mutation: Mutation
   }
 `
 
 const resolvers = {
   Query: {
-    hello: (parent, { name }, context) => `Hello ${name ? name : 'world'}!`,
-    nothing: () => 'nothing',
+    before: (parent, { arg }, ctx, info) => arg,
+    beforeNothing: (parent, { arg }, ctx, info) => arg,
+    after: () => 'after',
+    afterNothing: () => 'after',
+    null: () => null,
+    nested: () => ({}),
   },
-  Subscription: {
-    socool: {
-      subscribe: async (parent, { cool }, ctx, info) => {
-        return `You are ${cool} cool!`
-      },
-    },
+  Mutation: {
+    before: async (parent, { arg }, ctx, info) => arg,
+    beforeNothing: (parent, { arg }, ctx, info) => arg,
+    after: () => 'after',
+    afterNothing: () => 'after',
+    null: () => null,
+    nested: () => ({}),
+  },
+  Nothing: {
+    nothing: () => 'nothing',
   },
 }
 
@@ -43,138 +60,359 @@ const getSchema = () => makeExecutableSchema({ typeDefs, resolvers })
 
 // Middleware ----------------------------------------------------------------
 
-// Field
+// Field Middleware
 
 const fieldMiddleware = {
   Query: {
-    hello: async (resolve, parent, args, context, info) => {
-      const argsWithDefault = { name: 'Bob', ...args }
-      const result = await resolve(parent, argsWithDefault, context, info)
-      return result.replace(/Trump/g, 'beep')
+    before: async (resolve, parent, args, context, info) => {
+      const _args = { arg: 'changed' }
+      return resolve(parent, _args)
+    },
+    after: async (resolve, parent, args, context, info) => {
+      const res = resolve()
+      return 'changed'
+    },
+  },
+  Mutation: {
+    before: async (resolve, parent, args, context, info) => {
+      const _args = { arg: 'changed' }
+      return resolve(parent, _args)
+    },
+    after: async (resolve, parent, args, context, info) => {
+      const res = resolve()
+      return 'changed'
     },
   },
 }
 
-const typeMiddleware = {
+// Type Middleware
+
+const typeMiddlewareBefore = {
   Query: async (resolve, parent, args, context, info) => {
-    const argsWithDefault = { name: 'Bob', ...args }
-    const result = await resolve(parent, argsWithDefault, context, info)
-    return `Well ${result}`
+    const _args = { arg: 'changed' }
+    return resolve(parent, _args)
   },
-}
-
-const schemaMiddleware = async (resolve, parent, args, context, info) => {
-  const argsWithDefault = { name: 'Bob and Trump' }
-  const result = await resolve(parent, argsWithDefault, context, info)
-  return result
-}
-
-const partialFieldMiddleware = async resolve => resolve()
-
-const subscriptionMiddleware = {
-  Subscription: {
-    socool: async (resolve, parent, { cool }, ctx, info) => {
-      if (cool < 9000) {
-        cool = 9000
-      }
-      const result = await resolve(parent, { cool }, ctx, info)
-      return result
+  Mutation: async (resolve, parent, args, context, info) => {
+    const _args = { arg: 'changed' }
+    return resolve(parent, _args)
+  },
+  Nothing: {
+    nothing: async (resolve, parent, args, context, info) => {
+      return resolve()
     },
   },
+}
+
+// TODO: nested types will fail here (probably)
+
+const typeMiddlewareAfter = {
+  Query: async (resolve, parent, args, context, info) => {
+    const res = resolve()
+    return 'changed'
+  },
+  Mutation: async (resolve, parent, args, context, info) => {
+    const res = resolve()
+    return 'changed'
+  },
+}
+
+// Schema Middleware
+
+const schemaMiddlewareBefore = async (resolve, parent, args, context, info) => {
+  const _args = { arg: 'changed' }
+  return resolve(parent, _args, context, info)
+}
+
+const schemaMiddlewareAfter = async (resolve, parent, args, context, info) => {
+  const res = resolve()
+  return 'changed'
 }
 
 // Test ----------------------------------------------------------------------
 
 // Field
 
-test('Field middleware - Mixed middlewares', async t => {
+test('Field middleware - Query', async t => {
   const schema = getSchema()
-  const schemaWithFieldMiddlewares = applyFieldMiddleware(
-    schema,
-    schemaMiddleware,
-    fieldMiddleware,
-    typeMiddleware,
-  )
+  const schemaWithMiddleware = applyMiddleware(schema, fieldMiddleware)
 
   const query = `
-    {
-      hello(name: "Trump")
-      nothing
+    query {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
     }
   `
-  const res = await graphql(schemaWithFieldMiddlewares, query)
+  const res = await graphql(schemaWithMiddleware, query)
 
   t.deepEqual(res, {
     data: {
-      hello: 'Well Hello Bob and beep!',
-      nothing: 'Well nothing',
+      before: 'changed',
+      beforeNothing: 'before',
+      after: 'changed',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
     },
   })
 })
 
-test('Field middleware - Function Middleware', async t => {
+test('Field middleware - Mutation', async t => {
   const schema = getSchema()
-  const schemaWithFieldMiddlewares = applyFieldMiddleware(
-    schema,
-    schemaMiddleware,
-  )
+  const schemaWithMiddleware = applyMiddleware(schema, fieldMiddleware)
 
   const query = `
-    {
-      hello(name: "Trump")
-      nothing
+    mutation {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
     }
   `
-  const res = await graphql(schemaWithFieldMiddlewares, query)
+  const res = await graphql(schemaWithMiddleware, query)
 
   t.deepEqual(res, {
     data: {
-      hello: 'Hello Bob and Trump!',
-      nothing: 'nothing',
+      before: 'changed',
+      beforeNothing: 'before',
+      after: 'changed',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
     },
   })
 })
 
-test('Field middleware - Subscription middleware', async t => {
+// Type
+
+test('Type middleware - Query before', async t => {
   const schema = getSchema()
-  const schemaWithFieldMiddlewares = applyFieldMiddleware(
-    schema,
-    subscriptionMiddleware,
-  )
+  const schemaWithMiddleware = applyMiddleware(schema, typeMiddlewareBefore)
 
   const query = `
-    subscription {
-      socool(cool: 2)
+    query {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
     }
   `
-  const res = await graphql(schemaWithFieldMiddlewares, query)
+  const res = await graphql(schemaWithMiddleware, query)
 
   t.deepEqual(res, {
     data: {
-      socool: 'You are 9000 cool!',
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'after',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
     },
   })
 })
 
-test('Field middleware - Partial resolver arguments', async t => {
+test('Type middleware - Query after', async t => {
   const schema = getSchema()
-  const schemaWithFieldMiddlewares = applyFieldMiddleware(
-    schema,
-    partialFieldMiddleware,
-  )
+  const schemaWithMiddleware = applyMiddleware(schema, typeMiddlewareAfter)
 
   const query = `
-    {
-      hello(name: "Emma")
-      nothing
+    query {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
     }
   `
-  const res = await graphql(schemaWithFieldMiddlewares, query)
+  const res = await graphql(schemaWithMiddleware, query)
 
   t.deepEqual(res, {
     data: {
-      hello: 'Hello Emma!',
-      nothing: 'nothing',
+      before: 'before',
+      beforeNothing: 'before',
+      after: 'changed',
+      afterNothing: 'changed',
+      null: 'changed',
+      nested: { nothing: 'nothing' }, // TODO: this might be a problem
+    },
+  })
+})
+
+test('Type middleware - Mutation before', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, typeMiddlewareBefore)
+
+  const query = `
+    mutation {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'after',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
+    },
+  })
+})
+
+test('Type middleware - Mutation after', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, typeMiddlewareAfter)
+
+  const query = `
+    mutation {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'before',
+      beforeNothing: 'before',
+      after: 'changed',
+      afterNothing: 'changed',
+      null: 'changed',
+      nested: { nothing: 'nothing' }, // TODO: this might be a problem
+    },
+  })
+})
+
+// Schema
+
+test('Schema middleware - Query before', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, schemaMiddlewareBefore)
+
+  const query = `
+    query {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'after',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
+    },
+  })
+})
+
+test('Schema middleware - Query after', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, schemaMiddlewareAfter)
+
+  const query = `
+    query {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'changed',
+      afterNothing: 'changed',
+      null: 'changed',
+      nested: { nothing: 'changed' },
+    },
+  })
+})
+
+test('Schema middleware - Mutation before', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, schemaMiddlewareBefore)
+
+  const query = `
+    mutation {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'after',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
+    },
+  })
+})
+
+test('Schema middleware - Mutation after', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, schemaMiddlewareAfter)
+
+  const query = `
+    mutation {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'changed',
+      afterNothing: 'changed',
+      null: 'changed',
+      nested: { nothing: 'changed' },
     },
   })
 })
