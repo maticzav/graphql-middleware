@@ -10,7 +10,7 @@ import {
   GraphQLFieldResolver,
   GraphQLInterfaceType,
 } from 'graphql'
-import { mergeSchemas } from 'graphql-tools'
+import { addResolveFunctionsToSchema } from 'graphql-tools'
 import { IResolvers } from 'graphql-tools/dist/Interfaces'
 import {
   IMiddleware,
@@ -153,10 +153,9 @@ function addMiddlewareToSchema(
 ): GraphQLSchema {
   const resolvers = generateResolverFromSchemaAndMiddleware(schema, middleware)
 
-  return mergeSchemas({
-    schemas: [schema],
-    resolvers,
-  })
+  addResolveFunctionsToSchema(schema, resolvers)
+
+  return schema
 }
 
 // Exposed functions

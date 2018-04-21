@@ -4,6 +4,13 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "JS examples debug",
+      "program": "${workspaceFolder}/examples/authorization/index.js",
+      "skipFiles": ["<node_internals>/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "AVA tests debug",
       "program": "${workspaceFolder}/node_modules/ava/profile.js",
       "args": ["--serial", "${file}"],
