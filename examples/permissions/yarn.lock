@@ -421,8 +421,8 @@ graphql-import@^0.5.0:
     lodash "^4.17.4"
 
 graphql-middleware@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.0.3.tgz#13fe7c1a0a26bb4b3395abf190fabec71a6ac34f"
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.0.4.tgz#578be70026d7a53dbb9b67554adc0fd75d6ad612"
   dependencies:
     graphql-tools "^2.23.1"
 
