@@ -96,12 +96,6 @@ const typeMiddlewareBefore = {
     const _args = { arg: 'changed' }
     return resolve(parent, _args)
   },
-  // TODO this should work without explicit implementation
-  Nothing: {
-    nothing: async (resolve, parent, args, context, info) => {
-      return resolve()
-    },
-  },
 }
 
 const typeMiddlewareAfter = {
@@ -112,12 +106,6 @@ const typeMiddlewareAfter = {
   Mutation: async (resolve, parent, args, context, info) => {
     const res = resolve()
     return 'changed'
-  },
-  // TODO this should work without explicit implementation
-  Nothing: {
-    nothing: async (resolve, parent, args, context, info) => {
-      return resolve()
-    },
   },
 }
 

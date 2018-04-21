@@ -1,6 +1,6 @@
 const { GraphQLServer } = require('graphql-yoga')
 const { makeExecutableSchema } = require('graphql-tools')
-const { applyFieldMiddleware } = require('graphql-middleware')
+const { applyMiddleware } = require('graphql-middleware')
 
 // Schema
 
@@ -28,7 +28,7 @@ const logMiddleware = async (resolve, parent, args, ctx, info) => {
 // Server
 
 const schema = makeExecutableSchema({ typeDefs, resolvers })
-const analysedSchema = applyFieldMiddleware(schema, logMiddleware)
+const analysedSchema = applyMiddleware(schema, logMiddleware)
 
 const server = new GraphQLServer({
   schema: analysedSchema,
