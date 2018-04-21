@@ -153,12 +153,7 @@ function addMiddlewareToSchema(
 ): GraphQLSchema {
   const resolvers = generateResolverFromSchemaAndMiddleware(schema, middleware)
 
-  addResolveFunctionsToSchema(schema, resolvers, {
-    allowResolversNotInSchema: false,
-    requireResolversForAllFields: false,
-    requireResolversForArgs: false,
-    requireResolversForNonScalar: false,
-  })
+  addResolveFunctionsToSchema({ schema, resolvers })
 
   return schema
 }
