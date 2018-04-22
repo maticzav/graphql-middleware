@@ -409,3 +409,69 @@ test('Schema middleware - Mutation after', async t => {
     },
   })
 })
+
+// Combinations
+
+test('Schema, Field middleware - Query', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(
+    schema,
+    schemaMiddlewareBefore,
+    fieldMiddleware,
+  )
+
+  const query = `
+    query {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'changed',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
+    },
+  })
+})
+
+test('Schema, Field middleware - Mutation', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(
+    schema,
+    schemaMiddlewareBefore,
+    fieldMiddleware,
+  )
+
+  const query = `
+    mutation {
+      before(arg: "before")
+      beforeNothing(arg: "before")
+      after
+      afterNothing
+      null
+      nested { nothing }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      before: 'changed',
+      beforeNothing: 'changed',
+      after: 'changed',
+      afterNothing: 'after',
+      null: null,
+      nested: { nothing: 'nothing' },
+    },
+  })
+})
