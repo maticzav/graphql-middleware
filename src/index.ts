@@ -19,6 +19,8 @@ import {
   IMiddlewareFieldMap,
 } from './types'
 
+export { IMiddleware }
+
 // Type checks
 
 function isMiddlewareFunction(obj: any): boolean {
@@ -162,9 +164,9 @@ function addMiddlewareToSchema(
 
 export function applyMiddleware(
   schema: GraphQLSchema,
-  ...middlewares: IMiddleware[]
+  ...middleware: IMiddleware[]
 ): GraphQLSchema {
-  const schemaWithMiddleware = middlewares.reduce(
+  const schemaWithMiddleware = middleware.reduce(
     (currentSchema, middleware) =>
       addMiddlewareToSchema(currentSchema, middleware),
     schema,

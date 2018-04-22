@@ -26,13 +26,13 @@ yarn add graphql-middleware
 ```ts
 import { applyMiddleware } from 'graphql-middleware'
 import { makeExecutableSchema } from 'graphql-tools'
-import { authMiddleware, metricsMiddleware } from './middlewares'
+import { authMiddleware, metricsMiddleware } from './middleware'
 
 // Minimal example middleware (before & after)
 const beepMiddleware = {
   Query: {
     hello: async (resolve, parent, args, context, info) => {
-      // You can you middlewares to override arguments
+      // You can you middleware to override arguments
       const argsWithDefault = { name: 'Bob', ...args }
       const result = await resolve(parent, argsWithDefault, context, info)
       // Or change the returned values of resolvers
@@ -68,7 +68,7 @@ const schemaWithMiddleware = applyMiddleware(
 
 ```ts
 import { GraphQLServer } from 'graphql-yoga'
-import { authMiddleware, metricsMiddleware } from './middlewares'
+import { authMiddleware, metricsMiddleware } from './middleware'
 
 const typeDefs = `
   type Query {
@@ -117,7 +117,7 @@ type IMiddleware = IMiddlewareFunction | IMiddlewareTypeMap
 
 function applyMiddleware(
   schema: GraphQLSchema,
-  ...middlewares: IMiddleware[]
+  ...middleware: IMiddleware[]
 ): GraphQLSchema
 ```
 
