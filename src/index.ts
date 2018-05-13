@@ -52,6 +52,49 @@ function wrapResolverInMiddleware(
   }
 }
 
+// Validation
+
+function validateMiddleware(
+  schema: GraphQLSchema,
+  middleware: IMiddleware,
+): IMiddleware {
+  if (isMiddlewareFunction(middleware)) {
+    return middleware
+  }
+
+  const types = schema.getTypeMap()
+
+  Object.keys(middleware).forEach(type => {
+    if (!Object.keys(types).includes(type)) {
+      throw new MiddlewareError(
+        `Type ${type} exists in middleware but is missing in Schema.`,
+      )
+    }
+
+    if (!isMiddlewareFunction(middleware[type])) {
+      const fields = (types[type] as
+        | GraphQLObjectType
+        | GraphQLInterfaceType).getFields()
+
+      Object.keys(middleware[type]).forEach(field => {
+        if (!Object.keys(fields).includes(field)) {
+          throw new MiddlewareError(
+            `Field ${type}.${field} exists in middleware but is missing in Schema.`,
+          )
+        }
+      })
+    }
+  })
+
+  return middleware
+}
+
+export class MiddlewareError extends Error {
+  constructor(...props) {
+    super(...props)
+  }
+}
+
 // Merge
 
 function applyMiddlewareToField(
@@ -153,8 +196,11 @@ function addMiddlewareToSchema(
   schema: GraphQLSchema,
   middleware: IMiddleware,
 ): GraphQLSchema {
-  const resolvers = generateResolverFromSchemaAndMiddleware(schema, middleware)
-
+  const validMiddleware = validateMiddleware(schema, middleware)
+  const resolvers = generateResolverFromSchemaAndMiddleware(
+    schema,
+    validMiddleware,
+  )
   addResolveFunctionsToSchema({ schema, resolvers })
 
   return schema

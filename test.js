@@ -1,7 +1,7 @@
 import test from 'ava'
 import { graphql } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
-import { applyMiddleware } from './dist'
+import { applyMiddleware, MiddlewareError } from './dist'
 
 // Setup ---------------------------------------------------------------------
 
@@ -119,6 +119,18 @@ const schemaMiddlewareBefore = async (resolve, parent, args, context, info) => {
 const schemaMiddlewareAfter = async (resolve, parent, args, context, info) => {
   const res = resolve()
   return 'changed'
+}
+
+// Wrong Middleware
+
+const middlewareWithUndefinedType = {
+  Wrong: () => ({}),
+}
+
+const middlewareWithUndefinedField = {
+  Query: {
+    wrong: () => ({}),
+  },
 }
 
 // Test ----------------------------------------------------------------------
@@ -474,4 +486,36 @@ test('Schema, Field middleware - Mutation', async t => {
       nested: { nothing: 'nothing' },
     },
   })
+})
+
+// Not found fields
+
+test('Middleware Error - Schema undefined type', async t => {
+  const schema = getSchema()
+
+  const res = t.throws(() => {
+    applyMiddleware(schema, middlewareWithUndefinedType)
+  })
+
+  t.deepEqual(
+    res,
+    MiddlewareError(
+      `Type Wrong exists in middleware but is missing in Schema.`,
+    ),
+  )
+})
+
+test('Middleware Error - Schema undefined field', async t => {
+  const schema = getSchema()
+
+  const res = t.throws(() => {
+    applyMiddleware(schema, middlewareWithUndefinedField)
+  })
+
+  t.deepEqual(
+    res,
+    MiddlewareError(
+      `Field Query.wrong exists in middleware but is missing in Schema.`,
+    ),
+  )
 })
