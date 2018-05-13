@@ -121,7 +121,7 @@ const schemaMiddlewareAfter = async (resolve, parent, args, context, info) => {
   return 'changed'
 }
 
-// Wrong Middleware
+// Middleware Validation
 
 const middlewareWithUndefinedType = {
   Wrong: () => ({}),
@@ -130,6 +130,12 @@ const middlewareWithUndefinedType = {
 const middlewareWithUndefinedField = {
   Query: {
     wrong: () => ({}),
+  },
+}
+
+const middlewareWithObjectField = {
+  Query: {
+    before: false,
   },
 }
 
@@ -517,5 +523,18 @@ test('Middleware Error - Schema undefined field', async t => {
     MiddlewareError(
       `Field Query.wrong exists in middleware but is missing in Schema.`,
     ),
+  )
+})
+
+test('Middleware Error - Middleware field is not a function.', async t => {
+  const schema = getSchema()
+
+  const res = t.throws(() => {
+    applyMiddleware(schema, middlewareWithObjectField)
+  })
+
+  t.deepEqual(
+    res,
+    MiddlewareError(`Expected Query.before to be a function but found boolean`),
   )
 })

@@ -82,6 +82,13 @@ function validateMiddleware(
             `Field ${type}.${field} exists in middleware but is missing in Schema.`,
           )
         }
+
+        if (!isMiddlewareFunction(middleware[type][field])) {
+          throw new MiddlewareError(
+            `Expected ${type}.${field} to be a function but found ` +
+              typeof middleware[type][field],
+          )
+        }
       })
     }
   })
