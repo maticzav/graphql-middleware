@@ -149,4 +149,4 @@ GraphQL Middleware allows you to modify the context of your resolvers, but we en
 
 Join our [Slack community](http://slack.graph.cool/) if you run into issues or have questions. We love talking to you!
 
-[![GraphCool](http://i.imgur.com/5RHR6Ku.png)](https://www.graph.cool/)
+<p align="center"><a href="https://oss.prisma.io"><img src="https://imgur.com/IMU2ERq.png" alt="Prisma" height="170px"></a></p>
