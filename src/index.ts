@@ -1,4 +1,5 @@
 import {
+  defaultFieldResolver,
   GraphQLSchema,
   getNamedType,
   getNullableType,
@@ -43,7 +44,7 @@ function wrapResolverInMiddleware(
   return (parent, args, ctx, info) => {
     return middleware(
       (_parent = parent, _args = args, _ctx = ctx, _info = info) =>
-        resolver(_parent, _args, _ctx, _info),
+        (resolver || defaultFieldResolver)(_parent, _args, _ctx, _info),
       parent,
       args,
       ctx,

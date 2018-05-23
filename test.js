@@ -13,6 +13,7 @@ const typeDefs = `
     afterNothing: String!
     null: String
     nested: Nothing!
+    resolverless: Resolverless!
   }
 
   type Mutation {
@@ -26,6 +27,10 @@ const typeDefs = `
 
   type Nothing {
     nothing: String!
+  }
+
+  type Resolverless {
+    someData: String!
   }
 
   schema {
@@ -42,6 +47,7 @@ const resolvers = {
     afterNothing: () => 'after',
     null: () => null,
     nested: () => ({}),
+    resolverless: () => ({ someData: 'data' }),
   },
   Mutation: {
     before: async (parent, { arg }, ctx, info) => arg,
@@ -424,6 +430,28 @@ test('Schema middleware - Mutation after', async t => {
       afterNothing: 'changed',
       null: 'changed',
       nested: { nothing: 'changed' },
+    },
+  })
+})
+
+test('Schema middleware - Uses default field resolver', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, schemaMiddlewareBefore)
+
+  const query = `
+    query {
+      resolverless {
+        someData
+      }
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      resolverless: {
+        someData: 'data',
+      },
     },
   })
 })
