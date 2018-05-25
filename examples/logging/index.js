@@ -13,7 +13,9 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    hello: (_, { name }) => `Hello ${name || 'World'}`,
+    hello: (_, { name }) => {
+      throw new Error('No hello!')
+    },
     bye: (_, { name }) => `Bye ${name || 'World'}`,
   },
 }
@@ -21,8 +23,12 @@ const resolvers = {
 // Middleware
 
 const logMiddleware = async (resolve, parent, args, ctx, info) => {
-  console.log(args, info)
-  return resolve()
+  try {
+    const res = await resolve()
+    return res
+  } catch(e) {
+    console.log(e)
+  }
 }
 
 // Server

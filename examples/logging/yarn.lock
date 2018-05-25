@@ -420,9 +420,9 @@ graphql-import@^0.5.0:
   dependencies:
     lodash "^4.17.4"
 
-graphql-middleware@latest:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.0.1.tgz#e7a3d784bc2fb708bebfa9ca505aedbc3e27fdec"
+graphql-middleware@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.2.1.tgz#e9b063268ae617e8ac41e0a4141b0b4ad7e95317"
   dependencies:
     graphql-tools "^2.23.1"
 
