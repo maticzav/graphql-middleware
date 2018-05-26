@@ -211,7 +211,13 @@ function addMiddlewareToSchema(
     schema,
     validMiddleware,
   )
-  addResolveFunctionsToSchema({ schema, resolvers })
+  addResolveFunctionsToSchema({
+    schema,
+    resolvers,
+    resolverValidationOptions: {
+      requireResolversForResolveType: false,
+    },
+  })
 
   return schema
 }
