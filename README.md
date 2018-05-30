@@ -84,7 +84,7 @@ const resolvers = {
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
-  fieldMiddleware: [authMiddleware, metricsMiddleware],
+  middlewares: [authMiddleware, metricsMiddleware],
   documentMiddleware: [],
 })
 server.start(() => console.log('Server is running on localhost:4000'))
@@ -135,7 +135,7 @@ function applyMiddleware(
 
 ### Can I use GraphQL Middleware without GraphQL Yoga?
 
-Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `fieldMiddleware` that GraphQL Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
+Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `middlewares` that GraphQL Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
 
 ### How does GraphQL Middleware compare to `directives`?
 
