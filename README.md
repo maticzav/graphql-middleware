@@ -128,6 +128,16 @@ function applyMiddleware(
   schema: GraphQLSchema,
   ...middleware: (IMiddleware | MiddlewareGenerator)[]
 ): GraphQLSchema
+
+/**
+ * Applies middleware to a schema like `applyMiddleware` but only applies the
+ * middleware to fields that have non-default resolvers. This method can be
+ * useful if you want to report performance of only non-trivial methods.
+ */
+function applyMiddlewareToDeclaredResolvers(
+  schema: GraphQLSchema,
+  ...middleware: (IMiddleware | MiddlewareGenerator)[]
+): GraphQLSchema
 ```
 
 ### Middleware Generator

@@ -9,6 +9,7 @@ import {
 import { addResolveFunctionsToSchema } from 'graphql-tools'
 import { IResolvers } from 'graphql-tools/dist/Interfaces'
 import {
+  IApplyOptions,
   IMiddleware,
   IMiddlewareFunction,
   IMiddlewareTypeMap,
@@ -71,8 +72,13 @@ export function middleware<TSource = any, TContext = any, TArgs = any>(
 
 function wrapResolverInMiddleware<TSource, TContext, TArgs>(
   resolver: GraphQLFieldResolver<any, any, any>,
+  options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): GraphQLFieldResolver<any, any, any> {
+  if (options.onlyDeclaredResolvers && !resolver) {
+    return defaultFieldResolver
+  }
+
   return (parent, args, ctx, info) => {
     const resolveFn = resolver || defaultFieldResolver
 
@@ -141,21 +147,23 @@ export class MiddlewareError extends Error {
 
 function applyMiddlewareToField<TSource, TContext, TArgs>(
   field: GraphQLField<any, any, any>,
+  options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ):
   | GraphQLFieldResolver<any, any, any>
   | { subscribe: GraphQLFieldResolver<any, any, any> } {
   if (field.subscribe) {
     return {
-      subscribe: wrapResolverInMiddleware(field.subscribe, middleware),
+      subscribe: wrapResolverInMiddleware(field.subscribe, options, middleware),
     }
   }
 
-  return wrapResolverInMiddleware(field.resolve, middleware)
+  return wrapResolverInMiddleware(field.resolve, options, middleware)
 }
 
 function applyMiddlewareToType<TSource, TContext, TArgs>(
   type: GraphQLObjectType,
+  options: IApplyOptions,
   middleware:
     | IMiddlewareFunction<TSource, TContext, TArgs>
     | IMiddlewareFieldMap<TSource, TContext, TArgs>,
@@ -168,6 +176,7 @@ function applyMiddlewareToType<TSource, TContext, TArgs>(
         ...resolvers,
         [field]: applyMiddlewareToField(
           fieldMap[field],
+          options,
           middleware as IMiddlewareFunction<TSource, TContext, TArgs>,
         ),
       }),
@@ -179,7 +188,11 @@ function applyMiddlewareToType<TSource, TContext, TArgs>(
     const resolvers = Object.keys(middleware).reduce(
       (resolvers, field) => ({
         ...resolvers,
-        [field]: applyMiddlewareToField(fieldMap[field], middleware[field]),
+        [field]: applyMiddlewareToField(
+          fieldMap[field],
+          options,
+          middleware[field],
+        ),
       }),
       {},
     )
@@ -190,6 +203,7 @@ function applyMiddlewareToType<TSource, TContext, TArgs>(
 
 function applyMiddlewareToSchema<TSource, TContext, TArgs>(
   schema: GraphQLSchema,
+  options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): IResolvers {
   const typeMap = schema.getTypeMap()
@@ -201,6 +215,7 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
         ...resolvers,
         [type]: applyMiddlewareToType(
           typeMap[type] as GraphQLObjectType,
+          options,
           middleware,
         ),
       }),
@@ -214,14 +229,15 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
 
 function generateResolverFromSchemaAndMiddleware<TSource, TContext, TArgs>(
   schema: GraphQLSchema,
+  options: IApplyOptions,
   middleware: IMiddleware<TSource, TContext, TArgs>,
 ): IResolvers {
   if (isMiddlewareFunction(middleware)) {
-    return applyMiddlewareToSchema(schema, middleware as IMiddlewareFunction<
-      TSource,
-      TContext,
-      TArgs
-    >)
+    return applyMiddlewareToSchema(
+      schema,
+      options,
+      middleware as IMiddlewareFunction<TSource, TContext, TArgs>,
+    )
   } else {
     const typeMap = schema.getTypeMap()
 
@@ -230,6 +246,7 @@ function generateResolverFromSchemaAndMiddleware<TSource, TContext, TArgs>(
         ...resolvers,
         [type]: applyMiddlewareToType(
           typeMap[type] as GraphQLObjectType,
+          options,
           middleware[type],
         ),
       }),
@@ -244,11 +261,13 @@ function generateResolverFromSchemaAndMiddleware<TSource, TContext, TArgs>(
 
 function addMiddlewareToSchema<TSource, TContext, TArgs>(
   schema: GraphQLSchema,
+  options: IApplyOptions,
   middleware: IMiddleware<TSource, TContext, TArgs>,
 ): GraphQLSchema {
   const validMiddleware = validateMiddleware(schema, middleware)
   const resolvers = generateResolverFromSchemaAndMiddleware(
     schema,
+    options,
     validMiddleware,
   )
 
@@ -263,10 +282,9 @@ function addMiddlewareToSchema<TSource, TContext, TArgs>(
   return schema
 }
 
-// Exposed functions
-
-export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
+function applyMiddlewareWithOptions<TSource = any, TContext = any, TArgs = any>(
   schema: GraphQLSchema,
+  options: IApplyOptions,
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
     | MiddlewareGenerator<TSource, TContext, TArgs>)[]
@@ -281,9 +299,37 @@ export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
 
   const schemaWithMiddleware = normalisedMiddlewares.reduceRight(
     (currentSchema, middleware) =>
-      addMiddlewareToSchema(currentSchema, middleware),
+      addMiddlewareToSchema(currentSchema, options, middleware),
     schema,
   )
 
   return schemaWithMiddleware
+}
+
+// Exposed functions
+
+export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
+  schema: GraphQLSchema,
+  ...middlewares: (
+    | IMiddleware<TSource, TContext, TArgs>
+    | MiddlewareGenerator<TSource, TContext, TArgs>)[]
+): GraphQLSchema {
+  return applyMiddlewareWithOptions(schema, {}, ...middlewares)
+}
+
+export function applyMiddlewareToDeclaredResolvers<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+>(
+  schema: GraphQLSchema,
+  ...middlewares: (
+    | IMiddleware<TSource, TContext, TArgs>
+    | MiddlewareGenerator<TSource, TContext, TArgs>)[]
+): GraphQLSchema {
+  return applyMiddlewareWithOptions(
+    schema,
+    { onlyDeclaredResolvers: true },
+    ...middlewares,
+  )
 }
