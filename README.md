@@ -139,11 +139,15 @@ Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combinin
 
 ### How does GraphQL Middleware compare to `directives`?
 
-GraphQL Middleware and `directives` tackle the same problem in a completely different way. GraphQL Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
+GraphQL Middleware and `directives` tackle the same problem in a completely different way. GraphQL Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality. However, they are also not mutually exclusive; one can have middleware that applies to all resolvers by default, but override settings with directives.
 
 ### Should I modify the context using GraphQL Middleware?
 
 GraphQL Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL Yoga's `documentMiddleware` for this functionality instead.
+
+### Do I need to use `await`?
+
+It is important to realise that resolvers can return either immediate values or promises. By using `await` you can treat both in the same way, otherwise you’d need to check if a value returned by a resolver is a promise or always box return values with `Promise.resolve(…)`.
 
 ## Help & Community [![Slack Status](https://slack.graph.cool/badge.svg)](https://slack.graph.cool)
 
