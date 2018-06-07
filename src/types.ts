@@ -1,3 +1,5 @@
+import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql'
+
 export declare type IMiddlewareFunction<
   TSource = any,
   TContext = any,
@@ -9,6 +11,7 @@ export declare type IMiddlewareFunction<
   context: TContext,
   info: GraphQLResolveInfo,
 ) => Promise<any>
+
 export interface IMiddlewareTypeMap<
   TSource = any,
   TContext = any,
@@ -18,6 +21,7 @@ export interface IMiddlewareTypeMap<
     | IMiddlewareFunction<TSource, TContext, TArgs>
     | IMiddlewareFieldMap<TSource, TContext, TArgs>
 }
+
 export interface IMiddlewareFieldMap<
   TSource = any,
   TContext = any,
@@ -25,6 +29,7 @@ export interface IMiddlewareFieldMap<
 > {
   [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>
 }
+
 export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
   | IMiddlewareFunction<TSource, TContext, TArgs>
   | IMiddlewareTypeMap<TSource, TContext, TArgs>
