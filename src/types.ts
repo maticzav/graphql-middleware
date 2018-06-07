@@ -1,19 +1,30 @@
-import { GraphQLResolveInfo, GraphQLFieldResolver, GraphQLField } from 'graphql'
-
-export type IMiddlewareFunction = (
-  resolve: GraphQLFieldResolver<any, any>,
-  parent: any,
-  args: any,
-  context: any,
-  info: GraphQLResolveInfo,
-) => Promise<any>
-
-export interface IMiddlewareTypeMap {
-  [key: string]: IMiddlewareFunction | IMiddlewareFieldMap
+export declare type IMiddlewareFunction<
+    TSource = any,
+    TContext = any,
+    TArgs = any
+> = (
+    resolve: GraphQLFieldResolver<TSource, TContext, TArgs>,
+    parent: TSource,
+    args: TArgs,
+    context: TContext,
+    info: GraphQLResolveInfo,
+) => Promise<void>;
+export interface IMiddlewareTypeMap<
+    TSource = any,
+    TContext = any,
+    TArgs = any
+> {
+    [key: string]:
+        | IMiddlewareFunction<TSource, TContext, TArgs>
+        | IMiddlewareFieldMap<TSource, TContext, TArgs>;
 }
-
-export interface IMiddlewareFieldMap {
-  [key: string]: IMiddlewareFunction
+export interface IMiddlewareFieldMap<
+    TSource = any,
+    TContext = any,
+    TArgs = any
+> {
+    [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>;
 }
-
-export type IMiddleware = IMiddlewareFunction | IMiddlewareTypeMap
+export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
+    | IMiddlewareFunction<TSource, TContext, TArgs>
+    | IMiddlewareTypeMap<TSource, TContext, TArgs>;
