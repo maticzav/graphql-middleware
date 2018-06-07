@@ -8,7 +8,7 @@ export declare type IMiddlewareFunction<
   args: TArgs,
   context: TContext,
   info: GraphQLResolveInfo,
-) => Promise<void>
+) => Promise<any>
 export interface IMiddlewareTypeMap<
   TSource = any,
   TContext = any,
