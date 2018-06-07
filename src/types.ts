@@ -1,30 +1,30 @@
 export declare type IMiddlewareFunction<
-    TSource = any,
-    TContext = any,
-    TArgs = any
+  TSource = any,
+  TContext = any,
+  TArgs = any
 > = (
-    resolve: GraphQLFieldResolver<TSource, TContext, TArgs>,
-    parent: TSource,
-    args: TArgs,
-    context: TContext,
-    info: GraphQLResolveInfo,
-) => Promise<void>;
+  resolve: GraphQLFieldResolver<TSource, TContext, TArgs>,
+  parent: TSource,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo,
+) => Promise<void>
 export interface IMiddlewareTypeMap<
-    TSource = any,
-    TContext = any,
-    TArgs = any
+  TSource = any,
+  TContext = any,
+  TArgs = any
 > {
-    [key: string]:
-        | IMiddlewareFunction<TSource, TContext, TArgs>
-        | IMiddlewareFieldMap<TSource, TContext, TArgs>;
+  [key: string]:
+    | IMiddlewareFunction<TSource, TContext, TArgs>
+    | IMiddlewareFieldMap<TSource, TContext, TArgs>
 }
 export interface IMiddlewareFieldMap<
-    TSource = any,
-    TContext = any,
-    TArgs = any
+  TSource = any,
+  TContext = any,
+  TArgs = any
 > {
-    [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>;
+  [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>
 }
 export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
-    | IMiddlewareFunction<TSource, TContext, TArgs>
-    | IMiddlewareTypeMap<TSource, TContext, TArgs>;
+  | IMiddlewareFunction<TSource, TContext, TArgs>
+  | IMiddlewareTypeMap<TSource, TContext, TArgs>
