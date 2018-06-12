@@ -1,6 +1,7 @@
 import test from 'ava'
-import { graphql } from 'graphql'
+import { graphql, subscribe, parse } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
+import { $$asyncIterator } from 'iterall'
 import { applyMiddleware, MiddlewareError } from './dist'
 
 // Setup ---------------------------------------------------------------------
@@ -24,6 +25,10 @@ const typeDefs = `
     null: String
     nested: Nothing!
   }
+  
+  type Subscription {
+    sub: String
+  }
 
   type Nothing {
     nothing: String!
@@ -35,7 +40,8 @@ const typeDefs = `
 
   schema {
     query: Query,
-    mutation: Mutation
+    mutation: Mutation,
+    subscription: Subscription
   }
 `
 
@@ -56,6 +62,19 @@ const resolvers = {
     afterNothing: () => 'after',
     null: () => null,
     nested: () => ({}),
+  },
+  Subscription: {
+    sub: {
+      subscribe: async (parent, { arg }, ctx, info) => {
+        const iterator = {
+          next: () => Promise.resolve({ done: false, value: { sub: arg } }),
+          return: () => {},
+          throw: () => {},
+          [$$asyncIterator]: () => iterator,
+        }
+        return iterator
+      },
+    },
   },
   Nothing: {
     nothing: () => 'nothing',
@@ -89,6 +108,12 @@ const fieldMiddleware = {
       return 'changed'
     },
   },
+  Subscription: {
+    sub: async (resolve, parent, args, context, info) => {
+      const _args = { arg: 'changed' }
+      return resolve(parent, _args)
+    },
+  },
 }
 
 // Type Middleware
@@ -99,6 +124,10 @@ const typeMiddlewareBefore = {
     return resolve(parent, _args)
   },
   Mutation: async (resolve, parent, args, context, info) => {
+    const _args = { arg: 'changed' }
+    return resolve(parent, _args)
+  },
+  Subscription: async (resolve, parent, args, context, info) => {
     const _args = { arg: 'changed' }
     return resolve(parent, _args)
   },
@@ -201,6 +230,28 @@ test('Field middleware - Mutation', async t => {
       afterNothing: 'after',
       null: null,
       nested: { nothing: 'nothing' },
+    },
+  })
+})
+
+test('Field middleware - Subscription', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, fieldMiddleware)
+
+  const query = `
+    subscription {
+      sub
+    }
+  `
+  const iterator = await subscribe(schemaWithMiddleware, parse(query))
+  const res = await iterator.next()
+
+  t.deepEqual(res, {
+    done: false,
+    value: {
+      data: {
+        sub: 'changed',
+      },
     },
   })
 })
@@ -319,6 +370,28 @@ test('Type middleware - Mutation after', async t => {
   })
 })
 
+test('Type middleware - Subscription', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, typeMiddlewareBefore)
+
+  const query = `
+    subscription {
+      sub
+    }
+  `
+  const iterator = await subscribe(schemaWithMiddleware, parse(query))
+  const res = await iterator.next()
+
+  t.deepEqual(res, {
+    done: false,
+    value: {
+      data: {
+        sub: 'changed',
+      },
+    },
+  })
+})
+
 // Schema
 
 test('Schema middleware - Query before', async t => {
@@ -430,6 +503,28 @@ test('Schema middleware - Mutation after', async t => {
       afterNothing: 'changed',
       null: 'changed',
       nested: { nothing: 'changed' },
+    },
+  })
+})
+
+test('Schema middleware - Subscription', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(schema, schemaMiddlewareBefore)
+
+  const query = `
+    subscription {
+      sub
+    }
+  `
+  const iterator = await subscribe(schemaWithMiddleware, parse(query))
+  const res = await iterator.next()
+
+  t.deepEqual(res, {
+    done: false,
+    value: {
+      data: {
+        sub: 'changed',
+      },
     },
   })
 })

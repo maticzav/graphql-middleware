@@ -110,14 +110,14 @@ export class MiddlewareError extends Error {
 function applyMiddlewareToField(
   field: GraphQLField<any, any, any>,
   middleware: IMiddlewareFunction,
-): GraphQLFieldResolver<any, any, any> {
-  let resolver = field.resolve
-
+):
+  | GraphQLFieldResolver<any, any, any>
+  | { subscribe: GraphQLFieldResolver<any, any, any> } {
   if (field.subscribe) {
-    resolver = field.subscribe
+    return { subscribe: wrapResolverInMiddleware(field.subscribe, middleware) }
   }
 
-  return wrapResolverInMiddleware(resolver, middleware)
+  return wrapResolverInMiddleware(field.resolve, middleware)
 }
 
 function applyMiddlewareToType(
