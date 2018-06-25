@@ -150,8 +150,8 @@ GraphQL Middleware and `directives` tackle the same problem in a completely diff
 
 GraphQL Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL Yoga's `documentMiddleware` for this functionality instead.
 
-## Help & Community [![Slack Status](https://slack.graph.cool/badge.svg)](https://slack.graph.cool)
+## Help & Community [![Slack Status](https://slack.prisma.io/badge.svg)](https://slack.prisma.io)
 
-Join our [Slack community](http://slack.graph.cool/) if you run into issues or have questions. We love talking to you!
+Join our [Slack community](http://slack.prisma.io/) if you run into issues or have questions. We love talking to you!
 
 <p align="center"><a href="https://oss.prisma.io"><img src="https://imgur.com/IMU2ERq.png" alt="Prisma" height="170px"></a></p>
