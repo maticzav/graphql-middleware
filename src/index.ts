@@ -228,11 +228,13 @@ export function applyMiddleware(
   schema: GraphQLSchema,
   ...middleware: IMiddleware[]
 ): GraphQLSchema {
-  const schemaWithMiddleware = middleware.reduce(
-    (currentSchema, middleware) =>
-      addMiddlewareToSchema(currentSchema, middleware),
-    schema,
-  )
+  const schemaWithMiddleware = middleware
+    .reverse()
+    .reduce(
+      (currentSchema, middleware) =>
+        addMiddlewareToSchema(currentSchema, middleware),
+      schema,
+    )
 
   return schemaWithMiddleware
 }

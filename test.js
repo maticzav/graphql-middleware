@@ -174,6 +174,26 @@ const middlewareWithObjectField = {
   },
 }
 
+// Middleware execution
+
+const firstMiddleware = t => async (resolve, parent, args, ctx, info) => {
+  t.pass()
+
+  if (!ctx._execution) {
+    ctx._execution = true
+  }
+
+  return resolve()
+}
+
+const secondMiddleware = t => async (resolve, parent, args, ctx, info) => {
+  if (ctx._execution) {
+    t.pass()
+  }
+
+  return resolve()
+}
+
 // Test ----------------------------------------------------------------------
 
 // Field
@@ -660,4 +680,24 @@ test('Middleware Error - Middleware field is not a function.', async t => {
     res,
     MiddlewareError(`Expected Query.before to be a function but found boolean`),
   )
+})
+
+// Execution chain
+
+test('Middleware execution chain', async t => {
+  t.plan(2)
+
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddleware(
+    schema,
+    firstMiddleware(t),
+    secondMiddleware(t),
+  )
+
+  const query = `
+    query {
+      after
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query, null, {})
 })
