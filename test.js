@@ -2,7 +2,7 @@ import test from 'ava'
 import { graphql, subscribe, parse } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
 import { $$asyncIterator } from 'iterall'
-import { applyMiddleware, MiddlewareError } from './dist'
+import { applyMiddleware, middleware, MiddlewareError } from './dist'
 
 // Setup ---------------------------------------------------------------------
 
@@ -700,4 +700,117 @@ test('Middleware execution chain', async t => {
     }
   `
   const res = await graphql(schemaWithMiddleware, query, null, {})
+})
+
+// Fragments
+
+test.skip('Middleware with fragments', async t => {
+  // t.plan(3)
+
+  const typeDefs = `
+    type Query {
+      test: Test!
+    }
+
+    type Test {
+      id: ID!
+      dependant: String!
+    }
+  `
+
+  const resolvers = {
+    Query: {
+      test: () => ({
+        // id: 'fail',
+        // dependant: 'fail',
+      }),
+    },
+    Test: {
+      id: () => {
+        t.pass()
+        return 'pass'
+      },
+      // dependant: () => 'fail',
+
+      dependant: {
+        fragment: `fragment TestID on Test { id }`,
+        resolve: async (parent, args, ctx, info) => {
+          console.log({ parent })
+
+          return 'pass'
+        },
+      },
+    },
+  }
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+  // const middleware = {
+  //   Test: {
+  //     dependant: {
+  //       fragment: `fragment TestID on Test { id }`,
+  //       resolve: async (resolve, parent, args, ctx, info) => {
+  //         t.is(parent.id === 'pass')
+  //         t.log(parent)
+
+  //         return 'pass'
+  //       },
+  //     },
+  //   },
+  // }
+
+  // const schemaWithMiddleware = applyMiddleware(schema, middleware)
+  const query = `
+    query {
+      test {
+        dependant
+      }
+    }
+  `
+
+  const res = await graphql(schema, query)
+
+  console.log(res)
+
+  t.deepEqual(res.data, {
+    test: { dependant: 'pass' },
+  })
+})
+
+// Generator
+
+test('Middleware with generator', async t => {
+  t.plan(2)
+
+  const typeDefs = `
+    type Query {
+      test: String!
+    }
+  `
+
+  const resolvers = {
+    Query: {
+      test: () => 'fail',
+    },
+  }
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+  const testMiddleware = middleware(_schema => {
+    t.deepEqual(schema, _schema)
+    return async (resolve, parent, args, ctx, info) => {
+      return 'pass'
+    }
+  })
+
+  const schemaWithMiddleware = applyMiddleware(schema, testMiddleware)
+  const query = `
+    query {
+      test
+    }
+  `
+
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.is(res.data.test, 'pass')
 })
