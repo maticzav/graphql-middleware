@@ -34,9 +34,11 @@ export interface IMiddlewareFieldMap<
   [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>
 }
 
-export declare type IMiddlewareGenerator<TSource, TContext, TArgs> = (
-  schema: GraphQLSchema,
-) => IMiddleware<TSource, TContext, TArgs>
+export declare type IMiddlewareGenerator<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+> = (schema: GraphQLSchema) => IMiddleware<TSource, TContext, TArgs>
 
 export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
   | IMiddlewareFunction<TSource, TContext, TArgs>
