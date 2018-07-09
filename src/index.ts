@@ -13,9 +13,6 @@ import {
   IMiddlewareFunction,
   IMiddlewareTypeMap,
   IMiddlewareFieldMap,
-  IMiddlewareFunctionWithFragment,
-  IMiddlewareResolver,
-  IResolverWithFragment,
   IMiddlewareGenerator,
 } from './types'
 
@@ -37,25 +34,13 @@ export class MiddlewareGenerator<TSource, TContext, TArgs> {
 
 // Type checks
 
-function isMiddlewareResolver<TSource, TContext, TArgs>(
+function isMiddlewareFunction<TSource, TContext, TArgs>(
   obj: any,
-): obj is IMiddlewareResolver<TSource, TContext, TArgs> {
+): obj is IMiddlewareFunction<TSource, TContext, TArgs> {
   return (
     typeof obj === 'function' ||
     (typeof obj === 'object' && obj.then !== undefined)
   )
-}
-
-function isMiddlewareWithFragment<TSource, TContext, TArgs>(
-  obj: any,
-): obj is IMiddlewareFunctionWithFragment<TSource, TContext, TArgs> {
-  return typeof obj.fragment === 'string' && isMiddlewareResolver(obj.resolve)
-}
-
-function isMiddlewareFunction<TSource, TContext, TArgs>(
-  obj: any,
-): obj is IMiddlewareFunction<TSource, TContext, TArgs> {
-  return isMiddlewareWithFragment(obj) || isMiddlewareResolver(obj)
 }
 
 function isMiddlewareGenerator<TSource, TContext, TArgs>(
@@ -78,9 +63,9 @@ export function middleware<TSource = any, TContext = any, TArgs = any>(
   return new MiddlewareGenerator(generator)
 }
 
-function wrapResolverInMiddlewareResolver<TSource, TContext, TArgs>(
+function wrapResolverInMiddleware<TSource, TContext, TArgs>(
   resolver: GraphQLFieldResolver<any, any, any>,
-  middleware: IMiddlewareResolver<TSource, TContext, TArgs>,
+  middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): GraphQLFieldResolver<any, any, any> {
   return (parent, args, ctx, info) => {
     const resolveFn = resolver || defaultFieldResolver
@@ -93,20 +78,6 @@ function wrapResolverInMiddlewareResolver<TSource, TContext, TArgs>(
       ctx,
       info,
     )
-  }
-}
-
-function wrapResolverInMiddleware<TSource, TContext, TArgs>(
-  resolver: GraphQLFieldResolver<any, any, any>,
-  middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
-): GraphQLFieldResolver<any, any, any> | IResolverWithFragment<any, any, any> {
-  if (isMiddlewareResolver(middleware)) {
-    return wrapResolverInMiddlewareResolver(resolver, middleware)
-  } else if (isMiddlewareWithFragment(middleware)) {
-    return {
-      fragment: middleware.fragment,
-      resolve: wrapResolverInMiddlewareResolver(resolver, middleware.resolve),
-    }
   }
 }
 
@@ -167,11 +138,10 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ):
   | GraphQLFieldResolver<any, any, any>
-  | IResolverWithFragment<any, any, any>
   | { subscribe: GraphQLFieldResolver<any, any, any> } {
-  if (field.subscribe && isMiddlewareResolver(middleware)) {
+  if (field.subscribe) {
     return {
-      subscribe: wrapResolverInMiddlewareResolver(field.subscribe, middleware),
+      subscribe: wrapResolverInMiddleware(field.subscribe, middleware),
     }
   }
 
