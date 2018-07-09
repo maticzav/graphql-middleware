@@ -2,7 +2,7 @@ import test from 'ava'
 import { graphql, subscribe, parse } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
 import { $$asyncIterator } from 'iterall'
-import { applyMiddleware, MiddlewareError } from './dist'
+import { applyMiddleware, middleware, MiddlewareError } from './dist'
 
 // Setup ---------------------------------------------------------------------
 
@@ -700,4 +700,42 @@ test('Middleware execution chain', async t => {
     }
   `
   const res = await graphql(schemaWithMiddleware, query, null, {})
+})
+
+// Generator
+
+test('Middleware with generator', async t => {
+  t.plan(2)
+
+  const typeDefs = `
+    type Query {
+      test: String!
+    }
+  `
+
+  const resolvers = {
+    Query: {
+      test: () => 'fail',
+    },
+  }
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+  const testMiddleware = middleware(_schema => {
+    t.deepEqual(schema, _schema)
+    return async (resolve, parent, args, ctx, info) => {
+      return 'pass'
+    }
+  })
+
+  const schemaWithMiddleware = applyMiddleware(schema, testMiddleware)
+  const query = `
+    query {
+      test
+    }
+  `
+
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.is(res.data.test, 'pass')
 })

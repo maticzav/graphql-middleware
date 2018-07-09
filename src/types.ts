@@ -1,4 +1,8 @@
-import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql'
+import {
+  GraphQLFieldResolver,
+  GraphQLResolveInfo,
+  GraphQLSchema,
+} from 'graphql'
 
 export declare type IMiddlewareFunction<
   TSource = any,
@@ -29,6 +33,10 @@ export interface IMiddlewareFieldMap<
 > {
   [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>
 }
+
+export declare type IMiddlewareGenerator<TSource, TContext, TArgs> = (
+  schema: GraphQLSchema,
+) => IMiddleware<TSource, TContext, TArgs>
 
 export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
   | IMiddlewareFunction<TSource, TContext, TArgs>

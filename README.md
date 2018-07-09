@@ -120,10 +120,24 @@ interface IMiddlewareFieldMap {
 
 type IMiddleware = IMiddlewareFunction | IMiddlewareTypeMap
 
+function middleware(
+  generator: (schema: GraphQLSchema) => IMiddleware,
+): MiddlewareGenerator
+
 function applyMiddleware(
   schema: GraphQLSchema,
-  ...middleware: IMiddleware[]
+  ...middleware: (IMiddleware | MiddlewareGenerator)[]
 ): GraphQLSchema
+```
+
+### Middleware Generator
+
+In some cases, your middleware could depend on how your schema looks. In such situations, you can turn your middleware into a middleware generator. Middleware generators are denoted with function `middleware` and receive `schema` as the first argument.
+
+```ts
+const schemaDependentMiddleware = middleware(schema => {
+  return generateMiddlewareFromSchema(schema)
+})
 ```
 
 ## GraphQL Middleware Use Cases
