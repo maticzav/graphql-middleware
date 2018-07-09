@@ -16,7 +16,13 @@ import {
   IMiddlewareGenerator,
 } from './types'
 
-export { IMiddleware }
+export {
+  IMiddleware,
+  IMiddlewareTypeMap,
+  IMiddlewareFieldMap,
+  IMiddlewareFunction,
+  IMiddlewareGenerator,
+}
 
 // Classes
 
