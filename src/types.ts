@@ -43,3 +43,7 @@ export declare type IMiddlewareGenerator<
 export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
   | IMiddlewareFunction<TSource, TContext, TArgs>
   | IMiddlewareTypeMap<TSource, TContext, TArgs>
+
+export declare type IApplyOptions = {
+  onlyDeclaredResolvers: boolean
+}

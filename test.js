@@ -2,7 +2,12 @@ import test from 'ava'
 import { graphql, subscribe, parse } from 'graphql'
 import { makeExecutableSchema } from 'graphql-tools'
 import { $$asyncIterator } from 'iterall'
-import { applyMiddleware, middleware, MiddlewareError } from './dist'
+import {
+  applyMiddleware,
+  middleware,
+  applyMiddlewareToDeclaredResolvers,
+  MiddlewareError,
+} from './dist'
 
 // Setup ---------------------------------------------------------------------
 
@@ -154,6 +159,14 @@ const schemaMiddlewareBefore = async (resolve, parent, args, context, info) => {
 const schemaMiddlewareAfter = async (resolve, parent, args, context, info) => {
   const res = resolve()
   return 'changed'
+}
+
+const emptyStringMiddleware = async (resolve, parent, args, context, info) => {
+  if (/^String!?$/.test(info.returnType)) {
+    return ''
+  } else {
+    return resolve()
+  }
 }
 
 // Middleware Validation
@@ -738,4 +751,31 @@ test('Middleware with generator', async t => {
   const res = await graphql(schemaWithMiddleware, query)
 
   t.is(res.data.test, 'pass')
+})
+
+test('applyMiddlewareToDeclaredResolvers - applies middleware to all but default resolvers', async t => {
+  const schema = getSchema()
+  const schemaWithMiddleware = applyMiddlewareToDeclaredResolvers(
+    schema,
+    emptyStringMiddleware,
+  )
+
+  const query = `
+    query {
+      resolverless {
+        someData
+      }
+      after
+    }
+  `
+  const res = await graphql(schemaWithMiddleware, query)
+
+  t.deepEqual(res, {
+    data: {
+      resolverless: {
+        someData: 'data',
+      },
+      after: '',
+    },
+  })
 })
