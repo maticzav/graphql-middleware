@@ -45,5 +45,5 @@ export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
   | IMiddlewareTypeMap<TSource, TContext, TArgs>
 
 export declare type IApplyOptions = {
-  onlyDeclaredResolvers?: boolean
+  onlyDeclaredResolvers: boolean
 }

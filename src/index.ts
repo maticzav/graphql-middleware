@@ -314,7 +314,11 @@ export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
     | IMiddleware<TSource, TContext, TArgs>
     | MiddlewareGenerator<TSource, TContext, TArgs>)[]
 ): GraphQLSchema {
-  return applyMiddlewareWithOptions(schema, {}, ...middlewares)
+  return applyMiddlewareWithOptions(
+    schema,
+    { onlyDeclaredResolvers: false },
+    ...middlewares,
+  )
 }
 
 export function applyMiddlewareToDeclaredResolvers<
