@@ -765,7 +765,7 @@ test('applyMiddlewareToDeclaredResolvers - applies middleware to all but default
       resolverless {
         someData
       }
-      afterNothing
+      after
     }
   `
   const res = await graphql(schemaWithMiddleware, query)
@@ -775,7 +775,7 @@ test('applyMiddlewareToDeclaredResolvers - applies middleware to all but default
       resolverless: {
         someData: 'data',
       },
-      afterNothing: '',
+      after: '',
     },
   })
 })
