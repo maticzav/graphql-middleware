@@ -9,6 +9,7 @@
   },
   "author": "Matic Zavadlal <matic.zavadlal@gmail.com>",
   "dependencies": {
+    "graphql-binding": "^2.1.1",
     "graphql-tools": "^3.0.2"
   },
   "devDependencies": {

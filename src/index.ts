@@ -7,7 +7,7 @@ import {
   GraphQLInterfaceType,
 } from 'graphql'
 import { addResolveFunctionsToSchema } from 'graphql-tools'
-import { IResolvers } from 'graphql-tools/dist/Interfaces'
+import { IResolvers, IResolverOptions } from 'graphql-tools/dist/Interfaces'
 import {
   IApplyOptions,
   IMiddleware,
@@ -15,7 +15,11 @@ import {
   IMiddlewareTypeMap,
   IMiddlewareFieldMap,
   IMiddlewareGenerator,
+  IMiddlewareResolver,
+  IMiddlewareWithFragment,
+  GraphQLSchemaWithFragmentReplacements,
 } from './types'
+import { extractFragmentReplacements } from '../node_modules/graphql-binding'
 
 export {
   IMiddleware,
@@ -41,13 +45,28 @@ export class MiddlewareGenerator<TSource, TContext, TArgs> {
 
 // Type checks
 
-function isMiddlewareFunction<TSource, TContext, TArgs>(
+function isMiddlewareResolver<TSource, TContext, TArgs>(
   obj: any,
-): obj is IMiddlewareFunction<TSource, TContext, TArgs> {
+): obj is IMiddlewareResolver<TSource, TContext, TArgs> {
   return (
     typeof obj === 'function' ||
     (typeof obj === 'object' && obj.then !== undefined)
   )
+}
+
+function isMiddlewareWithFragment<TSource, TContext, TArgs>(
+  obj: any,
+): obj is IMiddlewareWithFragment<TSource, TContext, TArgs> {
+  return (
+    typeof obj.fragment === 'string' &&
+    (obj.resolve === undefined || isMiddlewareResolver(obj.resolve))
+  )
+}
+
+function isMiddlewareFunction<TSource, TContext, TArgs>(
+  obj: any,
+): obj is IMiddlewareFunction<TSource, TContext, TArgs> {
+  return isMiddlewareWithFragment(obj) || isMiddlewareResolver(obj)
 }
 
 function isMiddlewareGenerator<TSource, TContext, TArgs>(
@@ -60,37 +79,6 @@ function isGraphQLObjectType(
   obj: any,
 ): obj is GraphQLObjectType | GraphQLInterfaceType {
   return obj instanceof GraphQLObjectType || obj instanceof GraphQLInterfaceType
-}
-
-// Wrappers
-
-export function middleware<TSource = any, TContext = any, TArgs = any>(
-  generator: IMiddlewareGenerator<TSource, TContext, TArgs>,
-): MiddlewareGenerator<TSource, TContext, TArgs> {
-  return new MiddlewareGenerator(generator)
-}
-
-function wrapResolverInMiddleware<TSource, TContext, TArgs>(
-  resolver: GraphQLFieldResolver<any, any, any>,
-  options: IApplyOptions,
-  middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
-): GraphQLFieldResolver<any, any, any> {
-  if (options.onlyDeclaredResolvers && !resolver) {
-    return defaultFieldResolver
-  }
-
-  return (parent, args, ctx, info) => {
-    const resolveFn = resolver || defaultFieldResolver
-
-    return middleware(
-      (_parent = parent, _args = args, _ctx = ctx, _info = info) =>
-        resolveFn(_parent, _args, _ctx, _info),
-      parent,
-      args,
-      ctx,
-      info,
-    )
-  }
 }
 
 // Validation
@@ -143,22 +131,57 @@ export class MiddlewareError extends Error {
   }
 }
 
+// Constructors
+
+export function middleware<TSource = any, TContext = any, TArgs = any>(
+  generator: IMiddlewareGenerator<TSource, TContext, TArgs>,
+): MiddlewareGenerator<TSource, TContext, TArgs> {
+  return new MiddlewareGenerator(generator)
+}
+
+// Wrappers
+
+function wrapResolverInMiddleware<TSource, TContext, TArgs>(
+  resolver: GraphQLFieldResolver<any, any, any>,
+  middleware: IMiddlewareResolver<TSource, TContext, TArgs>,
+): GraphQLFieldResolver<any, any, any> {
+  return (parent, args, ctx, info) =>
+    middleware(
+      (_parent = parent, _args = args, _ctx = ctx, _info = info) =>
+        resolver(_parent, _args, _ctx, _info),
+      parent,
+      args,
+      ctx,
+      info,
+    )
+}
+
 // Merge
 
 function applyMiddlewareToField<TSource, TContext, TArgs>(
   field: GraphQLField<any, any, any>,
   options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
-):
-  | GraphQLFieldResolver<any, any, any>
-  | { subscribe: GraphQLFieldResolver<any, any, any> } {
-  if (field.subscribe) {
+): IResolverOptions {
+  if (!field.subscribe && !field.resolve && options.onlyDeclaredResolvers) {
+    return { resolve: defaultFieldResolver }
+  } else if (isMiddlewareWithFragment(middleware) && field.subscribe) {
     return {
-      subscribe: wrapResolverInMiddleware(field.subscribe, options, middleware),
+      fragment: middleware.fragment,
+      subscribe: wrapResolverInMiddleware(field.subscribe, middleware.resolve),
     }
+  } else if (isMiddlewareWithFragment(middleware) && field.resolve) {
+    return {
+      fragment: middleware.fragment,
+      resolve: wrapResolverInMiddleware(field.resolve, middleware.resolve),
+    }
+  } else if (isMiddlewareResolver(middleware) && field.subscribe) {
+    return { subscribe: wrapResolverInMiddleware(field.subscribe, middleware) }
+  } else if (isMiddlewareResolver(middleware) && field.resolve) {
+    return { resolve: wrapResolverInMiddleware(field.resolve, middleware) }
+  } else {
+    return { resolve: defaultFieldResolver }
   }
-
-  return wrapResolverInMiddleware(field.resolve, options, middleware)
 }
 
 function applyMiddlewareToType<TSource, TContext, TArgs>(
@@ -259,6 +282,16 @@ function generateResolverFromSchemaAndMiddleware<TSource, TContext, TArgs>(
 
 // Reducers
 
+/**
+ *
+ * @param schema
+ * @param options
+ * @param middleware
+ *
+ * Validates middleware and generates resolvers map for provided middleware.
+ * Applies middleware to the current schema and returns the modified one.
+ *
+ */
 function addMiddlewareToSchema<TSource, TContext, TArgs>(
   schema: GraphQLSchema,
   options: IApplyOptions,
@@ -282,6 +315,16 @@ function addMiddlewareToSchema<TSource, TContext, TArgs>(
   return schema
 }
 
+/**
+ *
+ * @param schema
+ * @param options
+ * @param middlewares
+ *
+ * Generates middleware from middleware generators and applies middleware to
+ * resolvers. Returns generated schema with all provided middleware.
+ *
+ */
 function applyMiddlewareWithOptions<TSource = any, TContext = any, TArgs = any>(
   schema: GraphQLSchema,
   options: IApplyOptions,
@@ -308,6 +351,14 @@ function applyMiddlewareWithOptions<TSource = any, TContext = any, TArgs = any>(
 
 // Exposed functions
 
+/**
+ *
+ * @param schema
+ * @param middlewares
+ *
+ * Apply middleware to resolvers and return generated schema.
+ *
+ */
 export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
   schema: GraphQLSchema,
   ...middlewares: (
@@ -321,6 +372,43 @@ export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
   )
 }
 
+/**
+ *
+ * @param schema
+ * @param middlewares
+ *
+ * Apply middleware to resolvers and return fragmentReplacements
+ * along with generated schema.
+ *
+ */
+export function applyMiddlewareWithFragments<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+>(
+  schema: GraphQLSchema,
+  ...middlewares: (
+    | IMiddleware<TSource, TContext, TArgs>
+    | MiddlewareGenerator<TSource, TContext, TArgs>)[]
+): GraphQLSchemaWithFragmentReplacements {
+  return {
+    fragmentReplacements: [],
+    schema: applyMiddlewareWithOptions(
+      schema,
+      { onlyDeclaredResolvers: false },
+      ...middlewares,
+    ),
+  }
+}
+
+/**
+ *
+ * @param schema
+ * @param middlewares
+ *
+ * Apply middleware to declared resolvers and return new schema.
+ *
+ */
 export function applyMiddlewareToDeclaredResolvers<
   TSource = any,
   TContext = any,
@@ -336,4 +424,33 @@ export function applyMiddlewareToDeclaredResolvers<
     { onlyDeclaredResolvers: true },
     ...middlewares,
   )
+}
+
+/**
+ *
+ * @param schema
+ * @param middlewares
+ *
+ * Apply middleware to declared resolvers and return fragmentReplacements
+ * along with generated schema.
+ *
+ */
+export function applyMiddlewareWithFragmentsToDeclaredResolvers<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+>(
+  schema: GraphQLSchema,
+  ...middlewares: (
+    | IMiddleware<TSource, TContext, TArgs>
+    | MiddlewareGenerator<TSource, TContext, TArgs>)[]
+): GraphQLSchemaWithFragmentReplacements {
+  return {
+    fragmentReplacements: [],
+    schema: applyMiddlewareWithOptions(
+      schema,
+      { onlyDeclaredResolvers: true },
+      ...middlewares,
+    ),
+  }
 }

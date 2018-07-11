@@ -3,8 +3,9 @@ import {
   GraphQLResolveInfo,
   GraphQLSchema,
 } from 'graphql'
+import { FragmentReplacement } from 'graphql-binding'
 
-export declare type IMiddlewareFunction<
+export declare type IMiddlewareResolver<
   TSource = any,
   TContext = any,
   TArgs = any
@@ -15,6 +16,19 @@ export declare type IMiddlewareFunction<
   context: TContext,
   info: GraphQLResolveInfo,
 ) => Promise<any>
+
+export interface IMiddlewareWithFragment<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+> {
+  fragment: string
+  resolve?: IMiddlewareResolver<TSource, TContext, TArgs>
+}
+
+export type IMiddlewareFunction<TSource = any, TContext = any, TArgs = any> =
+  | IMiddlewareWithFragment<TSource, TContext, TArgs>
+  | IMiddlewareResolver<TSource, TContext, TArgs>
 
 export interface IMiddlewareTypeMap<
   TSource = any,
@@ -46,4 +60,9 @@ export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
 
 export declare type IApplyOptions = {
   onlyDeclaredResolvers: boolean
+}
+
+export interface GraphQLSchemaWithFragmentReplacements {
+  schema: GraphQLSchema
+  fragmentReplacements: FragmentReplacement[]
 }
