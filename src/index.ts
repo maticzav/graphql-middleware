@@ -6,7 +6,11 @@ import {
   GraphQLFieldResolver,
   GraphQLInterfaceType,
 } from 'graphql'
-import { addResolveFunctionsToSchema } from 'graphql-tools'
+import {
+  addResolveFunctionsToSchema,
+  transformSchema,
+  ReplaceFieldWithFragment,
+} from 'graphql-tools'
 import { IResolvers, IResolverOptions } from 'graphql-tools/dist/Interfaces'
 import {
   IApplyOptions,
@@ -17,9 +21,8 @@ import {
   IMiddlewareGenerator,
   IMiddlewareResolver,
   IMiddlewareWithFragment,
-  GraphQLSchemaWithFragmentReplacements,
 } from './types'
-import { extractFragmentReplacements } from '../node_modules/graphql-binding'
+import { extractFragmentReplacements } from './fragmentReplacements'
 
 export {
   IMiddleware,
@@ -304,6 +307,8 @@ function addMiddlewareToSchema<TSource, TContext, TArgs>(
     validMiddleware,
   )
 
+  const fragmentReplacements = extractFragmentReplacements(resolvers)
+
   addResolveFunctionsToSchema({
     schema,
     resolvers,
@@ -312,7 +317,11 @@ function addMiddlewareToSchema<TSource, TContext, TArgs>(
     },
   })
 
-  return schema
+  const schemaWithFragments = transformSchema(schema, [
+    new ReplaceFieldWithFragment(schema, fragmentReplacements),
+  ])
+
+  return schemaWithFragments
 }
 
 /**
@@ -377,35 +386,6 @@ export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
  * @param schema
  * @param middlewares
  *
- * Apply middleware to resolvers and return fragmentReplacements
- * along with generated schema.
- *
- */
-export function applyMiddlewareWithFragments<
-  TSource = any,
-  TContext = any,
-  TArgs = any
->(
-  schema: GraphQLSchema,
-  ...middlewares: (
-    | IMiddleware<TSource, TContext, TArgs>
-    | MiddlewareGenerator<TSource, TContext, TArgs>)[]
-): GraphQLSchemaWithFragmentReplacements {
-  return {
-    fragmentReplacements: [],
-    schema: applyMiddlewareWithOptions(
-      schema,
-      { onlyDeclaredResolvers: false },
-      ...middlewares,
-    ),
-  }
-}
-
-/**
- *
- * @param schema
- * @param middlewares
- *
  * Apply middleware to declared resolvers and return new schema.
  *
  */
@@ -424,33 +404,4 @@ export function applyMiddlewareToDeclaredResolvers<
     { onlyDeclaredResolvers: true },
     ...middlewares,
   )
-}
-
-/**
- *
- * @param schema
- * @param middlewares
- *
- * Apply middleware to declared resolvers and return fragmentReplacements
- * along with generated schema.
- *
- */
-export function applyMiddlewareWithFragmentsToDeclaredResolvers<
-  TSource = any,
-  TContext = any,
-  TArgs = any
->(
-  schema: GraphQLSchema,
-  ...middlewares: (
-    | IMiddleware<TSource, TContext, TArgs>
-    | MiddlewareGenerator<TSource, TContext, TArgs>)[]
-): GraphQLSchemaWithFragmentReplacements {
-  return {
-    fragmentReplacements: [],
-    schema: applyMiddlewareWithOptions(
-      schema,
-      { onlyDeclaredResolvers: true },
-      ...middlewares,
-    ),
-  }
 }

@@ -3,7 +3,6 @@ import {
   GraphQLResolveInfo,
   GraphQLSchema,
 } from 'graphql'
-import { FragmentReplacement } from 'graphql-binding'
 
 export declare type IMiddlewareResolver<
   TSource = any,
@@ -62,7 +61,7 @@ export declare type IApplyOptions = {
   onlyDeclaredResolvers: boolean
 }
 
-export interface GraphQLSchemaWithFragmentReplacements {
-  schema: GraphQLSchema
-  fragmentReplacements: FragmentReplacement[]
+export interface FragmentReplacement {
+  field: string
+  fragment: string
 }
