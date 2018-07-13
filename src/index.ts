@@ -21,8 +21,8 @@ import {
   IMiddlewareGenerator,
   IMiddlewareResolver,
   IMiddlewareWithFragment,
+  FragmentReplacement,
 } from './types'
-import { extractFragmentReplacements } from './fragmentReplacements'
 
 export {
   IMiddleware,
@@ -140,6 +140,29 @@ export function middleware<TSource = any, TContext = any, TArgs = any>(
   generator: IMiddlewareGenerator<TSource, TContext, TArgs>,
 ): MiddlewareGenerator<TSource, TContext, TArgs> {
   return new MiddlewareGenerator(generator)
+}
+
+// Extractors
+
+export function extractFragmentReplacements(
+  resolvers: IResolvers,
+): FragmentReplacement[] {
+  const fragmentReplacements: FragmentReplacement[] = []
+
+  for (const typeName in resolvers) {
+    const fieldResolvers: any = resolvers[typeName]
+    for (const fieldName in fieldResolvers) {
+      const fieldResolver = fieldResolvers[fieldName]
+      if (typeof fieldResolver === 'object' && fieldResolver.fragment) {
+        fragmentReplacements.push({
+          field: fieldName,
+          fragment: fieldResolver.fragment,
+        })
+      }
+    }
+  }
+
+  return fragmentReplacements
 }
 
 // Wrappers
