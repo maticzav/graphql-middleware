@@ -22,6 +22,7 @@ import {
   IMiddlewareResolver,
   IMiddlewareWithFragment,
   FragmentReplacement,
+  GraphQLSchemaWithFragmentReplacements,
 } from './types'
 
 export {
@@ -189,22 +190,38 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
   options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): IResolverOptions {
-  if (!field.subscribe && !field.resolve && options.onlyDeclaredResolvers) {
-    return { resolve: defaultFieldResolver }
+  if (isMiddlewareWithFragment(middleware) && field.resolve) {
+    return {
+      fragment: middleware.fragment,
+      resolve: wrapResolverInMiddleware(field.resolve, middleware.resolve),
+    }
   } else if (isMiddlewareWithFragment(middleware) && field.subscribe) {
     return {
       fragment: middleware.fragment,
       subscribe: wrapResolverInMiddleware(field.subscribe, middleware.resolve),
     }
-  } else if (isMiddlewareWithFragment(middleware) && field.resolve) {
-    return {
-      fragment: middleware.fragment,
-      resolve: wrapResolverInMiddleware(field.resolve, middleware.resolve),
-    }
-  } else if (isMiddlewareResolver(middleware) && field.subscribe) {
-    return { subscribe: wrapResolverInMiddleware(field.subscribe, middleware) }
   } else if (isMiddlewareResolver(middleware) && field.resolve) {
     return { resolve: wrapResolverInMiddleware(field.resolve, middleware) }
+  } else if (isMiddlewareResolver(middleware) && field.subscribe) {
+    return { subscribe: wrapResolverInMiddleware(field.subscribe, middleware) }
+  } else if (
+    isMiddlewareWithFragment(middleware) &&
+    !options.onlyDeclaredResolvers
+  ) {
+    return {
+      fragment: middleware.fragment,
+      resolve: wrapResolverInMiddleware(
+        defaultFieldResolver,
+        middleware.resolve,
+      ),
+    }
+  } else if (
+    isMiddlewareResolver(middleware) &&
+    !options.onlyDeclaredResolvers
+  ) {
+    return {
+      resolve: wrapResolverInMiddleware(defaultFieldResolver, middleware),
+    }
   } else {
     return { resolve: defaultFieldResolver }
   }
@@ -322,7 +339,10 @@ function addMiddlewareToSchema<TSource, TContext, TArgs>(
   schema: GraphQLSchema,
   options: IApplyOptions,
   middleware: IMiddleware<TSource, TContext, TArgs>,
-): GraphQLSchema {
+): {
+  schema: GraphQLSchema
+  fragmentReplacements: FragmentReplacement[]
+} {
   const validMiddleware = validateMiddleware(schema, middleware)
   const resolvers = generateResolverFromSchemaAndMiddleware(
     schema,
@@ -340,11 +360,7 @@ function addMiddlewareToSchema<TSource, TContext, TArgs>(
     },
   })
 
-  const schemaWithFragments = transformSchema(schema, [
-    new ReplaceFieldWithFragment(schema, fragmentReplacements),
-  ])
-
-  return schemaWithFragments
+  return { schema, fragmentReplacements }
 }
 
 /**
@@ -363,7 +379,7 @@ function applyMiddlewareWithOptions<TSource = any, TContext = any, TArgs = any>(
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
     | MiddlewareGenerator<TSource, TContext, TArgs>)[]
-): GraphQLSchema {
+): GraphQLSchemaWithFragmentReplacements {
   const normalisedMiddlewares = middlewares.map(middleware => {
     if (isMiddlewareGenerator(middleware)) {
       return middleware.generate(schema)
@@ -372,11 +388,37 @@ function applyMiddlewareWithOptions<TSource = any, TContext = any, TArgs = any>(
     }
   })
 
-  const schemaWithMiddleware = normalisedMiddlewares.reduceRight(
-    (currentSchema, middleware) =>
-      addMiddlewareToSchema(currentSchema, options, middleware),
-    schema,
+  const schemaWithMiddlewareAndFragmentReplacements = normalisedMiddlewares.reduceRight(
+    (
+      {
+        schema: currentSchema,
+        fragmentReplacements: currentFragmentReplacements,
+      },
+      middleware,
+    ) => {
+      const {
+        schema: newSchema,
+        fragmentReplacements: newFragmentReplacements,
+      } = addMiddlewareToSchema(currentSchema, options, middleware)
+
+      return {
+        schema: newSchema,
+        fragmentReplacements: [
+          ...currentFragmentReplacements,
+          ...newFragmentReplacements,
+        ],
+      }
+    },
+    { schema, fragmentReplacements: [] },
   )
+
+  const schemaWithMiddleware: GraphQLSchemaWithFragmentReplacements =
+    schemaWithMiddlewareAndFragmentReplacements.schema
+
+  schemaWithMiddleware.schema =
+    schemaWithMiddlewareAndFragmentReplacements.schema
+  schemaWithMiddleware.fragmentReplacements =
+    schemaWithMiddlewareAndFragmentReplacements.fragmentReplacements
 
   return schemaWithMiddleware
 }
@@ -396,7 +438,7 @@ export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
     | MiddlewareGenerator<TSource, TContext, TArgs>)[]
-): GraphQLSchema {
+): GraphQLSchemaWithFragmentReplacements {
   return applyMiddlewareWithOptions(
     schema,
     { onlyDeclaredResolvers: false },
@@ -421,7 +463,7 @@ export function applyMiddlewareToDeclaredResolvers<
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
     | MiddlewareGenerator<TSource, TContext, TArgs>)[]
-): GraphQLSchema {
+): GraphQLSchemaWithFragmentReplacements {
   return applyMiddlewareWithOptions(
     schema,
     { onlyDeclaredResolvers: true },

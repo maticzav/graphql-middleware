@@ -58,35 +58,23 @@ async function mockRemoteSchema() {
 
   return {
     uri,
+    typeDefs,
     data: { book },
   }
 }
 
 class MockBinding extends Binding {
-  constructor({ endpoint, typeDefs }) {
+  constructor({ endpoint, typeDefs, fragmentReplacements }) {
     const link = new HttpLink({ uri: endpoint, fetch })
-    const debugLink = new ApolloLink((operation, forward) => {
-      console.log(`Request to ${endpoint}:`)
-      console.log(`query:`)
-      console.log(print(operation.query).trim())
-      console.log(`operationName: ${operation.operationName}`)
-      console.log(`variables:`)
-      console.log(JSON.stringify(operation.variables, null, 2))
-
-      return forward(operation).map(data => {
-        console.log(`Response from ${endpoint}:`)
-        console.log(JSON.stringify(data.data, null, 2))
-        return data
-      })
-    })
 
     const schema = makeRemoteExecutableSchema({
-      link: debugLink.concat(link),
+      link,
       schema: typeDefs,
     })
 
     super({
       schema,
+      fragmentReplacements,
     })
   }
 }
@@ -1086,15 +1074,9 @@ test('Supports fragments - Field', async t => {
     }
   `
 
-  const remote = await mockRemoteSchema()
-  const binding = new MockBinding({
-    endpoint: remote.uri,
-    typeDefs,
-  })
-
   const resolvers = {
     Query: {
-      book: (parent, args, ctx, info) => binding.query.book({}, info),
+      book: (parent, args, ctx, info) => ctx.binding.query.book({}, info),
     },
   }
 
@@ -1107,19 +1089,33 @@ test('Supports fragments - Field', async t => {
       content: {
         fragment: `fragment BookSecret on Book { secret }`,
         resolve: async (resolve, parent, args, ctx, info) => {
-          console.log({ parent }, { remote })
+          t.is(parent.secret, 'hidden')
           return resolve()
         },
       },
     },
   }
 
-  const schemaWithMiddleware = applyMiddleware(schema, middlewareWithFragments)
+  const {
+    schema: schemaWithMiddleware,
+    fragmentReplacements,
+  } = applyMiddleware(schema, middlewareWithFragments)
+
+  // Remote
+
+  const remote = await mockRemoteSchema()
 
   // GraphQL
 
   const server = new GraphQLServer({
     schema: schemaWithMiddleware,
+    context: () => ({
+      binding: new MockBinding({
+        typeDefs: remote.typeDefs,
+        endpoint: remote.uri,
+        fragmentReplacements,
+      }),
+    }),
   })
 
   const http = await server.start({ port: 0 })
@@ -1141,8 +1137,6 @@ test('Supports fragments - Field', async t => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
   }).then(response => response.json())
-
-  console.log(res)
 
   t.deepEqual(res, {
     data: {
