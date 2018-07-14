@@ -61,12 +61,7 @@ export declare type IApplyOptions = {
   onlyDeclaredResolvers: boolean
 }
 
-export interface GraphQLSchemaWithFragmentReplacements {
-  schema: GraphQLSchema
-  fragmentReplacements: FragmentReplacement[]
-}
-
-export declare type GraphQLSchemaWithSchemaAndFragmentReplacements = GraphQLSchema & {
+export declare type GraphQLSchemaWithFragmentReplacements = GraphQLSchema & {
   schema?: GraphQLSchema
   fragmentReplacements?: FragmentReplacement[]
 }
