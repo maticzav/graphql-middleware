@@ -1,5 +1,7 @@
 import { GraphQLResolveInfo, GraphQLSchema } from 'graphql'
 
+// Middleware
+
 export declare type IMiddlewareResolver<
   TSource = any,
   TContext = any,
@@ -43,7 +45,16 @@ export interface IMiddlewareFieldMap<
   [key: string]: IMiddlewareFunction<TSource, TContext, TArgs>
 }
 
-export declare type IMiddlewareGenerator<
+// Middleware Generator
+
+export declare class IMiddlewareGenerator<TSource, TContext, TArgs> {
+  constructor(
+    generator: IMiddlewareGeneratorConstructor<TSource, TContext, TArgs>,
+  )
+  generate(schema: GraphQLSchema): IMiddleware<TSource, TContext, TArgs>
+}
+
+export declare type IMiddlewareGeneratorConstructor<
   TSource = any,
   TContext = any,
   TArgs = any
