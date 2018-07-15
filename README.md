@@ -14,6 +14,7 @@ GraphQL Middleware is a schema wrapper which allows you to manage additional fun
 * **Easiest way to handle GraphQL middleware:** An intuitive, yet familiar API that you will pick up in a second.
 * **Powerful:** Allows complete control over your resolvers (Before, After).
 * **Compatible:** Works with any GraphQL Schema.
+* **Remote:** Accepts `fragments` in resolvers to connect with remote schemas.
 
 ## Install
 
@@ -102,13 +103,30 @@ server.start(() => console.log('Server is running on localhost:4000'))
 A middleware is a resolver function that wraps another resolver function.
 
 ```ts
-type IMiddlewareFunction = (
+export declare type IMiddlewareResolver<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+> = (
   resolve: Function,
-  parent: any,
-  args: any,
-  context: any,
+  parent: TSource,
+  args: TArgs,
+  context: TContext,
   info: GraphQLResolveInfo,
 ) => Promise<any>
+
+export interface IMiddlewareWithFragment<
+  TSource = any,
+  TContext = any,
+  TArgs = any
+> {
+  fragment: string
+  resolve?: IMiddlewareResolver<TSource, TContext, TArgs>
+}
+
+export type IMiddlewareFunction<TSource = any, TContext = any, TArgs = any> =
+  | IMiddlewareWithFragment<TSource, TContext, TArgs>
+  | IMiddlewareResolver<TSource, TContext, TArgs>
 
 interface IMiddlewareTypeMap {
   [key: string]: IMiddlewareFunction | IMiddlewareFieldMap
@@ -127,7 +145,10 @@ function middleware(
 function applyMiddleware(
   schema: GraphQLSchema,
   ...middleware: (IMiddleware | MiddlewareGenerator)[]
-): GraphQLSchema
+): GraphQLSchema & {
+  schema?: GraphQLSchema
+  fragmentReplacements?: FragmentReplacement[]
+}
 
 /**
  * Applies middleware to a schema like `applyMiddleware` but only applies the
@@ -137,7 +158,10 @@ function applyMiddleware(
 function applyMiddlewareToDeclaredResolvers(
   schema: GraphQLSchema,
   ...middleware: (IMiddleware | MiddlewareGenerator)[]
-): GraphQLSchema
+): GraphQLSchema & {
+  schema?: GraphQLSchema
+  fragmentReplacements?: FragmentReplacement[]
+}
 ```
 
 ### Middleware Generator
@@ -148,7 +172,73 @@ In some cases, your middleware could depend on how your schema looks. In such si
 const schemaDependentMiddleware = middleware(schema => {
   return generateMiddlewareFromSchema(schema)
 })
+
+const schemaWithMiddleware = applyMiddleware(
+  schema,
+  schemaDependentMiddleware,
+  someOtherOptionalMiddleware,
+  etc,
+)
 ```
+
+### Middleware Fragments
+
+Fragments are a way of expressing what information your resolver requires to make sure it can execute correctly. They are primarily used in schema forwarding when the client might not always request all the fields your resolver demands. Because of that, we need to provide a way of telling what other information we need from a remote schema and that's why we use fragments.
+
+You can read more about fragments in the [`graphql-binding`](https://github.com/graphql-binding/graphql-binding) repository and on [`graphql-tools`](https://www.apollographql.com/docs/graphql-tools/schema-transforms.html#Other) documentation website.
+
+GraphQL Middleware provides a convenient way to quickly and easily add fragments to your middleware. This might turn out particularly useful when your middleware depends on resolver data.
+
+We've made fragments extremely flexible by using the general API which, if you have ever run over fragments, you probably already know.
+
+```ts
+// Schema wide - gets applied to every field.
+const middlewareWithFragments = {
+  fragment: `fragment NodeID on Node { id }`,
+  resolve: (resolve, { id }, args, ctx, info) => {
+    const foo = doSomethingWithID(id)
+    return resolve(foo)
+  },
+}
+
+// Type wide - gets applied to every field of certain type.
+const middlewareWithFragments = {
+  Query: {
+    fragment: `fragment NodeID on Node { id }`,
+    resolve: (resolve, { id }, args, ctx, info) => {
+      const foo = doSomethingWithID(id)
+      return resolve(foo)
+    },
+  },
+  Mutation: (resolve, parent, args, ctx, info) => {
+    return resolve(parent, customArgs)
+  },
+}
+
+// Field scoped - gets applied to particular field.
+const middlewareWithFragments = {
+  Query: {
+    node: {
+      fragment: `fragment NodeID on Node { id }`,
+      resolve: (resolve, { id }, args, ctx, info) => {
+        const foo = doSomethingWithID(id)
+        return resolve(foo)
+      },
+    },
+    books: (resolve, parent, args, ctx, info) => {
+      return resolve(parent, customArgs)
+    },
+  },
+}
+
+const { schema, fragmentReplacements } = applyMiddleware(
+  schema,
+  middlewareWithFragments,
+  someOtherMiddleware,
+)
+```
+
+> `graphql-middleware` automatically merges fragments from multiple middlewares if possible. Otherwise, validation function throws an error.
 
 ## GraphQL Middleware Use Cases
 

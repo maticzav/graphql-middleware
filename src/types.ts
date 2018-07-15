@@ -1,15 +1,11 @@
-import {
-  GraphQLFieldResolver,
-  GraphQLResolveInfo,
-  GraphQLSchema,
-} from 'graphql'
+import { GraphQLResolveInfo, GraphQLSchema } from 'graphql'
 
 export declare type IMiddlewareResolver<
   TSource = any,
   TContext = any,
   TArgs = any
 > = (
-  resolve: GraphQLFieldResolver<TSource, TContext, TArgs>,
+  resolve: Function,
   parent: TSource,
   args: TArgs,
   context: TContext,
