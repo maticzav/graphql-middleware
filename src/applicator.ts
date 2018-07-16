@@ -5,13 +5,14 @@ import {
   GraphQLSchema,
   defaultFieldResolver,
 } from 'graphql'
-import { IResolverOptions, IResolvers } from 'graphql-tools'
 import {
   IMiddlewareFunction,
   IMiddlewareResolver,
   IMiddlewareFieldMap,
   IApplyOptions,
   IMiddleware,
+  IResolvers,
+  IResolverOptions,
 } from './types'
 import {
   isMiddlewareFunction,

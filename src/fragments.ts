@@ -1,5 +1,4 @@
-import { FragmentReplacement } from './types'
-import { IResolvers } from 'graphql-tools/dist/Interfaces'
+import { FragmentReplacement, IResolvers } from './types'
 
 export function extractFragmentReplacements(
   resolvers: IResolvers,
@@ -15,6 +14,14 @@ export function extractFragmentReplacements(
           field: fieldName,
           fragment: fieldResolver.fragment,
         })
+      }
+      if (typeof fieldResolver === 'object' && fieldResolver.fragments) {
+        for (const fragment in fieldResolver.fragments) {
+          fragmentReplacements.push({
+            field: fieldName,
+            fragment,
+          })
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLInterfaceType } from 'graphql'
 import {
   IMiddlewareResolver,
-  IMiddlewareWithFragment,
+  IMiddlewareWithOptions,
   IMiddlewareFunction,
   IMiddlewareGenerator,
 } from './types'
@@ -20,7 +20,7 @@ export function isMiddlewareResolver<TSource, TContext, TArgs>(
 
 export function isMiddlewareWithFragment<TSource, TContext, TArgs>(
   obj: any,
-): obj is IMiddlewareWithFragment<TSource, TContext, TArgs> {
+): obj is IMiddlewareWithOptions<TSource, TContext, TArgs> {
   return (
     typeof obj.fragment === 'string' &&
     (obj.resolve === undefined || isMiddlewareResolver(obj.resolve))

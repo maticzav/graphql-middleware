@@ -115,17 +115,18 @@ export declare type IMiddlewareResolver<
   info: GraphQLResolveInfo,
 ) => Promise<any>
 
-export interface IMiddlewareWithFragment<
+export interface IMiddlewareWithOptions<
   TSource = any,
   TContext = any,
   TArgs = any
 > {
-  fragment: string
+  fragment?: IMiddlewareFragment
+  fragments?: IMiddlewareFragment[]
   resolve?: IMiddlewareResolver<TSource, TContext, TArgs>
 }
 
 export type IMiddlewareFunction<TSource = any, TContext = any, TArgs = any> =
-  | IMiddlewareWithFragment<TSource, TContext, TArgs>
+  | IMiddlewareWithOptions<TSource, TContext, TArgs>
   | IMiddlewareResolver<TSource, TContext, TArgs>
 
 interface IMiddlewareTypeMap {
@@ -210,8 +211,14 @@ const middlewareWithFragments = {
       return resolve(foo)
     },
   },
-  Mutation: (resolve, parent, args, ctx, info) => {
-    return resolve(parent, customArgs)
+  Mutation: {
+    fragments: [
+      `fragment NodeID on Node { id }`,
+      `fragment NodeSecret on Node { secret }`,
+    ],
+    resolve: (resolve, parent, args, ctx, info) => {
+      return resolve(parent, customArgs)
+    },
   },
 }
 

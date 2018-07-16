@@ -1,6 +1,14 @@
-import { GraphQLResolveInfo, GraphQLSchema } from 'graphql'
+import {
+  GraphQLResolveInfo,
+  GraphQLSchema,
+  GraphQLTypeResolver,
+  GraphQLIsTypeOfFn,
+} from 'graphql'
+import { MergeInfo } from 'graphql-tools'
 
-// Middleware
+// Middleware Tree
+
+export declare type IMiddlewareFragment = string
 
 export declare type IMiddlewareResolver<
   TSource = any,
@@ -14,17 +22,18 @@ export declare type IMiddlewareResolver<
   info: GraphQLResolveInfo,
 ) => Promise<any>
 
-export interface IMiddlewareWithFragment<
+export interface IMiddlewareWithOptions<
   TSource = any,
   TContext = any,
   TArgs = any
 > {
-  fragment: string
+  fragment?: IMiddlewareFragment
+  fragments?: IMiddlewareFragment[]
   resolve?: IMiddlewareResolver<TSource, TContext, TArgs>
 }
 
 export type IMiddlewareFunction<TSource = any, TContext = any, TArgs = any> =
-  | IMiddlewareWithFragment<TSource, TContext, TArgs>
+  | IMiddlewareWithOptions<TSource, TContext, TArgs>
   | IMiddlewareResolver<TSource, TContext, TArgs>
 
 export interface IMiddlewareTypeMap<
@@ -64,6 +73,8 @@ export declare type IMiddleware<TSource = any, TContext = any, TArgs = any> =
   | IMiddlewareFunction<TSource, TContext, TArgs>
   | IMiddlewareTypeMap<TSource, TContext, TArgs>
 
+// Middleware
+
 export declare type IApplyOptions = {
   onlyDeclaredResolvers: boolean
 }
@@ -73,7 +84,34 @@ export declare type GraphQLSchemaWithFragmentReplacements = GraphQLSchema & {
   fragmentReplacements?: FragmentReplacement[]
 }
 
+// Fragments (inspired by graphql-tools)
+
 export interface FragmentReplacement {
   field: string
   fragment: string
 }
+
+export interface IResolvers<TSource = any, TContext = any> {
+  [key: string]: IResolverObject<TSource, TContext>
+}
+
+export interface IResolverObject<TSource = any, TContext = any> {
+  [key: string]:
+    | IFieldResolver<TSource, TContext>
+    | IResolverOptions<TSource, TContext>
+}
+
+export interface IResolverOptions<TSource = any, TContext = any> {
+  fragment?: string
+  resolve?: IFieldResolver<TSource, TContext>
+  subscribe?: IFieldResolver<TSource, TContext>
+  __resolveType?: GraphQLTypeResolver<TSource, TContext>
+  __isTypeOf?: GraphQLIsTypeOfFn<TSource, TContext>
+}
+
+export type IFieldResolver<TSource, TContext> = (
+  source: TSource,
+  args: { [argument: string]: any },
+  context: TContext,
+  info: GraphQLResolveInfo & { mergeInfo: MergeInfo },
+) => any
