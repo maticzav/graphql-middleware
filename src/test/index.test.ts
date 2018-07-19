@@ -1,83 +1,15 @@
 import test from 'ava'
-import fetch from 'node-fetch'
-import { graphql, subscribe, parse, print } from 'graphql'
-import { makeExecutableSchema, makeRemoteExecutableSchema } from 'graphql-tools'
-import { GraphQLServer } from 'graphql-yoga'
-import { Binding } from 'graphql-binding'
-import { ApolloLink } from 'apollo-link'
-import { HttpLink } from 'apollo-link-http'
+import { makeExecutableSchema } from 'graphql-tools'
+import { graphql, subscribe, parse } from 'graphql'
 import { $$asyncIterator } from 'iterall'
+import { ExecutionResult } from 'apollo-link'
 
 import {
   applyMiddleware,
   middleware,
   applyMiddlewareToDeclaredResolvers,
   MiddlewareError,
-} from './dist'
-
-// Helpers
-
-async function mockRemoteSchema() {
-  const randomId = () =>
-    Math.random()
-      .toString(36)
-      .substr(2, 5)
-
-  const typeDefs = `
-    type Query {
-      book: Book!
-    }
-
-    type Book {
-      id: ID!
-      name: String!
-      content: String!
-      secret: String!
-    }
-  `
-
-  const book = {
-    __typename: 'Book',
-    id: randomId(),
-    name: 'awesome',
-    content: 'content',
-    secret: 'hidden',
-  }
-
-  const resolvers = {
-    Query: {
-      book: () => book,
-    },
-  }
-
-  const server = new GraphQLServer({ typeDefs, resolvers })
-
-  const http = await server.start({ port: 0 })
-  const { port } = http.address()
-  const uri = `http://localhost:${port}/`
-
-  return {
-    uri,
-    typeDefs,
-    data: { book },
-  }
-}
-
-class MockBinding extends Binding {
-  constructor({ endpoint, typeDefs, fragmentReplacements }) {
-    const link = new HttpLink({ uri: endpoint, fetch })
-
-    const schema = makeRemoteExecutableSchema({
-      link,
-      schema: typeDefs,
-    })
-
-    super({
-      schema,
-      fragmentReplacements,
-    })
-  }
-}
+} from '../'
 
 // Setup ---------------------------------------------------------------------
 
@@ -143,8 +75,12 @@ const resolvers = {
       subscribe: async (parent, { arg }, ctx, info) => {
         const iterator = {
           next: () => Promise.resolve({ done: false, value: { sub: arg } }),
-          return: () => {},
-          throw: () => {},
+          return: () => {
+            return
+          },
+          throw: () => {
+            return
+          },
           [$$asyncIterator]: () => iterator,
         }
         return iterator
@@ -242,18 +178,16 @@ const emptyStringMiddleware = async (resolve, parent, args, context, info) => {
 // Middleware Validation
 
 const middlewareWithUndefinedType = {
-  Wrong: () => ({}),
+  Wrong: resolve => {
+    return resolve()
+  },
 }
 
 const middlewareWithUndefinedField = {
   Query: {
-    wrong: () => ({}),
-  },
-}
-
-const middlewareWithObjectField = {
-  Query: {
-    before: false,
+    wrong: resolve => {
+      return resolve()
+    },
   },
 }
 
@@ -347,7 +281,7 @@ test('Field middleware - Subscription', async t => {
     }
   `
   const iterator = await subscribe(schemaWithMiddleware, parse(query))
-  const res = await iterator.next()
+  const res = await (iterator as AsyncIterator<ExecutionResult>).next()
 
   t.deepEqual(res, {
     done: false,
@@ -483,7 +417,7 @@ test('Type middleware - Subscription', async t => {
     }
   `
   const iterator = await subscribe(schemaWithMiddleware, parse(query))
-  const res = await iterator.next()
+  const res = await (iterator as AsyncIterator<ExecutionResult>).next()
 
   t.deepEqual(res, {
     done: false,
@@ -620,7 +554,7 @@ test('Schema middleware - Subscription', async t => {
     }
   `
   const iterator = await subscribe(schemaWithMiddleware, parse(query))
-  const res = await iterator.next()
+  const res = await (iterator as AsyncIterator<ExecutionResult>).next()
 
   t.deepEqual(res, {
     done: false,
@@ -866,7 +800,9 @@ test('Schema, Type, Field - Overlapping', async t => {
   const res5 = await graphql(schemaWithMiddleware5, query)
   const res6 = await graphql(schemaWithMiddleware6, query)
 
-  const res = [res1, res2, res3, res4, res5, res6].map(JSON.stringify)
+  const res = [res1, res2, res3, res4, res5, res6].map(obj =>
+    JSON.stringify(obj),
+  )
 
   t.true(res.every(r => r === res[0]))
 })
@@ -899,21 +835,6 @@ test('Middleware Error - Schema undefined field', async t => {
     res,
     new MiddlewareError(
       `Field Query.wrong exists in middleware but is missing in Schema.`,
-    ),
-  )
-})
-
-test('Middleware Error - Middleware field is not a function.', async t => {
-  const schema = getSchema()
-
-  const res = t.throws(() => {
-    applyMiddleware(schema, middlewareWithObjectField)
-  })
-
-  t.deepEqual(
-    res,
-    new MiddlewareError(
-      `Expected Query.before to be a function but found boolean`,
     ),
   )
 })
@@ -1059,9 +980,7 @@ test('Argumnets forwarded correctly', async t => {
 
 // Fragments
 
-test('Supports fragments - Field', async t => {
-  t.plan(2)
-
+test('Extracts fragments correctly', async t => {
   const typeDefs = `
     type Query {
       book: Book!
@@ -1076,7 +995,24 @@ test('Supports fragments - Field', async t => {
 
   const resolvers = {
     Query: {
-      book: (parent, args, ctx, info) => ctx.binding.query.book({}, info),
+      book(parent, args, ctx, info) {
+        return {
+          id: 'id',
+          name: 'name',
+          content: 'content',
+        }
+      },
+    },
+    Book: {
+      id(parent) {
+        return parent.id
+      },
+      name(parent) {
+        return parent.name
+      },
+      content(parent) {
+        return parent.content
+      },
     },
   }
 
@@ -1084,67 +1020,48 @@ test('Supports fragments - Field', async t => {
 
   // Middleware
 
-  const middlewareWithFragments = {
+  const fieldMiddlewareWithFragment = {
     Book: {
       content: {
         fragment: `fragment BookSecret on Book { secret }`,
         resolve: async (resolve, parent, args, ctx, info) => {
-          t.is(parent.secret, 'hidden')
           return resolve()
         },
       },
     },
   }
 
-  const {
-    schema: schemaWithMiddleware,
-    fragmentReplacements,
-  } = applyMiddleware(schema, middlewareWithFragments)
-
-  // Remote
-
-  const remote = await mockRemoteSchema()
-
-  // GraphQL
-
-  const server = new GraphQLServer({
-    schema: schemaWithMiddleware,
-    context: () => ({
-      binding: new MockBinding({
-        typeDefs: remote.typeDefs,
-        endpoint: remote.uri,
-        fragmentReplacements,
-      }),
-    }),
-  })
-
-  const http = await server.start({ port: 0 })
-  const { port } = http.address()
-  const endpoint = `http://localhost:${port}/`
-
-  const query = `
-    query {
-      book {
-        id
-        name
-        content
-      }
-    }
-  `
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  }).then(response => response.json())
-
-  t.deepEqual(res, {
-    data: {
-      book: {
-        id: remote.data.book.id,
-        name: remote.data.book.name,
-        content: remote.data.book.content,
+  const typeMiddlewareWithFragment = {
+    Book: {
+      fragment: `fragment BookID on Book { id }`,
+      resolve: async (resolve, parent, args, ctx, info) => {
+        return resolve()
       },
     },
-  })
+  }
+
+  const { fragmentReplacements } = applyMiddlewareToDeclaredResolvers(
+    schema,
+    fieldMiddlewareWithFragment,
+    typeMiddlewareWithFragment,
+  )
+
+  t.deepEqual(fragmentReplacements, [
+    {
+      field: 'id',
+      fragment: 'fragment BookID on Book { id }',
+    },
+    {
+      field: 'name',
+      fragment: 'fragment BookID on Book { id }',
+    },
+    {
+      field: 'content',
+      fragment: 'fragment BookID on Book { id }',
+    },
+    {
+      field: 'content',
+      fragment: 'fragment BookSecret on Book { secret }',
+    },
+  ])
 })

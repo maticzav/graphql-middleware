@@ -4,5 +4,6 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
     "**/node_modules/**": true
-  }
+  },
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }

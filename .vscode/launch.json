@@ -15,6 +15,16 @@
       "program": "${workspaceRoot}/node_modules/ava/profile.js",
       "args": ["--serial", "${file}"],
       "skipFiles": ["<node_internals>/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Current TS File",
+      "args": ["${relativeFile}"],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

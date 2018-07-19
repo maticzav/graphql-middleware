@@ -1,3 +1,6 @@
 module.exports = {
-  files: ['tests/*.test.js'],
+  compileEnhancements: false,
+  extensions: ['ts'],
+  require: ['ts-node/register'],
+  files: ['src/test'],
 }

@@ -91,10 +91,10 @@ function applyMiddlewareToType<TSource, TContext, TArgs>(
 
   if (isMiddlewareFunction(middleware)) {
     const resolvers = Object.keys(fieldMap).reduce(
-      (resolvers, field) => ({
+      (resolvers, fieldName) => ({
         ...resolvers,
-        [field]: applyMiddlewareToField(
-          fieldMap[field],
+        [fieldName]: applyMiddlewareToField(
+          fieldMap[fieldName],
           options,
           middleware as IMiddlewareFunction<TSource, TContext, TArgs>,
         ),
