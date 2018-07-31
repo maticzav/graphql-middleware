@@ -22,8 +22,8 @@ export function isMiddlewareWithFragment<TSource, TContext, TArgs>(
   obj: any,
 ): obj is IMiddlewareWithOptions<TSource, TContext, TArgs> {
   return (
-    typeof obj.fragment === 'string' &&
-    (obj.resolve === undefined || isMiddlewareResolver(obj.resolve))
+    (typeof obj.fragment === 'string' || typeof obj.fragments === 'object') &&
+    isMiddlewareResolver(obj.resolve)
   )
 }
 

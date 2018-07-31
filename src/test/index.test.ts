@@ -990,6 +990,7 @@ test('Extracts fragments correctly', async t => {
       id: ID!
       name: String!
       content: String!
+      author: String!
     }
   `
 
@@ -1000,6 +1001,7 @@ test('Extracts fragments correctly', async t => {
           id: 'id',
           name: 'name',
           content: 'content',
+          author: 'author',
         }
       },
     },
@@ -1012,6 +1014,9 @@ test('Extracts fragments correctly', async t => {
       },
       content(parent) {
         return parent.content
+      },
+      author(parent) {
+        return parent.author
       },
     },
   }
@@ -1031,6 +1036,20 @@ test('Extracts fragments correctly', async t => {
     },
   }
 
+  const fieldMiddlewareWithFragments = {
+    Book: {
+      author: {
+        fragments: [
+          `fragment BookX on Book { x }`,
+          `fragment BookY on Book { y }`,
+        ],
+        resolve: async (resolve, parent, args, ctx, info) => {
+          return resolve()
+        },
+      },
+    },
+  }
+
   const typeMiddlewareWithFragment = {
     Book: {
       fragment: `fragment BookID on Book { id }`,
@@ -1043,6 +1062,7 @@ test('Extracts fragments correctly', async t => {
   const { fragmentReplacements } = applyMiddlewareToDeclaredResolvers(
     schema,
     fieldMiddlewareWithFragment,
+    fieldMiddlewareWithFragments,
     typeMiddlewareWithFragment,
   )
 
@@ -1058,6 +1078,18 @@ test('Extracts fragments correctly', async t => {
     {
       field: 'content',
       fragment: 'fragment BookID on Book { id }',
+    },
+    {
+      field: 'author',
+      fragment: 'fragment BookID on Book { id }',
+    },
+    {
+      field: 'author',
+      fragment: 'fragment BookX on Book { x }',
+    },
+    {
+      field: 'author',
+      fragment: 'fragment BookY on Book { y }',
     },
     {
       field: 'content',

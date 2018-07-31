@@ -103,6 +103,7 @@ export interface IResolverObject<TSource = any, TContext = any> {
 
 export interface IResolverOptions<TSource = any, TContext = any> {
   fragment?: string
+  fragments?: string[]
   resolve?: IFieldResolver<TSource, TContext>
   subscribe?: IFieldResolver<TSource, TContext>
   __resolveType?: GraphQLTypeResolver<TSource, TContext>

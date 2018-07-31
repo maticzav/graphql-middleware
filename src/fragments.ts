@@ -16,10 +16,10 @@ export function extractFragmentReplacements(
         })
       }
       if (typeof fieldResolver === 'object' && fieldResolver.fragments) {
-        for (const fragment in fieldResolver.fragments) {
+        for (const fragmentKey in fieldResolver.fragments) {
           fragmentReplacements.push({
             field: fieldName,
-            fragment,
+            fragment: fieldResolver.fragments[fragmentKey],
           })
         }
       }
