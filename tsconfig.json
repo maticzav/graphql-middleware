@@ -4,11 +4,10 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "sourceMap": true,
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "lib": [
-      "esnext", "dom"
-    ]
+    "rootDir": "src",
+    "outDir": "dist",
+    "lib": ["esnext", "dom"]
   },
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,3 +1,9 @@
 {
-  "eslint.enable": false
+  "eslint.enable": false,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true
+  },
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }
