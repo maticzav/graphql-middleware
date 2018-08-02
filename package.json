@@ -29,16 +29,15 @@
     "graphql": "^0.13.2"
   },
   "scripts": {
-    "prepublish": "npm run test",
+    "prepublishOnly": "npm run test",
     "build": "rm -rf dist && tsc -d",
-    "lint": "tslint --project tsconfig.json {src}/**/*.ts && prettier-check --ignore-path .gitignore {src,.}/{*.ts,*.js}",
+    "lint":
+      "tslint --project tsconfig.json {src}/**/*.ts && prettier-check --ignore-path .gitignore {src,.}/{*.ts,*.js}",
     "test-ava": "ava --verbose",
     "test": "npm run lint && npm run build && npm run test-ava",
     "semantic-release": "semantic-release"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "release": {
     "branch": "master"
   },
