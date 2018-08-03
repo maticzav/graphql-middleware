@@ -4,6 +4,7 @@ export {
   IMiddlewareFieldMap,
   IMiddlewareFunction,
   IMiddlewareGenerator,
+  IMiddlewareGeneratorConstructor,
 } from './types'
 export {
   applyMiddleware,
