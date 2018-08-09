@@ -1,4 +1,5 @@
 export {
+  FragmentReplacement,
   IMiddleware,
   IMiddlewareTypeMap,
   IMiddlewareFieldMap,
