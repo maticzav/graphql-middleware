@@ -22,7 +22,63 @@ GraphQL Middleware is a schema wrapper which allows you to manage additional fun
 yarn add graphql-middleware
 ```
 
-## Usage
+## How does it work
+
+GraphQL Middleware lets you run arbitrary code before or after a resolver is invoked. It improves your code structure by enabling code reuse and a clear separation of concerns.
+
+```ts
+const { GraphQLServer } = require('graphql-yoga')
+
+const typeDefs = `
+type Query {
+  hello(name: String): String
+  bye(name: String): String
+}
+`
+const resolvers = {
+  Query: {
+    hello: (root, args, context, info) => {
+      console.log(`3. resolver: hello`)
+      return `Hello ${args.name ? args.name : 'world'}!`
+    },
+    bye: (root, args, context, info) => {
+      console.log(`3. resolver: bye`)
+      return `Bye ${args.name ? args.name : 'world'}!`
+    },
+  },
+}
+
+const logInput = async (resolve, root, args, context, info) => {
+  console.log(`1. logInput: ${JSON.stringify(args)}`)
+  const result = await resolve(root, args, context, info)
+  console.log(`5. logInput`)
+  return result
+}
+
+const logResult = async (resolve, root, args, context, info) => {
+  console.log(`2. logResult`)
+  const result = await resolve(root, args, context, info)
+  console.log(`4. logResult: ${JSON.stringify(result)}`)
+  return result
+}
+
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers,
+  middlewares: [logInput, logResult],
+})
+server.start(() => console.log('Server is running on http://localhost:4000'))
+```
+
+Execution of the middleware and resolver functions follow the "onion"-principle, meaning each middleware function adds a layer before and after the actual resolver invocation.
+
+<p align="center"><img src="media/idea.png" /></p>
+
+> The order of the middleware functions in the middlewares array is important. The first resolver is the "most-outer" layer, so it gets executed first and last. The second resolver is the "second-outer" layer, so it gets executed second and second to last... And so forth.
+
+> You can read more about GraphQL Middleware in this fantastic [article](https://www.prisma.io/blog/graphql-middleware-zie3iphithxy/).
+
+## Standalone usage
 
 ```ts
 import { applyMiddleware } from 'graphql-middleware'
