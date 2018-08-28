@@ -26,7 +26,6 @@ const typeDefs = `
     afterNothing: String!
     null: String
     nested: Nothing!
-    withObjectTypeConfig: String!
   }
   
   type Subscription {
@@ -65,10 +64,6 @@ const resolvers = {
     afterNothing: () => 'after',
     null: () => null,
     nested: () => ({}),
-    withObjectTypeConfig: {
-      extraProperties: 'extra properties are passed down',
-      resolve: () => 'withObjectTypeConfig'
-    }
   },
   Subscription: {
     sub: {
@@ -117,9 +112,6 @@ const fieldMiddleware = {
     after: async (resolve, parent, args, context, info) => {
       const res = resolve()
       return 'changed'
-    },
-    withObjectTypeConfig: async (resolve, parent, args, context, info) => {
-      return info.schema.getMutationType().getFields()[info.fieldName].extraProperties || 'fail'
     },
   },
   Subscription: {
@@ -222,7 +214,6 @@ test('Field middleware - Mutation', async t => {
       afterNothing
       null
       nested { nothing }
-      withObjectTypeConfig
     }
   `
   const res = await graphql(schemaWithMiddleware, query)
@@ -235,7 +226,6 @@ test('Field middleware - Mutation', async t => {
       afterNothing: 'after',
       null: null,
       nested: { nothing: 'nothing' },
-      withObjectTypeConfig: 'extra properties are passed down',
     },
   })
 })
