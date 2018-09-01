@@ -45,25 +45,34 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
 ): IResolverOptions {
   if (isMiddlewareWithFragment(middleware) && field.resolve) {
     return {
+      ...field,
       fragment: middleware.fragment,
       fragments: middleware.fragments,
       resolve: wrapResolverInMiddleware(field.resolve, middleware.resolve),
     }
   } else if (isMiddlewareWithFragment(middleware) && field.subscribe) {
     return {
+      ...field,
       fragment: middleware.fragment,
       fragments: middleware.fragments,
       subscribe: wrapResolverInMiddleware(field.subscribe, middleware.resolve),
     }
   } else if (isMiddlewareResolver(middleware) && field.resolve) {
-    return { resolve: wrapResolverInMiddleware(field.resolve, middleware) }
+    return {
+      ...field,
+      resolve: wrapResolverInMiddleware(field.resolve, middleware),
+    }
   } else if (isMiddlewareResolver(middleware) && field.subscribe) {
-    return { subscribe: wrapResolverInMiddleware(field.subscribe, middleware) }
+    return {
+      ...field,
+      subscribe: wrapResolverInMiddleware(field.subscribe, middleware),
+    }
   } else if (
     isMiddlewareWithFragment(middleware) &&
     !options.onlyDeclaredResolvers
   ) {
     return {
+      ...field,
       fragment: middleware.fragment,
       fragments: middleware.fragments,
       resolve: wrapResolverInMiddleware(
@@ -76,10 +85,11 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
     !options.onlyDeclaredResolvers
   ) {
     return {
+      ...field,
       resolve: wrapResolverInMiddleware(defaultFieldResolver, middleware),
     }
   } else {
-    return { resolve: defaultFieldResolver }
+    return { ...field, resolve: defaultFieldResolver }
   }
 }
 

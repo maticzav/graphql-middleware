@@ -1,4 +1,5 @@
 import {
+  GraphQLField,
   GraphQLResolveInfo,
   GraphQLSchema,
   GraphQLTypeResolver,
@@ -101,7 +102,8 @@ export interface IResolverObject<TSource = any, TContext = any> {
     | IResolverOptions<TSource, TContext>
 }
 
-export interface IResolverOptions<TSource = any, TContext = any> {
+export interface IResolverOptions<TSource = any, TContext = any>
+  extends GraphQLField<any, any, any> {
   fragment?: string
   fragments?: string[]
   resolve?: IFieldResolver<TSource, TContext>
