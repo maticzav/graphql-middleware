@@ -5,7 +5,7 @@
 [![CircleCI](https://circleci.com/gh/prisma/graphql-middleware.svg?style=shield)](https://circleci.com/gh/prisma/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
 
-All in one solution to manage middleware in your GraphQL projects.
+Split up your GraphQL resolvers in middleware functions.
 
 ## Overview
 
