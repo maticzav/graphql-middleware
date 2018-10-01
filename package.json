@@ -12,7 +12,7 @@
     "graphql-tools": "^3.0.5"
   },
   "devDependencies": {
-    "@types/graphql": "^0.12.4",
+    "@types/graphql": "^0.12.7",
     "ava": "^0.25.0",
     "graphql": "^0.13.2",
     "prettier": "^1.11.1",
