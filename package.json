@@ -23,7 +23,7 @@
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.10.0",
     "tslint-config-standard": "^7.1.0",
-    "typescript": "^2.7.1"
+    "typescript": "^2.9.2"
   },
   "peerDependencies": {
     "graphql": "^0.13.2"
