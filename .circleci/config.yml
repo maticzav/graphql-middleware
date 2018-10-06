@@ -1,14 +1,22 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/app
     docker:
-      - image: 'circleci/node:latest'
+      - image: circleci/node:10
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v0-user-cache-{{ .Branch }}
+            - v0-user-cache
       - run:
-          name: install
-          command: |
-            sudo npm install -g yarn
-            yarn install
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - save_cache:
+          key: v0-user-cache-{{ .Branch }}
+          paths:
+            - ~/.cache
       - run: yarn test
       - run: yarn semantic-release
+
