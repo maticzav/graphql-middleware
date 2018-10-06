@@ -147,12 +147,13 @@ const server = new GraphQLServer({
 server.start(() => console.log('Server is running on localhost:4000'))
 ```
 
-## Awesome Plugins [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+## Awesome Middlewares [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
 * [graphql-middleware-apollo-upload-server](http://github.com/homeroom-live/graphql-middleware-apollo-upload-server) - Uploading files is hard, that's why this package manages it for you!
 * [graphql-shield](https://github.com/maticzav/graphql-shield) - Permissions as another layer of abstraction.
 * [graphql-middleware-sentry](https://github.com/maticzav/graphql-middleware-sentry) - Report your server errors to Sentry.
 * [graphql-middleware-forward-binding](https://github.com/maticzav/graphql-middleware-forward-binding) - GraphQL Binding forwardTo plugin for GraphQL Middleware.
+* [graphql-yup-middleware](https://github.com/JCMais/graphql-yup-middleware) - Use yup to validate mutation arguments
 
 ## API
 
