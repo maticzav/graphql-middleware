@@ -81,10 +81,7 @@ test('Applies schema middleware with fragments correctly.', async t => {
     { field: 'name', fragment: 'schema-fragment' },
     { field: 'description', fragment: 'schema-fragment' },
     { field: 'locations', fragment: 'schema-fragment' },
-    { field: 'args', fragment: 'schema-fragment' },
-    { field: 'onOperation', fragment: 'schema-fragment' },
-    { field: 'onFragment', fragment: 'schema-fragment' },
-    { field: 'onField', fragment: 'schema-fragment' },
+    { field: 'args', fragment: 'schema-fragment' }
   ])
 })
 
@@ -305,10 +302,7 @@ test('Applies schema middleware with fragments correctly on declared resolvers.'
     { field: 'name', fragment: 'schema-fragment' },
     { field: 'description', fragment: 'schema-fragment' },
     { field: 'locations', fragment: 'schema-fragment' },
-    { field: 'args', fragment: 'schema-fragment' },
-    { field: 'onOperation', fragment: 'schema-fragment' },
-    { field: 'onFragment', fragment: 'schema-fragment' },
-    { field: 'onField', fragment: 'schema-fragment' },
+    { field: 'args', fragment: 'schema-fragment' }
   ])
 })
 
