@@ -42,13 +42,13 @@
   "release": {
     "branch": "master"
   },
-  "homepage": "https://github.com/graphcool/graphql-middleware",
+  "homepage": "https://github.com/prisma/graphql-middleware",
   "repository": {
     "type": "git",
-    "url": "https://github.com/graphcool/graphql-middleware.git"
+    "url": "https://github.com/prisma/graphql-middleware.git"
   },
   "bugs": {
-    "url": "https://github.com/graphcool/graphql-middleware/issues"
+    "url": "https://github.com/prisma/graphql-middleware/issues"
   },
   "keywords": [
     "graphql",
