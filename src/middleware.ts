@@ -1,16 +1,31 @@
 import { GraphQLSchema } from 'graphql'
-import { addResolveFunctionsToSchema } from 'graphql-tools'
+// import { addResolveFunctionsToSchema } from 'graphql-tools'
 import {
   IApplyOptions,
   IMiddleware,
   FragmentReplacement,
   IMiddlewareGenerator,
   GraphQLSchemaWithFragmentReplacements,
+  IResolvers,
 } from './types'
 import { generateResolverFromSchemaAndMiddleware } from './applicator'
 import { validateMiddleware } from './validation'
 import { extractFragmentReplacements } from './fragments'
 import { isMiddlewareGenerator } from './utils'
+
+function addResolveFunctionsToSchema(
+  schema: GraphQLSchema,
+  resolvers: IResolvers,
+): GraphQLSchema {
+  let schemaWithMiddleware: GraphQLSchema
+
+  for (const typeName in schema) {
+    const type = schema[typeName]
+    schemaWithMiddleware[typeName] = type
+  }
+
+  return schemaWithMiddleware
+}
 
 /**
  *
@@ -39,15 +54,12 @@ export function addMiddlewareToSchema<TSource, TContext, TArgs>(
 
   const fragmentReplacements = extractFragmentReplacements(resolvers)
 
-  addResolveFunctionsToSchema({
-    schema,
-    resolvers,
-    resolverValidationOptions: {
-      requireResolversForResolveType: false,
-    },
-  })
+  const schemaWithMiddleware = addResolveFunctionsToSchema(schema, resolvers)
 
-  return { schema, fragmentReplacements }
+  return {
+    schema: schemaWithMiddleware,
+    fragmentReplacements,
+  }
 }
 
 /**
