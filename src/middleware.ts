@@ -1,4 +1,4 @@
-import { GraphQLSchema } from 'graphql'
+import { GraphQLSchema, GraphQLNamedType } from 'graphql'
 // import { addResolveFunctionsToSchema } from 'graphql-tools'
 import {
   IApplyOptions,
@@ -7,24 +7,61 @@ import {
   IMiddlewareGenerator,
   GraphQLSchemaWithFragmentReplacements,
   IResolvers,
+  IResolverObject,
 } from './types'
 import { generateResolverFromSchemaAndMiddleware } from './applicator'
 import { validateMiddleware } from './validation'
 import { extractFragmentReplacements } from './fragments'
 import { isMiddlewareGenerator } from './utils'
 
+function addResolveFunctionsToNamedType<T = GraphQLNamedType>(
+  type: T,
+  resolvers: IResolverObject,
+): T {
+  return new GraphQLTy()
+}
+
+function addResolveFunctionsToMaybeNamedType<T = GraphQLNamedType>(
+  type: T,
+  resolvers: IResolverObject,
+): T {
+  return type ? addResolveFunctionsToNamedType(type, resolvers) : null
+}
+
 function addResolveFunctionsToSchema(
   schema: GraphQLSchema,
   resolvers: IResolvers,
 ): GraphQLSchema {
-  let schemaWithMiddleware: GraphQLSchema
-
-  for (const typeName in schema) {
-    const type = schema[typeName]
-    schemaWithMiddleware[typeName] = type
+  const operationTypes = {
+    query: addResolveFunctionsToMaybeNamedType(
+      schema.getQueryType(),
+      resolvers['Query'],
+    ),
+    mutation: addResolveFunctionsToMaybeNamedType(
+      schema.getMutationType(),
+      resolvers['Mutation'],
+    ),
+    subscription: addResolveFunctionsToMaybeNamedType(
+      schema.getSubscriptionType(),
+      resolvers['Subscription'],
+    ),
   }
 
-  return schemaWithMiddleware
+  const types = Object.values(schema.getTypeMap()).map(type => {
+    if (resolvers[type.name]) {
+      return addResolveFunctionsToNamedType(type, resolvers[type.name])
+    } else {
+      return type
+    }
+  })
+
+  return new GraphQLSchema({
+    ...operationTypes,
+    types,
+    directives: [...schema.getDirectives()],
+    astNode: schema.astNode,
+    extensionASTNodes: schema.extensionASTNodes,
+  })
 }
 
 /**
