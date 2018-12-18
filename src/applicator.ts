@@ -4,6 +4,7 @@ import {
   GraphQLField,
   GraphQLSchema,
   defaultFieldResolver,
+  isIntrospectionType,
 } from 'graphql'
 import {
   IMiddlewareFunction,
@@ -141,7 +142,11 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
   const typeMap = schema.getTypeMap()
 
   const resolvers = Object.keys(typeMap)
-    .filter(type => isGraphQLObjectType(typeMap[type]))
+    .filter(
+      type =>
+        isGraphQLObjectType(typeMap[type]) &&
+        !isIntrospectionType(typeMap[type]),
+    )
     .reduce(
       (resolvers, type) => ({
         ...resolvers,

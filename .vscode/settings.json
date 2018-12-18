@@ -5,5 +5,11 @@
     "**/.git/subtree-cache/**": true,
     "**/node_modules/**": true
   },
-  "typescript.tsdk": "./node_modules/typescript/lib"
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "plaintext"
+  ]
 }

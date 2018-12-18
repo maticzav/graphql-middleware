@@ -11,10 +11,12 @@ Split up your GraphQL resolvers in middleware functions.
 
 GraphQL Middleware is a schema wrapper which allows you to manage additional functionality across multiple resolvers efficiently.
 
-* **Easiest way to handle GraphQL middleware:** An intuitive, yet familiar API that you will pick up in a second.
-* **Powerful:** Allows complete control over your resolvers (Before, After).
-* **Compatible:** Works with any GraphQL Schema.
-* **Remote:** Accepts `fragments` in resolvers to connect with remote schemas.
+- **Easiest way to handle GraphQL middleware:** An intuitive, yet familiar API that you will pick up in a second.
+- **Powerful:** Allows complete control over your resolvers (Before, After).
+- **Compatible:** Works with any GraphQL Schema.
+- **Remote:** Accepts `fragments` in resolvers to connect with remote schemas.
+
+> **NOTE:** As of 3.0.0 `graphql-middleware` no longer wraps introspection queries.
 
 ## Install
 
@@ -149,11 +151,11 @@ server.start(() => console.log('Server is running on localhost:4000'))
 
 ## Awesome Middlewares [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
-* [graphql-middleware-apollo-upload-server](http://github.com/homeroom-live/graphql-middleware-apollo-upload-server) - Uploading files is hard, that's why this package manages it for you!
-* [graphql-shield](https://github.com/maticzav/graphql-shield) - Permissions as another layer of abstraction.
-* [graphql-middleware-sentry](https://github.com/maticzav/graphql-middleware-sentry) - Report your server errors to Sentry.
-* [graphql-middleware-forward-binding](https://github.com/maticzav/graphql-middleware-forward-binding) - GraphQL Binding forwardTo plugin for GraphQL Middleware.
-* [graphql-yup-middleware](https://github.com/JCMais/graphql-yup-middleware) - Use yup to validate mutation arguments
+- [graphql-middleware-apollo-upload-server](http://github.com/homeroom-live/graphql-middleware-apollo-upload-server) - Uploading files is hard, that's why this package manages it for you!
+- [graphql-shield](https://github.com/maticzav/graphql-shield) - Permissions as another layer of abstraction.
+- [graphql-middleware-sentry](https://github.com/maticzav/graphql-middleware-sentry) - Report your server errors to Sentry.
+- [graphql-middleware-forward-binding](https://github.com/maticzav/graphql-middleware-forward-binding) - GraphQL Binding forwardTo plugin for GraphQL Middleware.
+- [graphql-yup-middleware](https://github.com/JCMais/graphql-yup-middleware) - Use yup to validate mutation arguments
 
 ## API
 
@@ -306,13 +308,13 @@ const { schema, fragmentReplacements } = applyMiddleware(
 
 ## GraphQL Middleware Use Cases
 
-* Logging
-* Metrics
-* Input sanitisation
-* Performance measurement
-* Authorization
-* Caching
-* Tracing
+- Logging
+- Metrics
+- Input sanitisation
+- Performance measurement
+- Authorization
+- Caching
+- Tracing
 
 ## FAQ
 
