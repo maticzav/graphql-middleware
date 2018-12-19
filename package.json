@@ -17,7 +17,7 @@
     "apollo-server": "^2.3.1",
     "ava": "^0.25.0",
     "graphql": "^14.0.2",
-    "graphql-yoga": "^1.16.7",
+    "graphql-yoga": "^1.16.8",
     "prettier": "^1.15.3",
     "prettier-check": "^2.0.0",
     "request-promise-native": "^1.0.5",
