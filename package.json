@@ -18,7 +18,7 @@
     "ava": "^0.25.0",
     "graphql": "^14.1.1",
     "graphql-yoga": "^1.17.0",
-    "prettier": "^1.16.0",
+    "prettier": "^1.16.1",
     "prettier-check": "^2.0.0",
     "request-promise-native": "^1.0.5",
     "rimraf": "^2.6.3",
