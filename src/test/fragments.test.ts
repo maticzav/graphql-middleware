@@ -35,7 +35,7 @@ test('Applies schema middleware with fragments correctly.', async t => {
   // Middleware
 
   const schemaMiddlewareWithFragment = {
-    fragment: `schema-fragment`,
+    fragment: `fragment NodeID on Node { id }`,
     resolve: resolve => resolve(),
   }
 
@@ -45,11 +45,10 @@ test('Applies schema middleware with fragments correctly.', async t => {
   )
 
   t.deepEqual(fragmentReplacements, [
-    { field: 'book', fragment: 'schema-fragment' },
-    { field: 'id', fragment: 'schema-fragment' },
-    { field: 'name', fragment: 'schema-fragment' },
-    { field: 'content', fragment: 'schema-fragment' },
-    { field: 'author', fragment: 'schema-fragment' },
+    { field: 'book', fragment: '... on Node {\n  id\n}' },
+    { field: 'name', fragment: '... on Node {\n  id\n}' },
+    { field: 'content', fragment: '... on Node {\n  id\n}' },
+    { field: 'author', fragment: '... on Node {\n  id\n}' },
   ])
 })
 
@@ -57,13 +56,18 @@ test('Applies type middleware with fragments correctly.', async t => {
   const typeDefs = `
     type Query {
       book: Book!
+      author: Author!
     }
 
     type Book {
       id: ID!
-      name: String!
       content: String!
       author: String!
+    }
+
+    type Author {
+      id: ID!
+      name: String!
     }
   `
 
@@ -72,9 +76,13 @@ test('Applies type middleware with fragments correctly.', async t => {
       book(parent, args, ctx, info) {
         return {
           id: 'id',
-          name: 'name',
           content: 'content',
           author: 'author',
+        }
+      },
+      author(parent, args, ctx, info) {
+        return {
+          name: 'name',
         }
       },
     },
@@ -85,12 +93,12 @@ test('Applies type middleware with fragments correctly.', async t => {
   // Middleware
 
   const typeMiddlewareWithFragment = {
-    Query: {
-      fragments: [`type-fragment:Query-1`, `type-fragment:Query-2`],
+    Book: {
+      fragment: `fragment BookId on Book { id }`,
       resolve: resolve => resolve(),
     },
-    Book: {
-      fragment: `type-fragment:Book`,
+    Author: {
+      fragments: [`... on Author { id }`, `... on Author { name }`],
       resolve: resolve => resolve(),
     },
   }
@@ -102,28 +110,20 @@ test('Applies type middleware with fragments correctly.', async t => {
 
   t.deepEqual(fragmentReplacements, [
     {
-      field: 'book',
-      fragment: 'type-fragment:Query-1',
-    },
-    {
-      field: 'book',
-      fragment: 'type-fragment:Query-2',
-    },
-    {
-      field: 'id',
-      fragment: 'type-fragment:Book',
-    },
-    {
-      field: 'name',
-      fragment: 'type-fragment:Book',
-    },
-    {
       field: 'content',
-      fragment: 'type-fragment:Book',
+      fragment: '... on Book {\n  id\n}',
     },
     {
       field: 'author',
-      fragment: 'type-fragment:Book',
+      fragment: '... on Book {\n  id\n}',
+    },
+    {
+      field: 'id',
+      fragment: '... on Author {\n  name\n}',
+    },
+    {
+      field: 'name',
+      fragment: '... on Author {\n  id\n}',
     },
   ])
 })
@@ -162,13 +162,13 @@ test('Applies field middleware with fragments correctly.', async t => {
   const fieldMiddlewareWithFragment = {
     Book: {
       content: {
-        fragment: `field-fragment:Book.content`,
+        fragment: `fragment BookId on Book { id }`,
         resolve: resolve => resolve(),
       },
       author: {
         fragments: [
-          `field-fragment:Book.author-1`,
-          `field-fragment:Book.author-2`,
+          `fragment BookId on Book { id }`,
+          `fragment BookContent on Book { content }`,
         ],
         resolve: resolve => resolve(),
       },
@@ -183,15 +183,15 @@ test('Applies field middleware with fragments correctly.', async t => {
   t.deepEqual(fragmentReplacements, [
     {
       field: 'content',
-      fragment: 'field-fragment:Book.content',
+      fragment: '... on Book {\n  id\n}',
     },
     {
       field: 'author',
-      fragment: 'field-fragment:Book.author-1',
+      fragment: '... on Book {\n  id\n}',
     },
     {
       field: 'author',
-      fragment: 'field-fragment:Book.author-2',
+      fragment: '... on Book {\n  content\n}',
     },
   ])
 })
@@ -228,7 +228,7 @@ test('Applies schema middleware with fragments correctly on declared resolvers.'
   // Middleware
 
   const schemaMiddlewareWithFragment = {
-    fragment: `schema-fragment`,
+    fragment: `fragment NodeId on Node { id }`,
     resolve: resolve => resolve(),
   }
 
@@ -238,7 +238,7 @@ test('Applies schema middleware with fragments correctly on declared resolvers.'
   )
 
   t.deepEqual(fragmentReplacements, [
-    { field: 'book', fragment: 'schema-fragment' },
+    { field: 'book', fragment: '... on Node {\n  id\n}' },
   ])
 })
 
@@ -274,11 +274,11 @@ test('Applies type middleware with fragments correctly on declared resolvers.', 
   // Middleware
   const typeMiddlewareWithFragment = {
     Query: {
-      fragments: [`type-fragment:Query-1`, `type-fragment:Query-2`],
+      fragments: [`fragment QueryViewer on Query { viewer }`],
       resolve: resolve => resolve(),
     },
     Book: {
-      fragment: `type-fragment:Book`,
+      fragment: `... on Book { id }`,
       resolve: resolve => resolve(),
     },
   }
@@ -291,11 +291,7 @@ test('Applies type middleware with fragments correctly on declared resolvers.', 
   t.deepEqual(fragmentReplacements, [
     {
       field: 'book',
-      fragment: 'type-fragment:Query-1',
-    },
-    {
-      field: 'book',
-      fragment: 'type-fragment:Query-2',
+      fragment: '... on Query {\n  viewer\n}',
     },
   ])
 })
@@ -339,17 +335,17 @@ test('Applies field middleware with fragments correctly on declared resolvers.',
   const fieldMiddlewareWithFragment = {
     Book: {
       id: {
-        fragment: `not-copied`,
+        fragment: `fragment Ignored on Book { ignore }`,
         resolve: resolve => resolve(),
       },
       content: {
-        fragment: `field-fragment:Book.content`,
+        fragment: `fragment BookId on Book { id }`,
         resolve: resolve => resolve(),
       },
       author: {
         fragments: [
-          `field-fragment:Book.author-1`,
-          `field-fragment:Book.author-2`,
+          `fragment AuthorId on Author { id }`,
+          `fragment AuthorName on Author { name }`,
         ],
         resolve: resolve => resolve(),
       },
@@ -364,15 +360,15 @@ test('Applies field middleware with fragments correctly on declared resolvers.',
   t.deepEqual(fragmentReplacements, [
     {
       field: 'content',
-      fragment: 'field-fragment:Book.content',
+      fragment: '... on Book {\n  id\n}',
     },
     {
       field: 'author',
-      fragment: 'field-fragment:Book.author-1',
+      fragment: '... on Author {\n  id\n}',
     },
     {
       field: 'author',
-      fragment: 'field-fragment:Book.author-2',
+      fragment: '... on Author {\n  name\n}',
     },
   ])
 })
