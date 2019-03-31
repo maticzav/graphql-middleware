@@ -16,7 +16,7 @@
     "@types/request-promise-native": "^1.0.15",
     "apollo-server": "^2.4.8",
     "ava": "^0.25.0",
-    "graphql": "^14.2.0",
+    "graphql": "^14.2.1",
     "graphql-yoga": "^1.17.4",
     "prettier": "^1.16.4",
     "prettier-check": "^2.0.0",
@@ -30,7 +30,7 @@
     "typescript": "^3.4.1"
   },
   "peerDependencies": {
-    "graphql": "^14.2.0"
+    "graphql": "^14.2.1"
   },
   "scripts": {
     "prepublishOnly": "npm run test",
