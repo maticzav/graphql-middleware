@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.2.0",
-    "@types/request-promise-native": "^1.0.15",
+    "@types/request-promise-native": "^1.0.16",
     "apollo-server": "^2.4.8",
     "ava": "^0.25.0",
     "graphql": "^14.2.1",
