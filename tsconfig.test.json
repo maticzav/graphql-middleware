@@ -9,6 +9,6 @@
     "lib": ["esnext"],
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }

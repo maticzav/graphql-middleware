@@ -13,32 +13,32 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.2.2",
+    "@types/jest": "^24.0.15",
     "@types/request-promise-native": "^1.0.16",
     "apollo-server": "^2.7.0",
-    "ava": "^0.25.0",
+    "codecov": "^3.5.0",
     "graphql": "^14.4.2",
     "graphql-yoga": "^1.18.1",
+    "jest": "^24.8.0",
     "prettier": "^1.18.2",
-    "prettier-check": "^2.0.0",
+    "pretty-quick": "^1.11.1",
     "request-promise-native": "^1.0.7",
     "rimraf": "^2.6.3",
     "semantic-release": "^15.13.18",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-config-standard": "^8.0.1",
     "typescript": "^3.5.3"
   },
   "peerDependencies": {
-    "graphql": "^14.4.2"
+    "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0"
   },
   "scripts": {
-    "prepublishOnly": "npm run test",
-    "build": "rm -rf dist && tsc -d",
-    "lint": "tslint --project tsconfig.json {src}/**/*.ts && prettier-check --ignore-path .gitignore {src,.}/{*.ts,*.js}",
-    "test-ava": "ava --verbose",
-    "test": "npm run lint && npm run build && npm run test-ava",
-    "semantic-release": "semantic-release"
+    "clean": "rimraf dist",
+    "compile": "tsc -d",
+    "coverage": "codecov",
+    "test": "jest",
+    "prepublishOnly": "npm run build",
+    "release": "semantic-release"
   },
   "files": [
     "dist"

@@ -1,6 +1,4 @@
 const { GraphQLServer } = require('graphql-yoga')
-const { makeExecutableSchema } = require('graphql-tools')
-const { applyMiddleware } = require('graphql-middleware')
 
 // Schema
 
@@ -55,11 +53,10 @@ const permissions = {
 
 // Server
 
-const schema = makeExecutableSchema({ typeDefs, resolvers })
-const protectedSchema = applyMiddleware(schema, permissions)
-
 const server = new GraphQLServer({
-  schema: protectedSchema,
+  typeDefs: typeDefs,
+  resolvers: resolvers,
+  middlewares: [permissions],
   context: req => ({ ...req }),
 })
 
