@@ -3,6 +3,7 @@
 # graphql-middleware
 
 [![CircleCI](https://circleci.com/gh/prisma/graphql-middleware.svg?style=shield)](https://circleci.com/gh/prisma/graphql-middleware)
+[![codecov](https://codecov.io/gh/prisma/graphql-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/prisma/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
 
 Split up your GraphQL resolvers in middleware functions.
