@@ -201,7 +201,7 @@ describe('fragments:', () => {
     expect(fragmentReplacements).toEqual([
       {
         field: 'content',
-        fragment: '... on Book {\n  id\n  ...on Book {\n    name\n}}',
+        fragment: '... on Book {\n  id\n  ... on Book {\n    name\n  }\n}',
       },
       {
         field: 'author',
@@ -286,16 +286,8 @@ describe('fragments:', () => {
 
     expect(fragmentReplacements).toEqual([
       {
-        field: 'content',
-        fragment: '... on Book {\n  id\n}',
-      },
-      {
-        field: 'author',
-        fragment: '... on Author {\n  id\n}',
-      },
-      {
-        field: 'author',
-        fragment: '... on Author {\n  name\n}',
+        field: 'book',
+        fragment: '... on Book {\n  ignore\n}',
       },
     ])
   })
@@ -427,13 +419,14 @@ describe('fragments on declared resolvers:', () => {
     const resolvers = {
       Query: {
         book() {
-          return {
-            id: 'id',
-            name: 'name',
-            content: 'content',
-            author: 'author',
-          }
+          return {}
         },
+      },
+      Book: {
+        id: () => 'id',
+        name: () => 'name',
+        content: () => 'content',
+        author: () => 'author',
       },
     }
 
@@ -469,6 +462,10 @@ describe('fragments on declared resolvers:', () => {
     /* Tests. */
 
     expect(fragmentReplacements).toEqual([
+      {
+        field: 'id',
+        fragment: '... on Book {\n  ignore\n}',
+      },
       {
         field: 'content',
         fragment: '... on Book {\n  id\n}',
