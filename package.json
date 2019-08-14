@@ -38,7 +38,7 @@
     "compile": "tsc -d",
     "coverage": "codecov",
     "test": "jest",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run compile",
     "release": "semantic-release"
   },
   "files": [
