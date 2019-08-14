@@ -44,8 +44,4 @@ export function validateMiddleware<TSource, TContext, TArgs>(
   return middleware
 }
 
-export class MiddlewareError extends Error {
-  constructor(...props) {
-    super(...props)
-  }
-}
+export class MiddlewareError extends Error {}

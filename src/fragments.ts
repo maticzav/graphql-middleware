@@ -12,9 +12,10 @@ export function extractFragmentReplacements(
 ): FragmentReplacement[] {
   const allFragmentReplacements: FragmentReplacement[] = []
 
-  /* Collect fragments */
+  /* Collect fragments. */
+
   for (const typeName in resolvers) {
-    const fieldResolvers: any = resolvers[typeName]
+    const fieldResolvers = resolvers[typeName]
     for (const fieldName in fieldResolvers) {
       const fieldResolver = fieldResolvers[fieldName]
       if (typeof fieldResolver === 'object' && fieldResolver.fragment) {
@@ -24,19 +25,20 @@ export function extractFragmentReplacements(
         })
       }
       if (typeof fieldResolver === 'object' && fieldResolver.fragments) {
-        for (const fragmentKey in fieldResolver.fragments) {
+        for (const fragment of fieldResolver.fragments) {
           allFragmentReplacements.push({
             field: fieldName,
-            fragment: fieldResolver.fragments[fragmentKey],
+            fragment: fragment,
           })
         }
       }
     }
   }
 
-  /* Filter and map circular dependencies */
+  /* Filter and map circular dependencies. */
 
   const fragmentReplacements = allFragmentReplacements
+    .filter(fragment => Boolean(fragment))
     .map(fragmentReplacement => {
       const fragment = parseFragmentToInlineFragment(
         fragmentReplacement.fragment,
@@ -44,7 +46,7 @@ export function extractFragmentReplacements(
 
       const newSelections = fragment.selectionSet.selections.filter(node => {
         switch (node.kind) {
-          case 'Field': {
+          case Kind.FIELD: {
             return node.name.value !== fragmentReplacement.field
           }
           default: {
