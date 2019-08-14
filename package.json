@@ -21,7 +21,7 @@
     "prettier": "^1.18.2",
     "prettier-check": "^2.0.0",
     "request-promise-native": "^1.0.7",
-    "rimraf": "^2.6.3",
+    "rimraf": "^2.7.0",
     "semantic-release": "^15.13.21",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
