@@ -18,7 +18,7 @@
     "apollo-server": "^2.8.1",
     "codecov": "^3.5.0",
     "graphql": "^14.4.2",
-    "graphql-yoga": "^1.18.1",
+    "graphql-yoga": "^1.18.2",
     "husky": "^3.0.4",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
