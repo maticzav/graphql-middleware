@@ -3290,10 +3290,10 @@ graphql-yoga@^1.18.2:
   dependencies:
     iterall "^1.2.2"
 
-graphql@^14.5.1:
-  version "14.5.1"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.5.1.tgz#ee8c6f887e7231b5ecc266ae0841e78a9f7ddb88"
-  integrity sha512-j1dEuS7q14QKdhv5xDaePDmJ54odK/cCZWdG8vT07KOEPoEEh8oj/SWzaboI/9zfwplbdE6UQv4aePnzJv7o6A==
+graphql@^14.5.2:
+  version "14.5.2"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.5.2.tgz#70e729167beb0472d9ddb9fcf933bb3a0ce64fc5"
+  integrity sha512-lq+7NLqdxQxglXHfHRH0Qkr6xOAvMtozxWOhxpX5tJXlN8SnKf55/zW0qbF7V7U0fh6sXenoJqaF2lP6Bp3NAQ==
   dependencies:
     iterall "^1.2.2"
 
