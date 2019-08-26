@@ -1,5 +1,4 @@
 import {
-  GraphQLField,
   GraphQLResolveInfo,
   GraphQLSchema,
   GraphQLTypeResolver,
@@ -16,7 +15,12 @@ export declare type IMiddlewareResolver<
   TContext = any,
   TArgs = any
 > = (
-  resolve: Function,
+  resolve: (
+    source?: TSource,
+    args?: TArgs,
+    context?: TContext,
+    info?: GraphQLResolveInfo & { mergeInfo?: MergeInfo },
+  ) => any,
   parent: TSource,
   args: TArgs,
   context: TContext,
