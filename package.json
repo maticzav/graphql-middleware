@@ -17,7 +17,7 @@
     "@types/request-promise-native": "^1.0.16",
     "apollo-server": "^2.9.1",
     "codecov": "^3.5.0",
-    "graphql": "^14.5.3",
+    "graphql": "^14.5.4",
     "graphql-yoga": "^1.18.3",
     "husky": "^3.0.4",
     "jest": "^24.9.0",
