@@ -1,6 +1,10 @@
 import { makeExecutableSchema } from 'graphql-tools'
 import { graphql } from 'graphql'
-import { applyMiddleware, IMiddlewareFunction } from '../src'
+import {
+  applyMiddleware,
+  applyMiddlewareToDeclaredResolvers,
+  IMiddlewareFunction,
+} from '../src'
 import { IResolvers } from '../src/types'
 
 describe('execution:', () => {
@@ -95,5 +99,59 @@ describe('execution:', () => {
         test: randomTestString,
       },
     })
+  })
+
+  test('applies multiple middlwares only to declared resolvers', async () => {
+    /* Schema. */
+
+    const typeDefs = `
+      type Object {
+        id: String,
+        name: String
+      }
+      type Query {
+        test(arg: String): Object!
+      }
+    `
+
+    const resolvers: IResolvers = {
+      Query: {
+        test: (parent, { arg }) => ({ id: arg, name: 'name' }),
+      },
+    }
+
+    const schema = makeExecutableSchema({ resolvers, typeDefs })
+
+    /* Middleware. */
+
+    const randomTestString = Math.random().toString()
+
+    const firstMiddleware: IMiddlewareFunction = jest.fn((resolve, parent) => {
+      return resolve(parent, { arg: randomTestString })
+    })
+    const secondMiddleware: IMiddlewareFunction = jest.fn((resolve, parent) => {
+      return resolve(parent, { arg: randomTestString })
+    })
+
+    const schemaWithMiddleware = applyMiddlewareToDeclaredResolvers(
+      schema,
+      firstMiddleware,
+      secondMiddleware,
+    )
+
+    const query = `
+      query {
+        test(arg: "id") {
+          id
+          name
+        }
+      }
+    `
+
+    const res = await graphql(schemaWithMiddleware, query)
+
+    /* Tests. */
+    expect(firstMiddleware).toHaveBeenCalledTimes(1)
+    expect(secondMiddleware).toHaveBeenCalledTimes(1)
   })
 })

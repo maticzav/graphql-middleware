@@ -44,7 +44,11 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
   options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): IResolverOptions {
-  if (isMiddlewareWithFragment(middleware) && field.resolve) {
+  if (
+    isMiddlewareWithFragment(middleware) &&
+    field.resolve &&
+    field.resolve !== defaultFieldResolver
+  ) {
     return {
       ...field,
       fragment: middleware.fragment,
@@ -58,7 +62,11 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
       fragments: middleware.fragments,
       subscribe: wrapResolverInMiddleware(field.subscribe, middleware.resolve),
     }
-  } else if (isMiddlewareResolver(middleware) && field.resolve) {
+  } else if (
+    isMiddlewareResolver(middleware) &&
+    field.resolve &&
+    field.resolve !== defaultFieldResolver
+  ) {
     return {
       ...field,
       resolve: wrapResolverInMiddleware(field.resolve, middleware),
