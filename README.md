@@ -158,6 +158,7 @@ server.start(() => console.log('Server is running on localhost:4000'))
 - [graphql-middleware-forward-binding](https://github.com/maticzav/graphql-middleware-forward-binding) - GraphQL Binding forwardTo plugin for GraphQL Middleware.
 - [graphql-yup-middleware](https://github.com/JCMais/graphql-yup-middleware) - Use yup to validate mutation arguments
 - [graphql-pino-middleware](https://github.com/addityasingh/graphql-pino-middleware) - GraphQL middleware to augment resolvers with pino logger
+- [graphql-lightstep-middleware](https://github.com/addityasingh/graphql-lightstep-middleware) - GraphQL middleware to instrument resolvers with `lightstep` traces
 
 ## API
 
