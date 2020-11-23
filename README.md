@@ -1,3 +1,7 @@
+# WARNING: This project is currently unmaintained
+
+--- 
+
 <p align="center"><img src="media/logo.png" width="150" /></p>
 
 # graphql-middleware
