@@ -1,4 +1,6 @@
-const { GraphQLServer } = require('graphql-yoga')
+const { applyMiddleware } = require('graphql-middleware-tools')
+const { ApolloServer } = require('apollo-server')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
 
 // Schema
 
@@ -29,11 +31,12 @@ const logMiddleware = async (resolve, parent, args, ctx, info) => {
   }
 }
 
-const server = new GraphQLServer({
-  typeDefs: typeDefs,
-  resolvers: resolvers,
-  middlewares: [logMiddleware],
-  context: req => ({ ...req }),
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+const schemaWithMiddleware = applyMiddleware(schema, logMiddleware)
+
+const server = new ApolloServer({
+  schema: schemaWithMiddleware,
 })
 
-server.start(() => console.log('Server is running on http://localhost:4000'))
+await server.listen({ port: 8008 })
