@@ -1,5 +1,5 @@
 {
-  "name": "graphql-middleware",
+  "name": "graphql-middleware-tools",
   "description": "GraphQL Middleware done right!",
   "version": "0.0.0-semantic-release",
   "main": "dist/index.js",
