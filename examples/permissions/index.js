@@ -1,4 +1,4 @@
-const { applyMiddleware } = require('graphql-middleware-tools')
+const { applyMiddleware } = require('graphql-middleware-tool')
 const { ApolloServer } = require('apollo-server')
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 
