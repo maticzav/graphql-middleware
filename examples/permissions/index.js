@@ -62,4 +62,6 @@ const server = new ApolloServer({
   context: ({ req }) => ({ req }),
 })
 
-await server.listen({ port: 8008 })
+server
+  .listen({ port: 8008 })
+  .then(() => console.log('Server is running on http://localhost:8008'))
