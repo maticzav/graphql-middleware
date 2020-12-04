@@ -1,3 +1,4 @@
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { ApolloServer } from 'apollo-server'
 import Axios from 'axios'
 import { applyMiddleware } from '../src'
@@ -30,24 +31,24 @@ describe('integrations', () => {
 
     await server.listen({ port: 8008 })
     try {
-    const uri = `http://localhost:8008/`
+      const uri = `http://localhost:8008/`
 
-    /* Tests */
+      /* Tests */
 
-    const query = `
-      query {
-        test
-      }
-    `
+      const query = `
+        query {
+          test
+        }
+      `
 
       const body = await Axios.post(uri, { query })
-    /* Tests. */
+      /* Tests. */
 
       expect(body.data).toEqual({
-      data: {
-        test: 'pass-test',
-      },
-    })
+        data: {
+          test: 'pass-test',
+        },
+      })
     } finally {
       await server.stop()
     }

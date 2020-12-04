@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { graphql, subscribe, parse } from 'graphql'
 import { $$asyncIterator } from 'iterall'
 import { ExecutionResult } from 'apollo-link'
@@ -144,7 +144,7 @@ describe('core:', () => {
           const _args = { arg: 'changed' }
           return resolve(parent, _args)
         },
-        after: async resolve => {
+        after: async (resolve) => {
           return 'changed'
         },
       },

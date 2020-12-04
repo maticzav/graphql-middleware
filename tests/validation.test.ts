@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { validateMiddleware, MiddlewareError } from '../src/validation'
 import { IMiddlewareFieldMap, IMiddlewareTypeMap } from '../src'
 
