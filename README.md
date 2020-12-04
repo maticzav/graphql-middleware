@@ -5,6 +5,7 @@
 [![CircleCI](https://circleci.com/gh/BigsonLvrocha/graphql-middleware.svg?style=shield)](https://circleci.com/gh/BigsonLvrocha/graphql-middleware)
 [![codecov](https://codecov.io/gh/BigsonLvrocha/graphql-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/BigsonLvrocha/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware-tools.svg)](https://badge.fury.io/js/graphql-middleware-tools)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 Split up your GraphQL resolvers in middleware functions.
 
@@ -216,7 +217,7 @@ function applyMiddlewareToDeclaredResolvers(
 In some cases, your middleware could depend on how your schema looks. In such situations, you can turn your middleware into a middleware generator. Middleware generators are denoted with function `middleware` and receive `schema` as the first argument.
 
 ```ts
-const schemaDependentMiddleware = middleware(schema => {
+const schemaDependentMiddleware = middleware((schema) => {
   return generateMiddlewareFromSchema(schema)
 })
 
