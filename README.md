@@ -27,7 +27,7 @@ GraphQL Middleware is a schema wrapper which allows you to manage additional fun
 ## Install
 
 ```sh
-yarn add graphql-middleware
+yarn add graphql-middlewar-tool
 ```
 
 ## How does it work
@@ -93,7 +93,7 @@ Execution of the middleware and resolver functions follow the "onion"-principle,
 ## Standalone usage
 
 ```ts
-import { applyMiddleware } from 'graphql-middleware'
+import { applyMiddleware } from 'graphql-middlewar-tool'
 import { makeExecutableSchema } from 'graphql-tools'
 import { authMiddleware, metricsMiddleware } from './middleware'
 

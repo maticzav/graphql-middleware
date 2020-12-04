@@ -8,10 +8,10 @@ This example illustrates basic usage of GraphQL Middleware. The idea is to log e
 
 ### Import
 
-This is where we import `graphql-middleware`.
+This is where we import `graphql-middleware-tool`.
 
 ```js
-const { applyMiddleware } = require('graphql-middleware')
+const { applyMiddleware } = require('graphql-middlewar-tool')
 ```
 
 ### Middleware

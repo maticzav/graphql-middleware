@@ -9,7 +9,7 @@ import {
 import { IResolvers } from '../src/types'
 
 /**
- * Tests whether graphql-middleware correctly applies middleware to fields it
+ * Tests whether graphql-middleware-tool correctly applies middleware to fields it
  * ought to impact based on the width of the middleware specification.
  */
 describe('fragments:', () => {
