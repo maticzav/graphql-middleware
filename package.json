@@ -61,8 +61,7 @@
     "schema",
     "resolvers",
     "server",
-    "prisma",
-    "yoga"
+    "prisma"
   ],
   "license": "MIT"
 }
