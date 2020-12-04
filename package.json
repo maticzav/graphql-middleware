@@ -7,7 +7,7 @@
   "typescript": {
     "definition": "dist/index.d.ts"
   },
-  "author": "Matic Zavadlal <matic.zavadlal@gmail.com>",
+  "author": "Luiz Victor Linhares Rocha <luizvictorlrocha@gmail.com>",
   "dependencies": {
     "@graphql-tools/schema": "^7.1.2"
   },
@@ -47,13 +47,13 @@
   "release": {
     "branch": "master"
   },
-  "homepage": "https://github.com/prisma/graphql-middleware",
+  "homepage": "https://github.com/BigsonLvrocha/graphql-middleware",
   "repository": {
     "type": "git",
-    "url": "https://github.com/prisma/graphql-middleware.git"
+    "url": "https://github.com/BigsonLvrocha/graphql-middleware.git"
   },
   "bugs": {
-    "url": "https://github.com/prisma/graphql-middleware/issues"
+    "url": "https://github.com/BigsonLvrocha/graphql-middleware/issues"
   },
   "keywords": [
     "graphql",
