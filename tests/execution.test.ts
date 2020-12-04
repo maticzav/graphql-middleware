@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { graphql } from 'graphql'
 import {
   applyMiddleware,
@@ -29,12 +29,12 @@ describe('execution:', () => {
 
     let sequence: string[] = []
 
-    const firstMiddleware: IMiddlewareFunction = async resolve => {
+    const firstMiddleware: IMiddlewareFunction = async (resolve) => {
       sequence.push('first')
       return resolve()
     }
 
-    const secondMiddleware: IMiddlewareFunction = async resolve => {
+    const secondMiddleware: IMiddlewareFunction = async (resolve) => {
       sequence.push('second')
       return resolve()
     }

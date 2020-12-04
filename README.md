@@ -1,16 +1,17 @@
-# WARNING: This project is currently unmaintained
-
---- 
+# graphql-middleware
 
 <p align="center"><img src="media/logo.png" width="150" /></p>
 
-# graphql-middleware
-
-[![CircleCI](https://circleci.com/gh/prisma/graphql-middleware.svg?style=shield)](https://circleci.com/gh/prisma/graphql-middleware)
-[![codecov](https://codecov.io/gh/prisma/graphql-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/prisma/graphql-middleware)
-[![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
+[![CircleCI](https://circleci.com/gh/BigsonLvrocha/graphql-middleware.svg?style=shield)](https://circleci.com/gh/BigsonLvrocha/graphql-middleware)
+[![codecov](https://codecov.io/gh/BigsonLvrocha/graphql-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/BigsonLvrocha/graphql-middleware)
+[![npm version](https://badge.fury.io/js/graphql-middleware-tool.svg)](https://badge.fury.io/js/graphql-middleware-tool)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 Split up your GraphQL resolvers in middleware functions.
+
+## Notice
+
+This is a fork from [prisma lab's](https://github.com/prisma-labs) [graphql-middleware](https://github.com/prisma-labs/graphql-middleware) helping to keep it out of the unmaintainable state, since there are big projects depending on it and there is no other replacement available (yet).
 
 ## Overview
 
@@ -34,7 +35,8 @@ yarn add graphql-middleware
 GraphQL Middleware lets you run arbitrary code before or after a resolver is invoked. It improves your code structure by enabling code reuse and a clear separation of concerns.
 
 ```ts
-const { GraphQLServer } = require('graphql-yoga')
+const { ApolloServer } = require('apollo-server')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
 
 const typeDefs = `
 type Query {
@@ -69,12 +71,15 @@ const logResult = async (resolve, root, args, context, info) => {
   return result
 }
 
-const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
-  middlewares: [logInput, logResult],
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+const schemaWithMiddleware = applyMiddleware(schema, logInput, logResult)
+
+const server = new ApolloServer({
+  schema: schemaWithMiddleware,
 })
-server.start(() => console.log('Server is running on http://localhost:4000'))
+
+await server.listen({ port: 8008 })
 ```
 
 Execution of the middleware and resolver functions follow the "onion"-principle, meaning each middleware function adds a layer before and after the actual resolver invocation.
@@ -128,31 +133,7 @@ const schemaWithMiddleware = applyMiddleware(
 
 ### Usage with `graphql-yoga`
 
-> `graphql-yoga` has built-in support for `graphql-middleware`!
-
-```ts
-import { GraphQLServer } from 'graphql-yoga'
-import { authMiddleware, metricsMiddleware } from './middleware'
-
-const typeDefs = `
-  type Query {
-    hello(name: String): String
-  }
-`
-const resolvers = {
-  Query: {
-    hello: (parent, { name }, context) => `Hello ${name ? name : 'world'}!`,
-  },
-}
-
-const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
-  middlewares: [authMiddleware, metricsMiddleware],
-  documentMiddleware: [],
-})
-server.start(() => console.log('Server is running on localhost:4000'))
-```
+[Graphql yoga is being abandonned](https://github.com/prisma/prisma-examples/issues/2000) so support for Graphql Yoga has been dropped
 
 ## Awesome Middlewares [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
@@ -236,7 +217,7 @@ function applyMiddlewareToDeclaredResolvers(
 In some cases, your middleware could depend on how your schema looks. In such situations, you can turn your middleware into a middleware generator. Middleware generators are denoted with function `middleware` and receive `schema` as the first argument.
 
 ```ts
-const schemaDependentMiddleware = middleware(schema => {
+const schemaDependentMiddleware = middleware((schema) => {
   return generateMiddlewareFromSchema(schema)
 })
 
@@ -325,20 +306,14 @@ const { schema, fragmentReplacements } = applyMiddleware(
 
 ## FAQ
 
-### Can I use GraphQL Middleware without GraphQL Yoga?
-
-Yes. Nevertheless, we encourage you to use it in combination with Yoga. Combining the power of `middlewares` that GraphQL Middleware offers, with `documentMiddleware` which Yoga exposes, gives you unparalleled control over the execution of your queries.
-
 ### How does GraphQL Middleware compare to `directives`?
 
 GraphQL Middleware and `directives` tackle the same problem in a completely different way. GraphQL Middleware allows you to implement all your middleware logic in your code, whereas directives encourage you to mix schema with your functionality.
 
 ### Should I modify the context using GraphQL Middleware?
 
-GraphQL Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL Yoga's `documentMiddleware` for this functionality instead.
+GraphQL Middleware allows you to modify the context of your resolvers.
 
-## Help & Community [![Slack Status](https://slack.prisma.io/badge.svg)](https://slack.prisma.io)
+## Help
 
-Join our [Slack community](http://slack.prisma.io/) if you run into issues or have questions. We love talking to you!
-
-<p align="center"><a href="https://oss.prisma.io"><img src="https://imgur.com/IMU2ERq.png" alt="Prisma" height="170px"></a></p>
+Feel free to open issues, create pull requests and send me e-mail to luizvictorlrocha@gmail.com

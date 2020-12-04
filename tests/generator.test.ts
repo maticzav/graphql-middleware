@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { GraphQLSchema } from 'graphql'
 import { applyMiddleware, middleware, IMiddlewareGenerator } from '../src'
 
@@ -23,7 +23,7 @@ test('middleware generator integration', async () => {
   /* Middleware. */
 
   const testMiddleware: IMiddlewareGenerator<any, any, any> = middleware(
-    _schema => {
+    (_schema) => {
       generatorSchema = _schema
       return async () => 'pass'
     },

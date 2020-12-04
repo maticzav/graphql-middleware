@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "graphql-yoga": "latest"
+    "graphql-middleware-tool": "*",
+    "@graphql-tools/schema": "^7.1.2",
+    "apollo-server": "^2.19.0"
   }
 }
