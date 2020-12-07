@@ -4,7 +4,7 @@ import {
   GraphQLTypeResolver,
   GraphQLIsTypeOfFn,
 } from 'graphql'
-import { MergeInfo } from 'graphql-tools'
+import { StitchingInfo } from '@graphql-tools/delegate'
 
 // Middleware Tree
 
@@ -19,7 +19,7 @@ export declare type IMiddlewareResolver<
     source?: TSource,
     args?: TArgs,
     context?: TContext,
-    info?: GraphQLResolveInfo & { mergeInfo?: MergeInfo },
+    info?: GraphQLResolveInfo & { stitchingInfo?: StitchingInfo },
   ) => any,
   parent: TSource,
   args: TArgs,
@@ -119,5 +119,5 @@ export type IFieldResolver<TSource, TContext> = (
   source: TSource,
   args: { [argument: string]: any },
   context: TContext,
-  info: GraphQLResolveInfo & { mergeInfo?: MergeInfo },
+  info: GraphQLResolveInfo & { stitchingInfo?: StitchingInfo },
 ) => any
