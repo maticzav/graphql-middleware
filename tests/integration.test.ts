@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { GraphQLServer as YogaServer } from 'graphql-yoga'
 import { gql, ApolloServer } from 'apollo-server'
 import * as request from 'request-promise-native'

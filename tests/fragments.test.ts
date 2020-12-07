@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { $$asyncIterator } from 'iterall'
 import {
   applyMiddleware,
@@ -9,7 +9,7 @@ import {
 import { IResolvers } from '../src/types'
 
 /**
- * Tests whether graphql-middleware correctly applies middleware to fields it
+ * Tests whether graphql-middleware-tool correctly applies middleware to fields it
  * ought to impact based on the width of the middleware specification.
  */
 describe('fragments:', () => {
@@ -47,7 +47,7 @@ describe('fragments:', () => {
 
     const schemaMiddlewareWithFragment: IMiddlewareFunction = {
       fragment: `fragment NodeID on Node { id }`,
-      resolve: resolve => resolve(),
+      resolve: (resolve) => resolve(),
     }
 
     const { fragmentReplacements } = applyMiddleware(
@@ -109,11 +109,11 @@ describe('fragments:', () => {
     const typeMiddlewareWithFragment: IMiddlewareTypeMap = {
       Book: {
         fragment: `fragment BookId on Book { id }`,
-        resolve: resolve => resolve(),
+        resolve: (resolve) => resolve(),
       },
       Author: {
         fragments: [`... on Author { id }`, `... on Author { name }`],
-        resolve: resolve => resolve(),
+        resolve: (resolve) => resolve(),
       },
     }
 
@@ -179,14 +179,14 @@ describe('fragments:', () => {
       Book: {
         content: {
           fragment: `fragment BookId on Book { id ... on Book { name } }`,
-          resolve: resolve => resolve(),
+          resolve: (resolve) => resolve(),
         },
         author: {
           fragments: [
             `fragment BookId on Book { id }`,
             `fragment BookContent on Book { content }`,
           ],
-          resolve: resolve => resolve(),
+          resolve: (resolve) => resolve(),
         },
       },
     }
@@ -272,7 +272,7 @@ describe('fragments:', () => {
       Subscription: {
         book: {
           fragment: `fragment Ignored on Book { ignore }`,
-          resolve: resolve => resolve(),
+          resolve: (resolve) => resolve(),
         },
       },
     }
@@ -328,7 +328,7 @@ describe('fragments on declared resolvers:', () => {
 
     const schemaMiddlewareWithFragment: IMiddlewareFunction = {
       fragment: `fragment NodeId on Node { id }`,
-      resolve: resolve => resolve(),
+      resolve: (resolve) => resolve(),
     }
 
     const { fragmentReplacements } = applyMiddlewareToDeclaredResolvers(
@@ -378,11 +378,11 @@ describe('fragments on declared resolvers:', () => {
     const typeMiddlewareWithFragment: IMiddlewareTypeMap = {
       Query: {
         fragments: [`fragment QueryViewer on Query { viewer }`],
-        resolve: resolve => resolve(),
+        resolve: (resolve) => resolve(),
       },
       Book: {
         fragment: `... on Book { id }`,
-        resolve: resolve => resolve(),
+        resolve: (resolve) => resolve(),
       },
     }
 
@@ -438,18 +438,18 @@ describe('fragments on declared resolvers:', () => {
       Book: {
         id: {
           fragment: `fragment Ignored on Book { ignore }`,
-          resolve: resolve => resolve(),
+          resolve: (resolve) => resolve(),
         },
         content: {
           fragment: `fragment BookId on Book { id }`,
-          resolve: resolve => resolve(),
+          resolve: (resolve) => resolve(),
         },
         author: {
           fragments: [
             `fragment AuthorId on Author { id }`,
             `fragment AuthorName on Author { name }`,
           ],
-          resolve: resolve => resolve(),
+          resolve: (resolve) => resolve(),
         },
       },
     }
@@ -504,7 +504,7 @@ test('imparsable fragment', async () => {
 
   const fieldMiddlewareWithFragment: IMiddlewareFunction = {
     fragment: 'foo',
-    resolve: resolve => resolve(),
+    resolve: (resolve) => resolve(),
   }
 
   /* Tests. */
