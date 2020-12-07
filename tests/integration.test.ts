@@ -1,7 +1,7 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { GraphQLServer as YogaServer } from 'graphql-yoga'
-import { gql, ApolloServer } from 'apollo-server'
-import * as request from 'request-promise-native'
+import { ApolloServer } from 'apollo-server'
+import Axios from 'axios'
 import { AddressInfo } from 'ws'
 import { applyMiddleware } from '../src'
 
@@ -21,7 +21,7 @@ describe('integrations', () => {
 
     const schema = makeExecutableSchema({ typeDefs, resolvers })
 
-    const schemaWithMiddleware = applyMiddleware(schema, async resolve => {
+    const schemaWithMiddleware = applyMiddleware(schema, async (resolve) => {
       const res = await resolve()
       return `pass-${res}`
     })
@@ -29,33 +29,33 @@ describe('integrations', () => {
     const server = new YogaServer({
       schema: schemaWithMiddleware,
     })
-
     const http = await server.start({ port: 0 })
-    const { port } = http.address() as AddressInfo
-    const uri = `http://localhost:${port}/`
+    try {
+      const { port } = http.address() as AddressInfo
+      const uri = `http://localhost:${port}/`
 
-    /* Tests */
+      /* Tests */
 
-    const query = `
-      query {
-        test
-      }
-    `
+      const query = `
+        query {
+          test
+        }
+      `
 
-    const body = await request({
-      uri,
-      method: 'POST',
-      json: true,
-      body: { query },
-    }).promise()
+      const body = await Axios.post(uri, {
+        query,
+      })
 
-    /* Tests. */
+      /* Tests. */
 
-    expect(body).toEqual({
-      data: {
-        test: 'pass-test',
-      },
-    })
+      expect(body.data).toEqual({
+        data: {
+          test: 'pass-test',
+        },
+      })
+    } finally {
+      http.close()
+    }
   })
 
   test('ApolloServer', async () => {
@@ -74,7 +74,7 @@ describe('integrations', () => {
 
     const schema = makeExecutableSchema({ typeDefs, resolvers })
 
-    const schemaWithMiddleware = applyMiddleware(schema, async resolve => {
+    const schemaWithMiddleware = applyMiddleware(schema, async (resolve) => {
       const res = await resolve()
       return `pass-${res}`
     })
@@ -84,29 +84,27 @@ describe('integrations', () => {
     })
 
     await server.listen({ port: 8008 })
-    const uri = `http://localhost:8008/`
+    try {
+      const uri = `http://localhost:8008/`
 
-    /* Tests */
+      /* Tests */
 
-    const query = `
+      const query = `
       query {
         test
       }
     `
 
-    const body = await request({
-      uri,
-      method: 'POST',
-      json: true,
-      body: { query },
-    }).promise()
+      const body = await Axios.post(uri, { query })
+      /* Tests. */
 
-    /* Tests. */
-
-    expect(body).toEqual({
-      data: {
-        test: 'pass-test',
-      },
-    })
+      expect(body.data).toEqual({
+        data: {
+          test: 'pass-test',
+        },
+      })
+    } finally {
+      await server.stop()
+    }
   })
 })
