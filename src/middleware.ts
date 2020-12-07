@@ -1,5 +1,5 @@
 import { GraphQLSchema } from 'graphql'
-import { addResolveFunctionsToSchema } from 'graphql-tools'
+import { addResolversToSchema } from '@graphql-tools/schema'
 import {
   IApplyOptions,
   IMiddleware,
@@ -39,15 +39,16 @@ export function addMiddlewareToSchema<TSource, TContext, TArgs>(
 
   const fragmentReplacements = extractFragmentReplacements(resolvers)
 
-  addResolveFunctionsToSchema({
+  const newSchema = addResolversToSchema({
     schema,
     resolvers,
+    updateResolversInPlace: false,
     resolverValidationOptions: {
-      requireResolversForResolveType: false,
+      requireResolversForResolveType: 'ignore',
     },
   })
 
-  return { schema, fragmentReplacements }
+  return { schema: newSchema, fragmentReplacements }
 }
 
 /**
@@ -65,9 +66,10 @@ function applyMiddlewareWithOptions<TSource = any, TContext = any, TArgs = any>(
   options: IApplyOptions,
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
-    | IMiddlewareGenerator<TSource, TContext, TArgs>)[]
+    | IMiddlewareGenerator<TSource, TContext, TArgs>
+  )[]
 ): GraphQLSchemaWithFragmentReplacements {
-  const normalisedMiddlewares = middlewares.map(middleware => {
+  const normalisedMiddlewares = middlewares.map((middleware) => {
     if (isMiddlewareGenerator(middleware)) {
       return middleware.generate(schema)
     } else {
@@ -124,7 +126,8 @@ export function applyMiddleware<TSource = any, TContext = any, TArgs = any>(
   schema: GraphQLSchema,
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
-    | IMiddlewareGenerator<TSource, TContext, TArgs>)[]
+    | IMiddlewareGenerator<TSource, TContext, TArgs>
+  )[]
 ): GraphQLSchemaWithFragmentReplacements {
   return applyMiddlewareWithOptions(
     schema,
@@ -149,7 +152,8 @@ export function applyMiddlewareToDeclaredResolvers<
   schema: GraphQLSchema,
   ...middlewares: (
     | IMiddleware<TSource, TContext, TArgs>
-    | IMiddlewareGenerator<TSource, TContext, TArgs>)[]
+    | IMiddlewareGenerator<TSource, TContext, TArgs>
+  )[]
 ): GraphQLSchemaWithFragmentReplacements {
   return applyMiddlewareWithOptions(
     schema,
