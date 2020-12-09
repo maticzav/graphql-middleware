@@ -25,7 +25,7 @@
     "pretty-quick": "^1.11.1",
     "request-promise-native": "^1.0.9",
     "rimraf": "^2.7.1",
-    "semantic-release": "^15.13.24",
+    "semantic-release": "^17.0.0",
     "ts-jest": "^24.3.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
