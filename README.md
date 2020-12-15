@@ -18,6 +18,8 @@ GraphQL Middleware is a schema wrapper which allows you to manage additional fun
 
 > **NOTE:** As of 3.0.0 `graphql-middleware` no longer wraps introspection queries.
 
+> **NOTE:** As of 5.0.0 `graphql-middleware` no longer supports GraphQL Yoga out of the box. We might bring back the support if the library becomes maintained again. We are keeping the docs as the reference for older versions.
+
 ## Install
 
 ```sh
@@ -29,7 +31,8 @@ yarn add graphql-middleware
 GraphQL Middleware lets you run arbitrary code before or after a resolver is invoked. It improves your code structure by enabling code reuse and a clear separation of concerns.
 
 ```ts
-const { GraphQLServer } = require('graphql-yoga')
+const { ApolloServer } = require('apollo-server')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
 
 const typeDefs = `
 type Query {
@@ -64,12 +67,15 @@ const logResult = async (resolve, root, args, context, info) => {
   return result
 }
 
-const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
-  middlewares: [logInput, logResult],
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+const schemaWithMiddleware = applyMiddleware(schema, logInput, logResult)
+
+const server = new ApolloServer({
+  schema: schemaWithMiddleware,
 })
-server.start(() => console.log('Server is running on http://localhost:4000'))
+
+await server.listen({ port: 8008 })
 ```
 
 Execution of the middleware and resolver functions follow the "onion"-principle, meaning each middleware function adds a layer before and after the actual resolver invocation.
@@ -83,9 +89,8 @@ Execution of the middleware and resolver functions follow the "onion"-principle,
 ## Standalone usage
 
 ```ts
-import { applyMiddleware } from 'graphql-middleware'
-import { makeExecutableSchema } from 'graphql-tools'
-import { authMiddleware, metricsMiddleware } from './middleware'
+const { ApolloServer } = require('apollo-server')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
 
 // Minimal example middleware (before & after)
 const beepMiddleware = {
@@ -119,6 +124,12 @@ const schemaWithMiddleware = applyMiddleware(
   authMiddleware,
   beepMiddleware,
 )
+
+const server = new ApolloServer({
+  schema: schemaWithMiddleware,
+})
+
+await server.listen({ port: 8008 })
 ```
 
 ### Usage with `graphql-yoga`
@@ -232,7 +243,7 @@ function applyMiddlewareToDeclaredResolvers(
 In some cases, your middleware could depend on how your schema looks. In such situations, you can turn your middleware into a middleware generator. Middleware generators are denoted with function `middleware` and receive `schema` as the first argument.
 
 ```ts
-const schemaDependentMiddleware = middleware(schema => {
+const schemaDependentMiddleware = middleware((schema) => {
   return generateMiddlewareFromSchema(schema)
 })
 
