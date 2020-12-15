@@ -1,4 +1,4 @@
-name: Test GraphQL Middleware
+name: Test
 
 on: [push, pull_request]
 
@@ -14,7 +14,7 @@ jobs:
           node-version: '13.x'
       - run: yarn install
       # Test
-      - run: yarn build
+      - run: yarn compile
       - run: yarn test
         env:
           GH_TOKEN: ${{ secrets.GH_SPONSORS_TOKEN }}

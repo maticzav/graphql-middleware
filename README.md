@@ -2,6 +2,7 @@
 
 # graphql-middleware
 
+[![Actions Status](https://github.com/maticzav/graphql-middleware/workflows/Test/badge.svg)](https://github.com/maticzav/graphql-middleware/actions)
 [![codecov](https://codecov.io/gh/prisma/graphql-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/prisma/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
 

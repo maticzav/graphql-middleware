@@ -1,4 +1,4 @@
-name: Release on NPM
+name: Publish
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
           node-version: '13.x'
       - run: yarn install
       # Publish
-      - run: yarn build
+      - run: yarn compile
       - run: yarn test
         env:
           GH_TOKEN: ${{ secrets.GH_SPONSORS_TOKEN }}
