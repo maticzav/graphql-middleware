@@ -12,10 +12,9 @@ Split up your GraphQL resolvers in middleware functions.
 
 GraphQL Middleware is a schema wrapper which allows you to manage additional functionality across multiple resolvers efficiently.
 
-- **Easiest way to handle GraphQL middleware:** An intuitive, yet familiar API that you will pick up in a second.
-- **Powerful:** Allows complete control over your resolvers (Before, After).
-- **Compatible:** Works with any GraphQL Schema.
-- **Remote:** Accepts `fragments` in resolvers to connect with remote schemas.
+- 💡 **Easy to use:** An intuitive, yet familiar API that you will pick up in a second.
+- 💪 **Powerful:** Allows complete control over your resolvers (Before, After).
+- 🌈 **Compatible:** Works with any GraphQL Schema.
 
 > **NOTE:** As of 3.0.0 `graphql-middleware` no longer wraps introspection queries.
 
