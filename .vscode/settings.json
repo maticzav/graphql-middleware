@@ -6,10 +6,7 @@
     "**/node_modules/**": true
   },
   "typescript.tsdk": "./node_modules/typescript/lib",
-  "spellright.language": [
-    "en"
-  ],
-  "spellright.documentTypes": [
-    "plaintext"
-  ]
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["plaintext"],
+  "editor.formatOnSave": true
 }

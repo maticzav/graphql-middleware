@@ -1,12 +1,7 @@
-# WARNING: This project is currently unmaintained
-
---- 
-
 <p align="center"><img src="media/logo.png" width="150" /></p>
 
 # graphql-middleware
 
-[![CircleCI](https://circleci.com/gh/prisma/graphql-middleware.svg?style=shield)](https://circleci.com/gh/prisma/graphql-middleware)
 [![codecov](https://codecov.io/gh/prisma/graphql-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/prisma/graphql-middleware)
 [![npm version](https://badge.fury.io/js/graphql-middleware.svg)](https://badge.fury.io/js/graphql-middleware)
 
@@ -156,8 +151,8 @@ server.start(() => console.log('Server is running on localhost:4000'))
 
 ## Awesome Middlewares [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
-- [graphql-middleware-apollo-upload-server](http://github.com/homeroom-live/graphql-middleware-apollo-upload-server) - Uploading files is hard, that's why this package manages it for you!
 - [graphql-shield](https://github.com/maticzav/graphql-shield) - Permissions as another layer of abstraction.
+- [graphql-middleware-apollo-upload-server](http://github.com/homeroom-live/graphql-middleware-apollo-upload-server) - Uploading files is hard, that's why this package manages it for you!
 - [graphql-middleware-sentry](https://github.com/maticzav/graphql-middleware-sentry) - Report your server errors to Sentry.
 - [graphql-middleware-forward-binding](https://github.com/maticzav/graphql-middleware-forward-binding) - GraphQL Binding forwardTo plugin for GraphQL Middleware.
 - [graphql-yup-middleware](https://github.com/JCMais/graphql-yup-middleware) - Use yup to validate mutation arguments
@@ -337,8 +332,12 @@ GraphQL Middleware and `directives` tackle the same problem in a completely diff
 
 GraphQL Middleware allows you to modify the context of your resolvers, but we encourage you to use GraphQL Yoga's `documentMiddleware` for this functionality instead.
 
-## Help & Community [![Slack Status](https://slack.prisma.io/badge.svg)](https://slack.prisma.io)
+## Thank you
 
-Join our [Slack community](http://slack.prisma.io/) if you run into issues or have questions. We love talking to you!
+Thanks to everyone who supported the development of this project. It's an honor to lead a project that helps so many people.
 
-<p align="center"><a href="https://oss.prisma.io"><img src="https://imgur.com/IMU2ERq.png" alt="Prisma" height="170px"></a></p>
+- [Prisma](http://github.com/prisma) - for sponsoring the project,
+- Johannes Schickling - for guiding the project development, and
+- everyone else who personally contributed to the project in one way or another.
+
+Thank you! :heart:

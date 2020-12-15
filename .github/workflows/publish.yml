@@ -1,0 +1,28 @@
+name: Release on NPM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      # Setup
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - run: yarn install
+      # Publish
+      - run: yarn build
+      - run: yarn test
+        env:
+          GH_TOKEN: ${{ secrets.GH_SPONSORS_TOKEN }}
+      - run: yarn coverage
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
