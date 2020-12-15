@@ -420,12 +420,6 @@ graphql-import@^0.5.0:
   dependencies:
     lodash "^4.17.4"
 
-graphql-middleware@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.2.1.tgz#e9b063268ae617e8ac41e0a4141b0b4ad7e95317"
-  dependencies:
-    graphql-tools "^2.23.1"
-
 graphql-playground-html@1.5.5:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/graphql-playground-html/-/graphql-playground-html-1.5.5.tgz#e2aca543eb66b435ead495b45244b2604d6b2d48"
@@ -621,8 +615,8 @@ object-assign@^4:
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
 object-path@^0.11.4:
-  version "0.11.4"
-  resolved "https://registry.yarnpkg.com/object-path/-/object-path-0.11.4.tgz#370ae752fbf37de3ea70a861c23bba8915691949"
+  version "0.11.5"
+  resolved "https://registry.yarnpkg.com/object-path/-/object-path-0.11.5.tgz#d4e3cf19601a5140a55a16ad712019a9c50b577a"
 
 on-finished@~2.3.0:
   version "2.3.0"
