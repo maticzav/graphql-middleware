@@ -158,6 +158,7 @@ server.start(() => console.log('Server is running on localhost:4000'))
 - [graphql-yup-middleware](https://github.com/JCMais/graphql-yup-middleware) - Use yup to validate mutation arguments
 - [graphql-pino-middleware](https://github.com/addityasingh/graphql-pino-middleware) - GraphQL middleware to augment resolvers with pino logger
 - [graphql-lightstep-middleware](https://github.com/addityasingh/graphql-lightstep-middleware) - GraphQL middleware to instrument resolvers with `lightstep` traces
+- [graphql-filter](https://github.com/hata6502/graphql-filter) - A GraphQL middleware to filter output data.
 
 ## API
 
