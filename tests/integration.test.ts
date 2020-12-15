@@ -6,6 +6,8 @@ import { AddressInfo } from 'ws'
 import { applyMiddleware } from '../src'
 
 describe('integrations', () => {
+  /* GraphQL Yoga */
+
   test('GraphQL Yoga', async () => {
     const typeDefs = `
       type Query {
@@ -56,7 +58,11 @@ describe('integrations', () => {
         test: 'pass-test',
       },
     })
+
+    http.close()
   })
+
+  /* Apollo Server */
 
   test('ApolloServer', async () => {
     /* Schema. */
@@ -108,5 +114,7 @@ describe('integrations', () => {
         test: 'pass-test',
       },
     })
+
+    await server.stop()
   })
 })

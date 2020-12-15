@@ -19,14 +19,13 @@
     "codecov": "^3.8.1",
     "graphql": "^14.7.0",
     "graphql-yoga": "^1.18.3",
-    "husky": "^3.1.0",
-    "jest": "^24.9.0",
+    "husky": "^4.3.6",
+    "jest": "^26.6.3",
     "prettier": "^1.19.1",
-    "pretty-quick": "^1.11.1",
+    "pretty-quick": "^3.1.0",
     "request-promise-native": "^1.0.9",
     "rimraf": "^2.7.1",
-    "semantic-release": "^15.13.24",
-    "ts-jest": "^24.3.0",
+    "ts-jest": "^26.4.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
@@ -38,8 +37,7 @@
     "compile": "tsc -d",
     "coverage": "codecov",
     "test": "jest",
-    "prepublishOnly": "npm run compile",
-    "release": "semantic-release"
+    "prepublishOnly": "npm run compile"
   },
   "files": [
     "dist"
