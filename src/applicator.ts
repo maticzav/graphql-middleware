@@ -5,6 +5,7 @@ import {
   GraphQLSchema,
   defaultFieldResolver,
   isIntrospectionType,
+  GraphQLArgument,
 } from 'graphql'
 import {
   IMiddlewareFunction,
@@ -39,49 +40,71 @@ function wrapResolverInMiddleware<TSource, TContext, TArgs>(
     )
 }
 
+function parseField(field: GraphQLField<any, any, any>) {
+  const { isDeprecated, ...restData } = field
+  const argsMap = field.args.reduce(
+    (acc, cur) => ({
+      ...acc,
+      [cur.name]: cur,
+    }),
+    {} as Record<string, GraphQLArgument>,
+  )
+  return {
+    ...restData,
+    args: argsMap,
+  }
+}
+
 function applyMiddlewareToField<TSource, TContext, TArgs>(
   field: GraphQLField<any, any, any>,
   options: IApplyOptions,
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): IResolverOptions {
+  const parsedField = parseField(field)
   if (
     isMiddlewareWithFragment(middleware) &&
-    field.resolve &&
-    field.resolve !== defaultFieldResolver
+    parsedField.resolve &&
+    parsedField.resolve !== defaultFieldResolver
   ) {
     return {
-      ...field,
+      ...parsedField,
       fragment: middleware.fragment,
       fragments: middleware.fragments,
-      resolve: wrapResolverInMiddleware(field.resolve, middleware.resolve),
+      resolve: wrapResolverInMiddleware(
+        parsedField.resolve,
+        middleware.resolve,
+      ),
     }
-  } else if (isMiddlewareWithFragment(middleware) && field.subscribe) {
+  } else if (isMiddlewareWithFragment(middleware) && parsedField.subscribe) {
     return {
-      ...field,
+      ...parsedField,
       fragment: middleware.fragment,
       fragments: middleware.fragments,
-      subscribe: wrapResolverInMiddleware(field.subscribe, middleware.resolve),
+      subscribe: wrapResolverInMiddleware(
+        parsedField.subscribe,
+        middleware.resolve,
+      ),
     }
   } else if (
     isMiddlewareResolver(middleware) &&
-    field.resolve &&
-    field.resolve !== defaultFieldResolver
+    parsedField.resolve &&
+    parsedField.resolve !== defaultFieldResolver
   ) {
     return {
-      ...field,
-      resolve: wrapResolverInMiddleware(field.resolve, middleware),
+      ...parsedField,
+      resolve: wrapResolverInMiddleware(parsedField.resolve, middleware),
     }
-  } else if (isMiddlewareResolver(middleware) && field.subscribe) {
+  } else if (isMiddlewareResolver(middleware) && parsedField.subscribe) {
     return {
-      ...field,
-      subscribe: wrapResolverInMiddleware(field.subscribe, middleware),
+      ...parsedField,
+      subscribe: wrapResolverInMiddleware(parsedField.subscribe, middleware),
     }
   } else if (
     isMiddlewareWithFragment(middleware) &&
     !options.onlyDeclaredResolvers
   ) {
     return {
-      ...field,
+      ...parsedField,
       fragment: middleware.fragment,
       fragments: middleware.fragments,
       resolve: wrapResolverInMiddleware(
@@ -94,11 +117,11 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
     !options.onlyDeclaredResolvers
   ) {
     return {
-      ...field,
+      ...parsedField,
       resolve: wrapResolverInMiddleware(defaultFieldResolver, middleware),
     }
   } else {
-    return { ...field, resolve: defaultFieldResolver }
+    return { ...parsedField, resolve: defaultFieldResolver }
   }
 }
 
@@ -151,7 +174,7 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
 
   const resolvers = Object.keys(typeMap)
     .filter(
-      type =>
+      (type) =>
         isGraphQLObjectType(typeMap[type]) &&
         !isIntrospectionType(typeMap[type]),
     )
