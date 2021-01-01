@@ -15,7 +15,7 @@
     "@graphql-tools/delegate": "^7.0.8",
     "@types/graphql": "^14.5.0",
     "@types/jest": "^26.0.19",
-    "@types/lodash": "^4.14.166",
+    "@types/lodash": "^4.14.167",
     "apollo-server": "^2.19.1",
     "axios": "^0.21.0",
     "codecov": "^3.8.1",
