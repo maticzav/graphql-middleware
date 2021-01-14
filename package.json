@@ -16,7 +16,7 @@
     "@types/graphql": "^14.5.0",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.167",
-    "apollo-server": "^2.19.1",
+    "apollo-server": "^2.19.2",
     "axios": "^0.21.0",
     "codecov": "^3.8.1",
     "graphql": "^15.4.0",
