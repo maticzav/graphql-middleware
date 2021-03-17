@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.5.0",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "@types/lodash": "^4.14.168",
     "apollo-server": "^2.21.1",
     "axios": "^0.21.0",
