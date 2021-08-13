@@ -23,8 +23,8 @@
   },
   "author": "Matic Zavadlal <matic.zavadlal@gmail.com>",
   "dependencies": {
-    "@graphql-tools/delegate": "^7.1.5",
-    "@graphql-tools/schema": "^7.1.5"
+    "@graphql-tools/delegate": "^8.0.8",
+    "@graphql-tools/schema": "^8.1.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
@@ -32,7 +32,7 @@
     "apollo-link": "^1.2.14",
     "apollo-server": "^2.25.2",
     "axios": "^0.21.0",
-    "bob-esbuild": "^1.2.0",
+    "bob-esbuild": "^1.2.2",
     "bob-esbuild-cli": "^1.0.1",
     "codecov": "^3.8.3",
     "graphql": "^15.5.1",
