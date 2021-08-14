@@ -11,11 +11,12 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
         with:
-          node-version: '13.x'
-      - run: yarn install
+          node-version: '14.x'
+      - run: npm i -g pnpm
+      - run: pnpm install
       # Test
-      - run: yarn compile
-      - run: yarn test
+      - run: pnpm compile
+      - run: pnpm test
         env:
           GH_TOKEN: ${{ secrets.GH_SPONSORS_TOKEN }}
-      - run: yarn coverage
+      - run: pnpm coverage
