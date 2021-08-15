@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: release
+    name: Test
     runs-on: ubuntu-latest
     steps:
       # Setup
@@ -12,10 +12,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-pnpm-modules
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('./pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
       - run: npm i -g pnpm
       - run: pnpm install
       # Test
-      - run: pnpm compile
+      - run: pnpm build
       - run: pnpm test
         env:
           GH_TOKEN: ${{ secrets.GH_SPONSORS_TOKEN }}

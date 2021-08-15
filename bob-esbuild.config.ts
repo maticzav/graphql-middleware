@@ -1,8 +1,7 @@
 export const config: import('bob-esbuild').BobConfig = {
   tsc: {
-    dirs: ['.'],
+    dirs: ['packages/*'],
   },
   distDir: 'dist',
   verbose: true,
-  singleBuild: true,
 }

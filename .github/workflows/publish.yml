@@ -4,29 +4,39 @@ on:
   push:
     branches:
       - master
-
 jobs:
-  build:
-    name: release
+  publish:
     runs-on: ubuntu-latest
     steps:
-      # Setup
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
+      - name: Checkout Main
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node
+        uses: actions/setup-node@v2
         with:
           node-version: '14.x'
-      - run: npm i -g pnpm
-      - run: pnpm i
-      # Publish
-      - run: pnpm compile
-      - run: pnpm test
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
         env:
-          GH_TOKEN: ${{ secrets.GH_SPONSORS_TOKEN }}
-      - run: pnpm coverage
-      # This alias makes semantic-release to use pnpm when publishing
-      # Which adds support for "publishConfig.directory"
-      - run: alias npm=pnpm
-      - run: npx semantic-release
+          cache-name: cache-pnpm-modules
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('./pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - name: install pnpm
+        run: npm i pnpm -g
+      - name: Install Dependencies
+        run: pnpm i
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@master
+        with:
+          publish: pnpm ci:release
+          version: pnpm ci:version
+          commit: 'chore(release): update monorepo packages versions'
+          title: 'Upcoming Release Changes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
