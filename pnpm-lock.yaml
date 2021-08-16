@@ -58,7 +58,7 @@ importers:
       '@graphql-tools/schema': ^8.1.2
       '@types/node': ^16.6.1
       bob-esbuild: ^1.2.3
-      husky: ^6.0.0
+      husky: ^7.0.1
       prettier: ^2.3.2
       pretty-quick: ^3.1.1
       typescript: ^4.3.5
@@ -68,7 +68,7 @@ importers:
       '@graphql-tools/schema': 8.1.2
       '@types/node': 16.6.1
       bob-esbuild: 1.2.3_1ce31f93b456bf092bdcfa22c36a8430
-      husky: 6.0.0
+      husky: 7.0.1
       prettier: 2.3.2
       pretty-quick: 3.1.1_prettier@2.3.2
       typescript: 4.3.5
@@ -111,7 +111,7 @@ importers:
       apollo-link: 1.2.14_graphql@15.5.1
       apollo-server: 3.1.2_graphql@15.5.1
       axios: 0.21.1
-      bob-esbuild-cli: 1.0.1
+      bob-esbuild-cli: 1.0.1_bob-esbuild@1.2.3
       changesets-github-release: 0.0.3
       codecov: 3.8.3
       graphql: 15.5.1
@@ -119,7 +119,7 @@ importers:
       jest: 27.0.6_ts-node@10.2.0
       rimraf: 3.0.2
       ts-jest: 27.0.4_92306e36c1a4cf876b1cd4839a977b9c
-      ts-node: 10.2.0_typescript@4.3.5
+      ts-node: 10.2.0_1ce31f93b456bf092bdcfa22c36a8430
       typescript: 4.3.5
 >>>>>>> fe47ddd (monorepo & changesets)
 
@@ -741,6 +741,16 @@ packages:
       value-or-promise: 1.0.10
     dev: false
 
+  /@graphql-tools/merge/8.0.1_graphql@15.5.1:
+    resolution: {integrity: sha512-YAozogbjC2Oun+UcwG0LZFumhlCiHBmqe68OIf7bqtBdp4pbPAiVuK/J9oJqRVJmzvUqugo6RD9zz1qDTKZaiQ==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0
+    dependencies:
+      '@graphql-tools/utils': 8.1.1_graphql@15.5.1
+      graphql: 15.5.1
+      tslib: 2.3.1
+    dev: true
+
   /@graphql-tools/merge/8.0.2:
     resolution: {integrity: sha512-li/bl6RpcZCPA0LrSxMYMcyYk+brer8QYY25jCKLS7gvhJkgzEFpCDaX43V1+X13djEoAbgay2mCr3dtfJQQRQ==}
     peerDependencies:
@@ -758,6 +768,7 @@ packages:
       '@graphql-tools/utils': 8.1.1_graphql@15.5.1
       graphql: 15.5.1
       tslib: 2.3.1
+    dev: false
 
   /@graphql-tools/mock/8.2.1_graphql@15.5.1:
     resolution: {integrity: sha512-/DyU742thZ3wSR8NxbzeV2K5sxtfPcnRJDuaN+WuHDOE1X1lsFiS49J0TouEnZCfLuAmhSjUMT/2GbD0xu6ggw==}
@@ -769,6 +780,18 @@ packages:
       fast-json-stable-stringify: 2.1.0
       graphql: 15.5.1
       tslib: 2.3.1
+    dev: true
+
+  /@graphql-tools/schema/8.1.1_graphql@15.5.1:
+    resolution: {integrity: sha512-u+0kxPtuP+GcKnGNt459Ob7iIpzesIJeJTmPPailaG7ZhB5hkXIizl4uHrzEIAh2Ja1P/VA8sEBYpu1N0n6Mmg==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0
+    dependencies:
+      '@graphql-tools/merge': 8.0.1_graphql@15.5.1
+      '@graphql-tools/utils': 8.1.1_graphql@15.5.1
+      graphql: 15.5.1
+      tslib: 2.3.1
+      value-or-promise: 1.0.10
     dev: true
 
   /@graphql-tools/schema/8.1.2:
@@ -792,6 +815,7 @@ packages:
       graphql: 15.5.1
       tslib: 2.3.1
       value-or-promise: 1.0.10
+    dev: false
 
   /@graphql-tools/utils/8.1.1:
     resolution: {integrity: sha512-QbFNoBmBiZ+ej4y6mOv8Ba4lNhcrTEKXAhZ0f74AhdEXi7b9xbGUH/slO5JaSyp85sGQYIPmxjRPpXBjLklbmw==}
@@ -2172,7 +2196,7 @@ packages:
       readable-stream: 3.6.0
     dev: true
 
-  /bob-esbuild-cli/1.0.1:
+  /bob-esbuild-cli/1.0.1_bob-esbuild@1.2.3:
     resolution: {integrity: sha512-z1WBNCPNgwL9CaQ7sTA0xGCHX0xjLKhjvMHrBmBhk/Fl3fLX78qq14CarFCRPn8MUjDXc1KDRXYSfhVcdS/rDQ==}
     engines: {node: '>=12.0.0'}
     hasBin: true
@@ -2181,12 +2205,16 @@ packages:
     dependencies:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       bob-esbuild: 1.2.3_typescript@4.4.2
 =======
       bob-esbuild: 1.2.3_1ce31f93b456bf092bdcfa22c36a8430
 >>>>>>> fe47ddd (monorepo & changesets)
 =======
 >>>>>>> 6cb9937 (clean update)
+=======
+      bob-esbuild: 1.2.3_1ce31f93b456bf092bdcfa22c36a8430
+>>>>>>> 02c6d37 (update husky)
       commander: 8.1.0
     dev: true
 
@@ -3600,8 +3628,9 @@ packages:
     engines: {node: '>=10.17.0'}
     dev: true
 
-  /husky/6.0.0:
-    resolution: {integrity: sha512-SQS2gDTB7tBN486QSoKPKQItZw97BMOd+Kdb6ghfpBc0yXyzrddI0oDV5MkDAbuB4X2mO3/nj60TRMcYxwzZeQ==}
+  /husky/7.0.1:
+    resolution: {integrity: sha512-gceRaITVZ+cJH9sNHqx5tFwbzlLCVxtVZcusME8JYQ8Edy5mpGDOqD8QBCdMhpyo9a+JXddnujQ4rpY2Ff9SJA==}
+    engines: {node: '>=12'}
     hasBin: true
     dev: true
 
@@ -3947,8 +3976,12 @@ packages:
       ts-node: 9.1.1_typescript@4.4.2
 =======
       pretty-format: 27.0.6
+<<<<<<< HEAD
       ts-node: 10.2.0_typescript@4.3.5
 >>>>>>> 6cb9937 (clean update)
+=======
+      ts-node: 10.2.0_1ce31f93b456bf092bdcfa22c36a8430
+>>>>>>> 02c6d37 (update husky)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -5837,11 +5870,15 @@ packages:
     dev: true
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   /ts-node/9.1.1_typescript@4.4.2:
     resolution: {integrity: sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==}
     engines: {node: '>=10.0.0'}
 =======
   /ts-node/10.2.0_typescript@4.3.5:
+=======
+  /ts-node/10.2.0_1ce31f93b456bf092bdcfa22c36a8430:
+>>>>>>> 02c6d37 (update husky)
     resolution: {integrity: sha512-FstYHtQz6isj8rBtYMN4bZdnXN1vq4HCbqn9vdNQcInRqtB86PePJQIxE6es0PhxKWhj2PHuwbG40H+bxkZPmg==}
     engines: {node: '>=12.0.0'}
 >>>>>>> 6cb9937 (clean update)
@@ -5862,6 +5899,7 @@ packages:
       '@tsconfig/node12': 1.0.9
       '@tsconfig/node14': 1.0.1
       '@tsconfig/node16': 1.0.2
+      '@types/node': 16.6.1
       acorn: 8.4.1
       acorn-walk: 8.1.1
       arg: 4.1.3
