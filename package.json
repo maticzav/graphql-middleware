@@ -32,7 +32,7 @@
     "apollo-link": "^1.2.14",
     "apollo-server": "^2.25.2",
     "axios": "^0.21.0",
-    "bob-esbuild": "^1.2.2",
+    "bob-esbuild": "^1.2.3",
     "bob-esbuild-cli": "^1.0.1",
     "codecov": "^3.8.3",
     "graphql": "^15.5.1",
