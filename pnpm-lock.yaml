@@ -8,7 +8,7 @@ specifiers:
   apollo-link: ^1.2.14
   apollo-server: ^2.25.2
   axios: ^0.21.0
-  bob-esbuild: ^1.2.2
+  bob-esbuild: ^1.2.3
   bob-esbuild-cli: ^1.0.1
   codecov: ^3.8.3
   graphql: ^15.5.1
@@ -33,8 +33,8 @@ devDependencies:
   apollo-link: 1.2.14_graphql@15.5.1
   apollo-server: 2.25.2_graphql@15.5.1
   axios: 0.21.1
-  bob-esbuild: 1.2.2_typescript@4.3.5
-  bob-esbuild-cli: 1.0.1_bob-esbuild@1.2.2
+  bob-esbuild: 1.2.3_typescript@4.3.5
+  bob-esbuild-cli: 1.0.1_bob-esbuild@1.2.3
   codecov: 3.8.3
   graphql: 15.5.1
   husky: 6.0.0
@@ -1795,14 +1795,14 @@ packages:
     resolution: {integrity: sha512-3pZEU3NT5BFUo/AD5ERPWOgQOCZITni6iavr5AUw5AUwQjMlI0kzu5btnyD39AF0gUEsDPwJT+oY1ORBJijPjQ==}
     dev: true
 
-  /bob-esbuild-cli/1.0.1_bob-esbuild@1.2.2:
+  /bob-esbuild-cli/1.0.1_bob-esbuild@1.2.3:
     resolution: {integrity: sha512-z1WBNCPNgwL9CaQ7sTA0xGCHX0xjLKhjvMHrBmBhk/Fl3fLX78qq14CarFCRPn8MUjDXc1KDRXYSfhVcdS/rDQ==}
     engines: {node: '>=12.0.0'}
     hasBin: true
     peerDependencies:
       bob-esbuild: ^1.0.0
     dependencies:
-      bob-esbuild: 1.2.2_typescript@4.3.5
+      bob-esbuild: 1.2.3_typescript@4.3.5
       commander: 8.1.0
     dev: true
 
@@ -1819,8 +1819,8 @@ packages:
       rollup: 2.56.2
     dev: true
 
-  /bob-esbuild/1.2.2_typescript@4.3.5:
-    resolution: {integrity: sha512-2P+UD1MLJ4jjBaorHixdWJu9wQEU1yUnKE9l6lnRZ8gnOnQpgfay/qQC/tw6aWHcaSMPWYewEAPl/uLz1YKDFg==}
+  /bob-esbuild/1.2.3_typescript@4.3.5:
+    resolution: {integrity: sha512-cLKIedYjbECm2SOtbuSjvXQ+Kmrjdfv5DN7iFxcuEXCon5cxwhpdbi9PA1A+7Iq6KFRle5Vo1KGj+oQY9493AQ==}
     peerDependencies:
       typescript: '*'
     dependencies:
