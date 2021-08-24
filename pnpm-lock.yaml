@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@graphql-tools/delegate': ^8.1.0
+  '@graphql-tools/delegate': ^8.1.1
   '@graphql-tools/schema': ^8.1.2
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.172
@@ -24,7 +24,7 @@ specifiers:
   typescript: ^4.3.5
 
 dependencies:
-  '@graphql-tools/delegate': 8.1.0_graphql@15.5.1
+  '@graphql-tools/delegate': 8.1.1_graphql@15.5.1
   '@graphql-tools/schema': 8.1.2_graphql@15.5.1
 
 devDependencies:
@@ -442,21 +442,21 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0
     dependencies:
-      '@graphql-tools/utils': 8.1.1_graphql@15.5.1
+      '@graphql-tools/utils': 8.1.2_graphql@15.5.1
       dataloader: 2.0.0
       graphql: 15.5.1
       tslib: 2.3.1
       value-or-promise: 1.0.10
     dev: false
 
-  /@graphql-tools/delegate/8.1.0_graphql@15.5.1:
-    resolution: {integrity: sha512-jJmty2rr4k2k6pG3H0qoCH9LDezjyVe0wLNUbVQcSfWBj1VgeHX6BF4qgbT5HsDD3oOP8ruiHZgbn6EbrOwDfA==}
+  /@graphql-tools/delegate/8.1.1_graphql@15.5.1:
+    resolution: {integrity: sha512-Vttd0nfYTqRnRMKLvk8s4cIi9U+OMXGc9CMZAlKkHrBJ6dGXjdSM+4n3p9rfWZc/FtbVk1FnNS4IFyMeKwFuxA==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0
     dependencies:
       '@graphql-tools/batch-execute': 8.0.5_graphql@15.5.1
       '@graphql-tools/schema': 8.1.2_graphql@15.5.1
-      '@graphql-tools/utils': 8.1.1_graphql@15.5.1
+      '@graphql-tools/utils': 8.1.2_graphql@15.5.1
       dataloader: 2.0.0
       graphql: 15.5.1
       tslib: 2.3.1
@@ -487,6 +487,15 @@ packages:
 
   /@graphql-tools/utils/8.1.1_graphql@15.5.1:
     resolution: {integrity: sha512-QbFNoBmBiZ+ej4y6mOv8Ba4lNhcrTEKXAhZ0f74AhdEXi7b9xbGUH/slO5JaSyp85sGQYIPmxjRPpXBjLklbmw==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0
+    dependencies:
+      graphql: 15.5.1
+      tslib: 2.3.1
+    dev: false
+
+  /@graphql-tools/utils/8.1.2_graphql@15.5.1:
+    resolution: {integrity: sha512-3G+NIBR5mHjPm78jAD0l07JRE0XH+lr9m7yL/wl69jAzK0Jr/H+/Ok4ljEolI70iglz+ZhIShVPAwyesF6rnFg==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0
     dependencies:
