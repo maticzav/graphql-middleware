@@ -21,7 +21,7 @@ specifiers:
   semantic-release: ^17.4.7
   ts-jest: ^26.5.6
   ts-node: ^9.1.1
-  typescript: ^4.3.5
+  typescript: ^4.4.2
 
 dependencies:
   '@graphql-tools/delegate': 8.1.1_graphql@15.5.1
@@ -33,7 +33,7 @@ devDependencies:
   apollo-link: 1.2.14_graphql@15.5.1
   apollo-server: 2.25.2_graphql@15.5.1
   axios: 0.21.1
-  bob-esbuild: 1.2.3_typescript@4.3.5
+  bob-esbuild: 1.2.3_typescript@4.4.2
   bob-esbuild-cli: 1.0.1_bob-esbuild@1.2.3
   codecov: 3.8.3
   graphql: 15.5.1
@@ -44,9 +44,9 @@ devDependencies:
   pretty-quick: 3.1.1_prettier@2.3.2
   rimraf: 3.0.2
   semantic-release: 17.4.7
-  ts-jest: 26.5.6_jest@26.6.3+typescript@4.3.5
-  ts-node: 9.1.1_typescript@4.3.5
-  typescript: 4.3.5
+  ts-jest: 26.5.6_jest@26.6.3+typescript@4.4.2
+  ts-node: 9.1.1_typescript@4.4.2
+  typescript: 4.4.2
 
 packages:
 
@@ -1811,7 +1811,7 @@ packages:
     peerDependencies:
       bob-esbuild: ^1.0.0
     dependencies:
-      bob-esbuild: 1.2.3_typescript@4.3.5
+      bob-esbuild: 1.2.3_typescript@4.4.2
       commander: 8.1.0
     dev: true
 
@@ -1828,7 +1828,7 @@ packages:
       rollup: 2.56.2
     dev: true
 
-  /bob-esbuild/1.2.3_typescript@4.3.5:
+  /bob-esbuild/1.2.3_typescript@4.4.2:
     resolution: {integrity: sha512-cLKIedYjbECm2SOtbuSjvXQ+Kmrjdfv5DN7iFxcuEXCon5cxwhpdbi9PA1A+7Iq6KFRle5Vo1KGj+oQY9493AQ==}
     peerDependencies:
       typescript: '*'
@@ -1852,7 +1852,7 @@ packages:
       sucrase: 3.20.1
       tree-kill: 1.2.2
       tsconfig: 7.0.0
-      typescript: 4.3.5
+      typescript: 4.4.2
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
@@ -3896,7 +3896,7 @@ packages:
       jest-validate: 26.6.2
       micromatch: 4.0.4
       pretty-format: 26.6.2
-      ts-node: 9.1.1_typescript@4.3.5
+      ts-node: 9.1.1_typescript@4.4.2
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -6272,7 +6272,7 @@ packages:
       tslib: 1.14.1
     dev: true
 
-  /ts-jest/26.5.6_jest@26.6.3+typescript@4.3.5:
+  /ts-jest/26.5.6_jest@26.6.3+typescript@4.4.2:
     resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
     engines: {node: '>= 10'}
     hasBin: true
@@ -6290,11 +6290,11 @@ packages:
       make-error: 1.3.6
       mkdirp: 1.0.4
       semver: 7.3.5
-      typescript: 4.3.5
+      typescript: 4.4.2
       yargs-parser: 20.2.9
     dev: true
 
-  /ts-node/9.1.1_typescript@4.3.5:
+  /ts-node/9.1.1_typescript@4.4.2:
     resolution: {integrity: sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==}
     engines: {node: '>=10.0.0'}
     hasBin: true
@@ -6306,7 +6306,7 @@ packages:
       diff: 4.0.2
       make-error: 1.3.6
       source-map-support: 0.5.19
-      typescript: 4.3.5
+      typescript: 4.4.2
       yn: 3.1.1
     dev: true
 
@@ -6377,8 +6377,8 @@ packages:
       is-typedarray: 1.0.0
     dev: true
 
-  /typescript/4.3.5:
-    resolution: {integrity: sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==}
+  /typescript/4.4.2:
+    resolution: {integrity: sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
