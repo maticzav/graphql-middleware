@@ -13,6 +13,10 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
+    "./package.json": {
+      "require": "./package.json",
+      "import": "./package.json"
+    },
     "./*": {
       "require": "./dist/*.js",
       "import": "./dist/*.mjs"
