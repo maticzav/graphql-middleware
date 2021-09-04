@@ -7,7 +7,7 @@ specifiers:
   '@types/lodash': ^4.14.172
   apollo-link: ^1.2.14
   apollo-server: ^2.25.2
-  axios: ^0.21.0
+  axios: ^0.21.2
   bob-esbuild: ^1.2.3
   bob-esbuild-cli: ^1.0.1
   codecov: ^3.8.3
@@ -32,7 +32,7 @@ devDependencies:
   '@types/lodash': 4.14.172
   apollo-link: 1.2.14_graphql@15.5.2
   apollo-server: 2.25.2_graphql@15.5.2
-  axios: 0.21.1
+  axios: 0.21.2
   bob-esbuild: 1.2.3_typescript@4.4.2
   bob-esbuild-cli: 1.0.1_bob-esbuild@1.2.3
   codecov: 3.8.3
@@ -1689,8 +1689,8 @@ packages:
     hasBin: true
     dev: true
 
-  /axios/0.21.1:
-    resolution: {integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==}
+  /axios/0.21.2:
+    resolution: {integrity: sha512-87otirqUw3e8CzHTMO+/9kh/FSgXt/eVDvipijwDtEuwbkySWZ9SBm6VEubmJ/kLKEoLQV/POhxXFb66bfekfg==}
     dependencies:
       follow-redirects: 1.14.1
     transitivePeerDependencies:
