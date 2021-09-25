@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "@types/lodash": "^4.14.173",
+    "@types/lodash": "^4.14.174",
     "apollo-link": "^1.2.14",
     "apollo-server": "^2.25.2",
     "axios": "^0.21.4",
