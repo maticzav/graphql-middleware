@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@graphql-tools/delegate': ^8.2.2
+  '@graphql-tools/delegate': ^8.2.3
   '@graphql-tools/schema': ^8.2.0
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.175
@@ -24,7 +24,7 @@ specifiers:
   typescript: ^4.4.4
 
 dependencies:
-  '@graphql-tools/delegate': 8.2.2_graphql@15.6.1
+  '@graphql-tools/delegate': 8.2.3_graphql@15.6.1
   '@graphql-tools/schema': 8.2.0_graphql@15.6.1
 
 devDependencies:
@@ -442,25 +442,25 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
-      '@graphql-tools/utils': 8.2.4_graphql@15.6.1
+      '@graphql-tools/utils': 8.3.0_graphql@15.6.1
       dataloader: 2.0.0
       graphql: 15.6.1
       tslib: 2.3.1
       value-or-promise: 1.0.10
     dev: false
 
-  /@graphql-tools/delegate/8.2.2_graphql@15.6.1:
-    resolution: {integrity: sha512-1fV9JePOBjYHwcYEhKkYDU9S0ttDs1qZHh8KvkJc05fH57ahsdedm97s4l8YNBaaXqLVjSq8aTUEsXqOZ/Fefg==}
+  /@graphql-tools/delegate/8.2.3_graphql@15.6.1:
+    resolution: {integrity: sha512-CS0B7oAA3n8mHhufY54j0/oxBK0aQcWy8oYyGT36ZM+MaTXQL5Wf6AlzMqvCtmBnQxGOyn/b2o0wsZ41HVH3nA==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
       '@graphql-tools/batch-execute': 8.1.1_graphql@15.6.1
       '@graphql-tools/schema': 8.2.0_graphql@15.6.1
-      '@graphql-tools/utils': 8.2.4_graphql@15.6.1
+      '@graphql-tools/utils': 8.3.0_graphql@15.6.1
       dataloader: 2.0.0
       graphql: 15.6.1
       tslib: 2.3.1
-      value-or-promise: 1.0.10
+      value-or-promise: 1.0.11
     dev: false
 
   /@graphql-tools/merge/8.1.0_graphql@15.6.1:
@@ -494,8 +494,8 @@ packages:
       tslib: 2.3.1
     dev: false
 
-  /@graphql-tools/utils/8.2.4_graphql@15.6.1:
-    resolution: {integrity: sha512-uB+JL7CqTKJ2Q5zXA+a2la1cA8YYPcc0RHO/3mK54hxlZa2Z5/9k9XrNfMof4LZQefTaBM7M6QWtaxGklJln4A==}
+  /@graphql-tools/utils/8.3.0_graphql@15.6.1:
+    resolution: {integrity: sha512-ksE0RxS0AFllo6KIJjvQsRgcUAzoyZUgUrDbCngv4SaQwyX9YxTfddTLN4uQmbiZB9h25fPp/Xgeyaa3ARCzgg==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
@@ -6525,6 +6525,11 @@ packages:
 
   /value-or-promise/1.0.10:
     resolution: {integrity: sha512-1OwTzvcfXkAfabk60UVr5NdjtjJ0Fg0T5+B1bhxtrOEwSH2fe8y4DnLgoksfCyd8yZCOQQHB0qLMQnwgCjbXLQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /value-or-promise/1.0.11:
+    resolution: {integrity: sha512-41BrgH+dIbCFXClcSapVs5M6GkENd3gQOJpEfPDNa71LsUGMXDL0jMWpI/Rh7WhX+Aalfz2TTS3Zt5pUsbnhLg==}
     engines: {node: '>=12'}
     dev: false
 
