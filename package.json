@@ -27,7 +27,7 @@
     "@graphql-tools/schema": "^8.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.176",
     "apollo-link": "^1.2.14",
     "apollo-server": "^2.25.2",
