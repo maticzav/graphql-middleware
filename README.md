@@ -32,6 +32,7 @@ GraphQL Middleware lets you run arbitrary code before or after a resolver is inv
 
 ```ts
 const { ApolloServer } = require('apollo-server')
+const { applyMiddleware } = require('graphql-middleware')
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 
 const typeDefs = `
