@@ -1,24 +1,24 @@
 import {
-  GraphQLObjectType,
-  GraphQLFieldResolver,
-  GraphQLField,
-  GraphQLSchema,
   defaultFieldResolver,
-  isIntrospectionType,
   GraphQLArgument,
+  GraphQLField,
+  GraphQLFieldResolver,
+  GraphQLObjectType,
+  GraphQLSchema,
+  isIntrospectionType,
 } from 'graphql'
 import {
-  IMiddlewareFunction,
-  IMiddlewareResolver,
-  IMiddlewareFieldMap,
   IApplyOptions,
   IMiddleware,
-  IResolvers,
+  IMiddlewareFieldMap,
+  IMiddlewareFunction,
+  IMiddlewareResolver,
   IResolverOptions,
+  IResolvers,
 } from './types'
 import {
-  isMiddlewareFunction,
   isGraphQLObjectType,
+  isMiddlewareFunction,
   isMiddlewareResolver,
   isMiddlewareWithFragment,
 } from './utils'
@@ -41,7 +41,6 @@ function wrapResolverInMiddleware<TSource, TContext, TArgs>(
 }
 
 function parseField(field: GraphQLField<any, any, any>) {
-  const { isDeprecated, ...restData } = field
   const argsMap = field.args.reduce(
     (acc, cur) => ({
       ...acc,
@@ -50,7 +49,7 @@ function parseField(field: GraphQLField<any, any, any>) {
     {} as Record<string, GraphQLArgument>,
   )
   return {
-    ...restData,
+    ...field,
     args: argsMap,
   }
 }
@@ -198,7 +197,7 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
 export function generateResolverFromSchemaAndMiddleware<
   TSource,
   TContext,
-  TArgs
+  TArgs,
 >(
   schema: GraphQLSchema,
   options: IApplyOptions,
