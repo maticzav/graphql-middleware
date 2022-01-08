@@ -78,6 +78,60 @@ const server = new ApolloServer({
 await server.listen({ port: 8008 })
 ```
 
+TypeScript Usage:
+
+```ts
+import { ApolloServer } from 'apollo-server'
+import { makeExecutableSchema } from '@graphql-tools/schema'
+import { applyMiddleware } from 'graphql-middleware'
+
+import type { IMiddleware, IResolvers } from 'graphql-middleware'
+
+const typeDefs = `
+type Query {
+  hello(name: String): String
+  bye(name: String): String
+}
+`
+
+const resolvers: IResolvers = {
+  Query: {
+    hello: (root, args, context, info) => {
+      console.log(`3. resolver: hello`)
+      return `Hello ${args.name ? args.name : 'world'}!`
+    },
+    bye: (root, args, context, info) => {
+      console.log(`3. resolver: bye`)
+      return `Bye ${args.name ? args.name : 'world'}!`
+    },
+  },
+}
+
+const logInput: IMiddleware = async (resolve, root, args, context, info) => {
+  console.log(`1. logInput: ${JSON.stringify(args)}`)
+  const result = await resolve(root, args, context, info)
+  console.log(`5. logInput`)
+  return result
+}
+
+const logResult: IMiddleware = async (resolve, root, args, context, info) => {
+  console.log(`2. logResult`)
+  const result = await resolve(root, args, context, info)
+  console.log(`4. logResult: ${JSON.stringify(result)}`)
+  return result
+}
+
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+const schemaWithMiddleware = applyMiddleware(schema, logInput, logResult)
+
+const server = new ApolloServer({
+  schema: schemaWithMiddleware,
+})
+
+await server.listen({ port: 8008 })
+```
+
 Execution of the middleware and resolver functions follow the "onion"-principle, meaning each middleware function adds a layer before and after the actual resolver invocation.
 
 <p align="center"><img src="media/idea.png" /></p>
@@ -179,7 +233,7 @@ A middleware is a resolver function that wraps another resolver function.
 export declare type IMiddlewareResolver<
   TSource = any,
   TContext = any,
-  TArgs = any
+  TArgs = any,
 > = (
   resolve: Function,
   parent: TSource,
@@ -191,7 +245,7 @@ export declare type IMiddlewareResolver<
 export interface IMiddlewareWithOptions<
   TSource = any,
   TContext = any,
-  TArgs = any
+  TArgs = any,
 > {
   fragment?: IMiddlewareFragment
   fragments?: IMiddlewareFragment[]

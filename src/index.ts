@@ -1,6 +1,7 @@
 export type {
   FragmentReplacement,
   IMiddleware,
+  IResolvers,
   IMiddlewareTypeMap,
   IMiddlewareFieldMap,
   IMiddlewareFunction,
