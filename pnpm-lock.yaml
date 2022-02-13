@@ -7,7 +7,7 @@ specifiers:
   '@types/lodash': ^4.14.178
   apollo-link: ^1.2.14
   apollo-server: ^2.25.3
-  axios: ^0.25.0
+  axios: ^0.26.0
   bob-esbuild: ^1.3.0
   bob-esbuild-cli: ^1.0.1
   codecov: ^3.8.3
@@ -32,7 +32,7 @@ devDependencies:
   '@types/lodash': 4.14.178
   apollo-link: 1.2.14_graphql@15.8.0
   apollo-server: 2.25.3_graphql@15.8.0
-  axios: 0.25.0
+  axios: 0.26.0
   bob-esbuild: 1.3.0_typescript@4.5.5
   bob-esbuild-cli: 1.0.1_bob-esbuild@1.3.0
   codecov: 3.8.3
@@ -1698,10 +1698,10 @@ packages:
     hasBin: true
     dev: true
 
-  /axios/0.25.0:
-    resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
+  /axios/0.26.0:
+    resolution: {integrity: sha512-lKoGLMYtHvFrPVt3r+RBMp9nh34N0M8zEfCWqdWZx6phynIEhQqAdydpyBAAG211zlhX9Rgu08cOamy6XjE5Og==}
     dependencies:
-      follow-redirects: 1.14.7
+      follow-redirects: 1.14.8
     transitivePeerDependencies:
       - debug
     dev: true
@@ -2973,8 +2973,8 @@ packages:
       - supports-color
     dev: true
 
-  /follow-redirects/1.14.7:
-    resolution: {integrity: sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==}
+  /follow-redirects/1.14.8:
+    resolution: {integrity: sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
