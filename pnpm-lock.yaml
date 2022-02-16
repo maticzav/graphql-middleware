@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@graphql-tools/delegate': ^8.4.3
+  '@graphql-tools/delegate': ^8.5.0
   '@graphql-tools/schema': ^8.3.1
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.178
@@ -24,7 +24,7 @@ specifiers:
   typescript: ^4.5.5
 
 dependencies:
-  '@graphql-tools/delegate': 8.4.3_graphql@15.8.0
+  '@graphql-tools/delegate': 8.5.0_graphql@15.8.0
   '@graphql-tools/schema': 8.3.1_graphql@15.8.0
 
 devDependencies:
@@ -449,8 +449,8 @@ packages:
       value-or-promise: 1.0.11
     dev: false
 
-  /@graphql-tools/delegate/8.4.3_graphql@15.8.0:
-    resolution: {integrity: sha512-hKTJdJXJnKL0+2vpU+Kt7OHQTIXZ9mBmNBwHsYiG5WNArz/vNI7910r6TC2XMf/e7zhyyK+mXxMDBmDQkkJagA==}
+  /@graphql-tools/delegate/8.5.0_graphql@15.8.0:
+    resolution: {integrity: sha512-P2LLahWpv8eFrqXQi9v/NDLxLBKAugd3rmB8lxeTnCqma19ZM/VaSpvGAgGyjjHKQe097mAeBEkM/7uYbG/NFg==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
@@ -459,6 +459,7 @@ packages:
       '@graphql-tools/utils': 8.5.4_graphql@15.8.0
       dataloader: 2.0.0
       graphql: 15.8.0
+      graphql-executor: 0.0.18_graphql@15.8.0
       tslib: 2.3.1
       value-or-promise: 1.0.11
     dev: false
@@ -3178,6 +3179,15 @@ packages:
   /graceful-fs/4.2.8:
     resolution: {integrity: sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==}
     dev: true
+
+  /graphql-executor/0.0.18_graphql@15.8.0:
+    resolution: {integrity: sha512-upUSl7tfZCZ5dWG1XkOvpG70Yk3duZKcCoi/uJso4WxJVT6KIrcK4nZ4+2X/hzx46pL8wAukgYHY6iNmocRN+g==}
+    engines: {node: ^12.22.0 || ^14.16.0 || >=16.0.0}
+    peerDependencies:
+      graphql: ^15.0.0 || ^16.0.0
+    dependencies:
+      graphql: 15.8.0
+    dev: false
 
   /graphql-extensions/0.15.0_graphql@15.8.0:
     resolution: {integrity: sha512-bVddVO8YFJPwuACn+3pgmrEg6I8iBuYLuwvxiE+lcQQ7POotVZxm2rgGw0PvVYmWWf3DT7nTVDZ5ROh/ALp8mA==}
