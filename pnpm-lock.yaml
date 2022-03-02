@@ -1,8 +1,8 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@graphql-tools/delegate': ^8.4.3
-  '@graphql-tools/schema': ^8.3.1
+  '@graphql-tools/delegate': ^8.5.1
+  '@graphql-tools/schema': ^8.3.2
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.179
   apollo-link: ^1.2.14
