@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@graphql-tools/delegate': ^8.5.2
+  '@graphql-tools/delegate': ^8.5.3
   '@graphql-tools/schema': ^8.3.2
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.179
@@ -24,7 +24,7 @@ specifiers:
   typescript: ^4.6.2
 
 dependencies:
-  '@graphql-tools/delegate': 8.5.2_graphql@15.8.0
+  '@graphql-tools/delegate': 8.5.3_graphql@15.8.0
   '@graphql-tools/schema': 8.3.2_graphql@15.8.0
 
 devDependencies:
@@ -449,8 +449,8 @@ packages:
       value-or-promise: 1.0.11
     dev: false
 
-  /@graphql-tools/delegate/8.5.2_graphql@15.8.0:
-    resolution: {integrity: sha512-M7d1jY4orPUC7MBoSKZEP21HTVqVGX+mS0AL6UGxg1L7GCRtaYQeopyKXmnnEmBi5FNZ9KduJgHRtxkS4Hc6uA==}
+  /@graphql-tools/delegate/8.5.3_graphql@15.8.0:
+    resolution: {integrity: sha512-e65cEmAccodc3tlVskU0JgEbHgJUGB4sbd/dk2v15nOFzjj9izBTsTdvebI1Bm28Mip10vBJj9G0jJcTeOIyhg==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
