@@ -4,7 +4,7 @@ specifiers:
   '@graphql-tools/delegate': ^8.7.0
   '@graphql-tools/schema': ^8.3.5
   '@types/jest': ^26.0.24
-  '@types/lodash': ^4.14.180
+  '@types/lodash': ^4.14.181
   apollo-link: ^1.2.14
   apollo-server: ^2.25.3
   axios: ^0.26.1
@@ -29,7 +29,7 @@ dependencies:
 
 devDependencies:
   '@types/jest': 26.0.24
-  '@types/lodash': 4.14.180
+  '@types/lodash': 4.14.181
   apollo-link: 1.2.14_graphql@15.8.0
   apollo-server: 2.25.3_graphql@15.8.0
   axios: 0.26.1
@@ -1192,8 +1192,8 @@ packages:
       '@types/node': 16.6.1
     dev: true
 
-  /@types/lodash/4.14.180:
-    resolution: {integrity: sha512-XOKXa1KIxtNXgASAnwj7cnttJxS4fksBRywK/9LzRV5YxrF80BXZIGeQSuoESQ/VkUj30Ae0+YcuHc15wJCB2g==}
+  /@types/lodash/4.14.181:
+    resolution: {integrity: sha512-n3tyKthHJbkiWhDZs3DkhkCzt2MexYHXlX0td5iMplyfwketaOeKboEVBqzceH7juqvEg3q5oUoBFxSLu7zFag==}
     dev: true
 
   /@types/long/4.0.1:
