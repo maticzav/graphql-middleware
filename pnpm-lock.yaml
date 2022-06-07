@@ -1,8 +1,8 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@graphql-tools/delegate': ^8.7.10
-  '@graphql-tools/schema': ^8.3.13
+  '@graphql-tools/delegate': ^8.7.11
+  '@graphql-tools/schema': ^8.3.14
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.182
   apollo-link: ^1.2.14
@@ -24,8 +24,8 @@ specifiers:
   typescript: ^4.7.3
 
 dependencies:
-  '@graphql-tools/delegate': 8.7.10_graphql@15.8.0
-  '@graphql-tools/schema': 8.3.13_graphql@15.8.0
+  '@graphql-tools/delegate': 8.7.11_graphql@15.8.0
+  '@graphql-tools/schema': 8.3.14_graphql@15.8.0
 
 devDependencies:
   '@types/jest': 26.0.24
@@ -443,26 +443,26 @@ packages:
       minimist: 1.2.5
     dev: true
 
-  /@graphql-tools/batch-execute/8.4.9_graphql@15.8.0:
-    resolution: {integrity: sha512-McfAPdxP4mRGqm+NKQ0AN8aZXG7AnCcKqQxu5k0RP8Llg/81rImHqgBPO8L8GUW8E0Sx+PzeXmipHjS0MceN2Q==}
+  /@graphql-tools/batch-execute/8.4.10_graphql@15.8.0:
+    resolution: {integrity: sha512-rugHElhKYZgb6w3mBuNdgjMIo0LW5QbwIwJ1bc9VKWh51dCQmNwJS1Nx8qFWUjhmjVJWbvKWqYb6Z7wTGnOc3g==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
-      '@graphql-tools/utils': 8.6.12_graphql@15.8.0
+      '@graphql-tools/utils': 8.6.13_graphql@15.8.0
       dataloader: 2.1.0
       graphql: 15.8.0
       tslib: 2.4.0
       value-or-promise: 1.0.11
     dev: false
 
-  /@graphql-tools/delegate/8.7.10_graphql@15.8.0:
-    resolution: {integrity: sha512-gzkXErvQEuCQF3Fn6ImADeuVHgiqIVE64Va4p3LMK2D/gDwwLeTVc7jY5rjd9oZwxz6JkVD77inbFjA/Nnqlxg==}
+  /@graphql-tools/delegate/8.7.11_graphql@15.8.0:
+    resolution: {integrity: sha512-Rm9ThQHPOz/78OsoB8pZF+8YJm7cHsFMbGa67Q2hLmEAf2xLmNKvsfKfnxYuLnfmpdRxdSmab/ecHZ0qW/DS5w==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
-      '@graphql-tools/batch-execute': 8.4.9_graphql@15.8.0
-      '@graphql-tools/schema': 8.3.13_graphql@15.8.0
-      '@graphql-tools/utils': 8.6.12_graphql@15.8.0
+      '@graphql-tools/batch-execute': 8.4.10_graphql@15.8.0
+      '@graphql-tools/schema': 8.3.14_graphql@15.8.0
+      '@graphql-tools/utils': 8.6.13_graphql@15.8.0
       dataloader: 2.1.0
       graphql: 15.8.0
       graphql-executor: 0.0.23_graphql@15.8.0
@@ -470,30 +470,30 @@ packages:
       value-or-promise: 1.0.11
     dev: false
 
-  /@graphql-tools/merge/8.2.13_graphql@15.8.0:
-    resolution: {integrity: sha512-lhzjCa6wCthOYl7B6UzER3SGjU2WjSGnW0WGr8giMYsrtf6G3vIRotMcSVMlhDzyyMIOn7uPULOUt3/kaJ/rIA==}
+  /@graphql-tools/merge/8.2.14_graphql@15.8.0:
+    resolution: {integrity: sha512-od6lTF732nwPX91G79eiJf+dyRBHxCaKe7QL4IYeH4d1k+NYqx/ihYpFJNjDaqxmpHH92Hr+TxsP9SYRK3/QKg==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
-      '@graphql-tools/utils': 8.6.12_graphql@15.8.0
+      '@graphql-tools/utils': 8.6.13_graphql@15.8.0
       graphql: 15.8.0
       tslib: 2.4.0
     dev: false
 
-  /@graphql-tools/schema/8.3.13_graphql@15.8.0:
-    resolution: {integrity: sha512-e+bx1VHj1i5v4HmhCYCar0lqdoLmkRi/CfV07rTqHR6CRDbIb/S/qDCajHLt7FCovQ5ozlI5sRVbBhzfq5H0PQ==}
+  /@graphql-tools/schema/8.3.14_graphql@15.8.0:
+    resolution: {integrity: sha512-ntA4pKwyyPHFFKcIw17FfqGZAiTNZl0tHieQpPIkN5fPc4oHcXOfaj1vBjtIC/Qn6H7XBBu3l2kMA8FpobdxTQ==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
-      '@graphql-tools/merge': 8.2.13_graphql@15.8.0
-      '@graphql-tools/utils': 8.6.12_graphql@15.8.0
+      '@graphql-tools/merge': 8.2.14_graphql@15.8.0
+      '@graphql-tools/utils': 8.6.13_graphql@15.8.0
       graphql: 15.8.0
       tslib: 2.4.0
       value-or-promise: 1.0.11
     dev: false
 
-  /@graphql-tools/utils/8.6.12_graphql@15.8.0:
-    resolution: {integrity: sha512-WQ91O40RC+UJgZ9K+IzevSf8oolR1QE+WQ21Oyc2fgDYYiqT0eSf+HVyhZr/8x9rVjn3N9HeqCsywbdmbljg0w==}
+  /@graphql-tools/utils/8.6.13_graphql@15.8.0:
+    resolution: {integrity: sha512-FiVqrQzj4cgz0HcZ3CxUs8NtBGPZFpmsVyIgwmL6YCwIhjJQnT72h8G3/vk5zVfjfesht85YGp0inWWuoCKWzg==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
