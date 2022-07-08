@@ -41,7 +41,7 @@ function wrapResolverInMiddleware<TSource, TContext, TArgs>(
 }
 
 function parseField(field: GraphQLField<any, any, any>) {
-  const { isDeprecated, ...restData } = field
+  const { deprecationReason, ...restData } = field
   const argsMap = field.args.reduce(
     (acc, cur) => ({
       ...acc,
@@ -198,7 +198,7 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
 export function generateResolverFromSchemaAndMiddleware<
   TSource,
   TContext,
-  TArgs
+  TArgs,
 >(
   schema: GraphQLSchema,
   options: IApplyOptions,

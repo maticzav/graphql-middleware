@@ -1,7 +1,6 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import { graphql, subscribe, parse } from 'graphql'
+import { graphql, subscribe, parse, ExecutionResult } from 'graphql'
 import { $$asyncIterator } from 'iterall'
-import { ExecutionResult } from 'apollo-link'
 
 import { applyMiddleware } from '../src'
 import {
@@ -161,7 +160,7 @@ describe('core:', () => {
         nested { nothing }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -195,7 +194,10 @@ describe('core:', () => {
         sub
       }
     `
-    const iterator = await subscribe(schemaWithMiddleware, parse(query))
+    const iterator = await subscribe({
+      schema: schemaWithMiddleware,
+      document: parse(query),
+    })
     const res = await (iterator as AsyncIterator<ExecutionResult>).next()
 
     /* Tests. */
@@ -224,7 +226,7 @@ describe('core:', () => {
         nested { nothing }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -254,7 +256,7 @@ describe('core:', () => {
         nested { nothing }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -279,7 +281,10 @@ describe('core:', () => {
         sub
       }
     `
-    const iterator = await subscribe(schemaWithMiddleware, parse(query))
+    const iterator = await subscribe({
+      schema: schemaWithMiddleware,
+      document: parse(query),
+    })
     const res = await (iterator as AsyncIterator<ExecutionResult>).next()
 
     expect(res).toEqual({
@@ -306,7 +311,7 @@ describe('core:', () => {
         nested { nothing }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -336,7 +341,7 @@ describe('core:', () => {
         nested { nothing }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -366,7 +371,7 @@ describe('core:', () => {
         nested { nothing }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -391,7 +396,10 @@ describe('core:', () => {
         sub
       }
     `
-    const iterator = await subscribe(schemaWithMiddleware, parse(query))
+    const iterator = await subscribe({
+      schema: schemaWithMiddleware,
+      document: parse(query),
+    })
     const res = await (iterator as AsyncIterator<ExecutionResult>).next()
 
     expect(res).toEqual({
@@ -415,7 +423,7 @@ describe('core:', () => {
         }
       }
     `
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     expect(res).toEqual({
       data: {

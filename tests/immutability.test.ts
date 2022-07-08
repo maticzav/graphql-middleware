@@ -43,23 +43,23 @@ test('immutable', async () => {
     }
   `
 
-  const responseWithMiddleware = await graphql(
-    schemaWithMiddlewares,
-    query,
-    {},
-    { middlewareCalled: false },
-    {},
-  )
+  const responseWithMiddleware = await graphql({
+    schema: schemaWithMiddlewares,
+    source: query,
+    contextValue: { middlewareCalled: false },
+    variableValues: {},
+    rootValue: {},
+  })
   expect(responseWithMiddleware.errors).toBeUndefined()
   expect(responseWithMiddleware.data!.test).toEqual(true)
 
-  const responseWihoutMiddleware = await graphql(
-    schema,
-    query,
-    {},
-    { middlewareCalled: false },
-    {},
-  )
+  const responseWihoutMiddleware = await graphql({
+    schema: schema,
+    source: query,
+    contextValue: { middlewareCalled: false },
+    variableValues: {},
+    rootValue: {},
+  })
   expect(responseWihoutMiddleware.errors).toBeUndefined()
   expect(responseWihoutMiddleware.data!.test).toEqual(false)
 })
