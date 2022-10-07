@@ -50,7 +50,12 @@ describe('execution:', () => {
         test
       }
     `
-    await graphql(schemaWithMiddleware, query, null, {})
+    await graphql({
+      schema: schemaWithMiddleware,
+      source: query,
+      rootValue: null,
+      contextValue: {},
+    })
 
     /* Tests */
 
@@ -90,7 +95,7 @@ describe('execution:', () => {
       }
     `
 
-    const res = await graphql(schemaWithMiddleware, query)
+    const res = await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
 
@@ -148,7 +153,7 @@ describe('execution:', () => {
       }
     `
 
-    const res = await graphql(schemaWithMiddleware, query)
+    await graphql({ schema: schemaWithMiddleware, source: query })
 
     /* Tests. */
     expect(firstMiddleware).toHaveBeenCalledTimes(1)
