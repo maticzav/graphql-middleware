@@ -45,11 +45,10 @@ function parseField(
 ) {
   const { isDeprecated, ...restData } = field
   const argsMap = field.args.reduce(
-    (acc, cur) => ({
-      ...acc,
-      [cur.name]: cur,
-    }),
-    {} as Record<string, GraphQLArgument>,
+    (acc, cur) => {
+      acc[cur.name] = cur;
+      return acc;
+    }, {} as Record<string, GraphQLArgument>,
   )
   return {
     ...restData,
@@ -138,28 +137,28 @@ function applyMiddlewareToType<TSource, TContext, TArgs>(
 
   if (isMiddlewareFunction(middleware)) {
     const resolvers = Object.keys(fieldMap).reduce(
-      (resolvers, fieldName) => ({
-        ...resolvers,
-        [fieldName]: applyMiddlewareToField(
+      (resolvers, fieldName) => {
+        resolvers[fieldName] = applyMiddlewareToField(
           fieldMap[fieldName],
           options,
           middleware as IMiddlewareFunction<TSource, TContext, TArgs>,
-        ),
-      }),
+        );
+        return resolvers;
+      },
       {},
     )
 
     return resolvers
   } else {
     const resolvers = Object.keys(middleware).reduce(
-      (resolvers, field) => ({
-        ...resolvers,
-        [field]: applyMiddlewareToField(
-          fieldMap[field],
+      (resolvers, fieldName) => {
+        resolvers[fieldName] = applyMiddlewareToField(
+          fieldMap[fieldName],
           options,
-          middleware[field],
-        ),
-      }),
+          middleware[fieldName],
+        );
+        return resolvers;
+      },
       {},
     )
 
@@ -181,14 +180,14 @@ function applyMiddlewareToSchema<TSource, TContext, TArgs>(
         !isIntrospectionType(typeMap[type]),
     )
     .reduce(
-      (resolvers, type) => ({
-        ...resolvers,
-        [type]: applyMiddlewareToType(
+      (resolvers, type) => {
+        resolvers[type] = applyMiddlewareToType(
           typeMap[type] as GraphQLObjectType,
           options,
           middleware,
-        ),
-      }),
+        );
+        return resolvers;
+      },
       {},
     )
 
@@ -216,14 +215,14 @@ export function generateResolverFromSchemaAndMiddleware<
     const typeMap = schema.getTypeMap()
 
     const resolvers = Object.keys(middleware).reduce(
-      (resolvers, type) => ({
-        ...resolvers,
-        [type]: applyMiddlewareToType(
+      (resolvers, type) => {
+        resolvers[type] = applyMiddlewareToType(
           typeMap[type] as GraphQLObjectType,
           options,
           middleware[type],
-        ),
-      }),
+        );
+        return resolvers;
+      },
       {},
     )
 
