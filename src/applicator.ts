@@ -153,9 +153,9 @@ function applyMiddlewareToType<TSource, TContext, TArgs>(
     const resolvers = Object.keys(middleware).reduce(
       (resolvers, fieldName) => {
         resolvers[fieldName] = applyMiddlewareToField(
-          fieldMap[field],
+          fieldMap[fieldName],
           options,
-          middleware[field],
+          middleware[fieldName],
         );
         return resolvers;
       },
@@ -221,6 +221,7 @@ export function generateResolverFromSchemaAndMiddleware<
           options,
           middleware[type],
         );
+        return resolvers;
       },
       {},
     )
