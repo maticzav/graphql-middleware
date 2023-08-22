@@ -62,67 +62,45 @@ function applyMiddlewareToField<TSource, TContext, TArgs>(
   middleware: IMiddlewareFunction<TSource, TContext, TArgs>,
 ): IResolverOptions {
   const parsedField = parseField(field)
-  if (
-    isMiddlewareWithFragment(middleware) &&
-    parsedField.resolve &&
-    parsedField.resolve !== defaultFieldResolver
-  ) {
-    return {
-      ...parsedField,
-      fragment: middleware.fragment,
-      fragments: middleware.fragments,
-      resolve: wrapResolverInMiddleware(
-        parsedField.resolve,
-        middleware.resolve,
-      ),
+  
+  const resolve = options.onlyDeclaredResolvers
+    ? field.resolve !== defaultFieldResolver
+      ? parsedField.resolve
+      : null
+    : field.resolve || defaultFieldResolver
+
+  const subscribe = parsedField.subscribe
+
+  if (resolve || subscribe) {
+    let update = null
+    let middlewareResolve = null
+
+    if (isMiddlewareWithFragment(middleware)) {
+      update = {}
+      update.fragment = middleware.fragment
+      update.fragments = middleware.fragments
+      middlewareResolve = middleware.resolve
+    } else if (isMiddlewareResolver(middleware)) {
+      update = {}
+      middlewareResolve = middleware
     }
-  } else if (isMiddlewareWithFragment(middleware) && parsedField.subscribe) {
-    return {
-      ...parsedField,
-      fragment: middleware.fragment,
-      fragments: middleware.fragments,
-      subscribe: wrapResolverInMiddleware(
-        parsedField.subscribe,
-        middleware.resolve,
-      ),
-    }
-  } else if (
-    isMiddlewareResolver(middleware) &&
-    parsedField.resolve &&
-    parsedField.resolve !== defaultFieldResolver
-  ) {
-    return {
-      ...parsedField,
-      resolve: wrapResolverInMiddleware(parsedField.resolve, middleware),
-    }
-  } else if (isMiddlewareResolver(middleware) && parsedField.subscribe) {
-    return {
-      ...parsedField,
-      subscribe: wrapResolverInMiddleware(parsedField.subscribe, middleware),
-    }
-  } else if (
-    isMiddlewareWithFragment(middleware) &&
-    !options.onlyDeclaredResolvers
-  ) {
-    return {
-      ...parsedField,
-      fragment: middleware.fragment,
-      fragments: middleware.fragments,
-      resolve: wrapResolverInMiddleware(
-        defaultFieldResolver,
-        middleware.resolve,
-      ),
-    }
-  } else if (
-    isMiddlewareResolver(middleware) &&
-    !options.onlyDeclaredResolvers
-  ) {
-    return {
-      ...parsedField,
-      resolve: wrapResolverInMiddleware(defaultFieldResolver, middleware),
+
+    if (middlewareResolve) {
+      if (resolve) {
+        update.resolve = wrapResolverInMiddleware(resolve, middlewareResolve)
+      }
+      if (subscribe) {
+        update.subscribe = wrapResolverInMiddleware(
+          subscribe,
+          middlewareResolve,
+        )
+      }
+      return { ...parsedField, ...update }
+    } else {
+      return parsedField
     }
   } else {
-    return { ...parsedField, resolve: defaultFieldResolver }
+    return parsedField
   }
 }
 
