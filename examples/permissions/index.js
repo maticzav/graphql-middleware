@@ -38,7 +38,7 @@ const isLoggedIn = async (resolve, parent, args, ctx, info) => {
   const permit = ctx.request.get('Authorization') === code
 
   if (!permit) {
-    throw new Error(`Not authorised!`)
+    throw new Error(`Not authorized!`)
   }
 
   return resolve()
