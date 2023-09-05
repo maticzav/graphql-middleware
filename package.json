@@ -14,6 +14,10 @@
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     },
+    "./package.json": {
+      "require": "./package.json",
+      "import": "./package.json"
+    },
     "./*": {
       "require": "./dist/*.js",
       "import": "./dist/*.mjs",
