@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.182",
-    "@types/node":"^18.8.3",
+    "@types/node":"^18.19.59",
     "apollo-server": "^3.10.2",
     "axios": "^0.27.2",
     "bob-esbuild": "^1.3.0",
